@@ -1,0 +1,165 @@
+{
+  "sbl_model": "Geospatial Intelligence Foundation",
+  "software_components": {
+    "7-Zip": {
+      "path": "Programs and Features",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_WebAdaptor, ArcGIS_Portal, ArcGIS_HostingServer, ArcGIS_DS1, ArcGIS_DS2, GCS_Management",
+      "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+      "generic_name": "7-Zip",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_WebAdaptor",
+        "ArcGIS_Portal",
+        "ArcGIS_HostingServer",
+        "ArcGIS_DS1",
+        "ArcGIS_DS2",
+        "GCS_Management"
+      ],
+      "verification_source": "programs_and_features"
+    },
+    "Adobe Acrobat Reader DC": {
+      "path": "Programs and Features",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_WebAdaptor, ArcGIS_Portal, ArcGIS_HostingServer, ArcGIS_DS1, ArcGIS_DS2, GCS_Management",
+      "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+      "generic_name": "Adobe Acrobat",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_WebAdaptor",
+        "ArcGIS_Portal",
+        "ArcGIS_HostingServer",
+        "ArcGIS_DS1",
+        "ArcGIS_DS2",
+        "GCS_Management"
+      ],
+      "verification_source": "programs_and_features"
+    },
+    "ArcGIS Data Store 11.3": {
+      "path": "Programs and Features",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_HostingServer, ArcGIS_DS2",
+      "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+      "generic_name": "ArcGIS Data Store",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_HostingServer",
+        "ArcGIS_DS2"
+      ],
+      "verification_source": "programs_and_features"
+    },
+    "ArcGIS PowerShell DSC Module": {
+      "path": "Launch Windows PowerShell, type Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_WebAdaptor, ArcGIS_Portal, ArcGIS_HostingServer, ArcGIS_DS1, ArcGIS_DS2, GCS_Management",
+      "coded_path": "Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version",
+      "generic_name": "ArcGIS PowerShell DSC Module",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_WebAdaptor",
+        "ArcGIS_Portal",
+        "ArcGIS_HostingServer",
+        "ArcGIS_DS1",
+        "ArcGIS_DS2",
+        "GCS_Management"
+      ],
+      "verification_source": "powershell"
+    },
+    "Google Chrome": {
+      "path": "Programs and Features",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_WebAdaptor, GCS_Management",
+      "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+      "generic_name": "Google Chrome",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_WebAdaptor",
+        "GCS_Management"
+      ],
+      "verification_source": "programs_and_features"
+    },
+    "Microsoft Visual C++ 2015-2022 Redistributable (x64)": {
+      "path": "Programs and Features",
+      "path_last_verified_date": "",
+      "notes": "Tracked in VMs: ArcGIS_WebAdaptor, ArcGIS_Portal, ArcGIS_HostingServer, ArcGIS_DS1, ArcGIS_DS2, GCS_Management",
+      "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+      "generic_name": "Microsoft Visual C++",
+      "registry_name": "",
+      "tracked_in_vms": [
+        "ArcGIS_WebAdaptor",
+        "ArcGIS_Portal",
+        "ArcGIS_HostingServer",
+        "ArcGIS_DS1",
+        "ArcGIS_DS2",
+        "GCS_Management"
+      ],
+      "verification_source": "programs_and_features"
+    }
+  },
+  "vm_components": {
+    "ArcGIS_WebAdaptor": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS PowerShell DSC Module",
+        "Google Chrome",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    },
+    "ArcGIS_Portal": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS PowerShell DSC Module",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    },
+    "ArcGIS_HostingServer": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS Data Store 11.3",
+        "ArcGIS PowerShell DSC Module",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    },
+    "ArcGIS_DS1": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS PowerShell DSC Module",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    },
+    "ArcGIS_DS2": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS Data Store 11.3",
+        "ArcGIS PowerShell DSC Module",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    },
+    "GCS_Management": {
+      "vm_name": "",
+      "os_type": "windows",
+      "tracked_software": [
+        "7-Zip",
+        "Adobe Acrobat Reader DC",
+        "ArcGIS PowerShell DSC Module",
+        "Google Chrome",
+        "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+      ]
+    }
+  }
+}

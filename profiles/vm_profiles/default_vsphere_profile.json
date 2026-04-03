@@ -1,0 +1,33 @@
+{
+  "vcenter_server": "ABCD-EF",
+  "ignore_ssl": true,
+  "targets": {
+    "ArcGIS_WebAdaptor": {
+      "vm_name": "",
+      "os_type": "windows"
+    },
+    "ArcGIS_Portal": {
+      "vm_name": "",
+      "os_type": "windows"
+    },
+    "ArcGIS_HostingServer": {
+      "vm_name": "",
+      "os_type": "windows"
+    },
+    "ArcGIS_DS1": {
+      "vm_name": "",
+      "os_type": "windows"
+    },
+    "ArcGIS_DS2": {
+      "vm_name": "",
+      "os_type": "windows"
+    },
+    "GCS_Management": {
+      "vm_name": "",
+      "os_type": "windows"
+    }
+  },
+  "last_verified": "",
+  "profile_name": "default_vsphere_profile",
+  "updated_at": "2026-04-02T11:43:42"
+}
