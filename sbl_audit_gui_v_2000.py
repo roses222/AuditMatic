@@ -652,6 +652,13 @@ class TemplateAssetService:
         ensure_project_structure()
 
     @staticmethod
+    def _find_first_existing(paths: List[Path]) -> Optional[Path]:
+        for candidate in paths:
+            if candidate.exists():
+                return candidate
+        return None
+
+    @staticmethod
     def _blank_master_payload(components: Dict[str, str], sbl_model: str = None) -> Dict[str, Any]:
         model_key = normalize_model_key(sbl_model)
         software_components = {}
@@ -747,6 +754,21 @@ class TemplateAssetService:
     def get_baseline_sbl_path(self, sbl_model: str = None) -> str:
         """Get baseline SBL path (model-specific if provided)."""
         return str(get_sbl_template_baseline_path(sbl_model))
+
+    def resolve_existing_baseline_sbl_path(self, sbl_model: str = None) -> Optional[str]:
+        """Return an existing baseline template path, trying model-specific then fallbacks."""
+        preferred = get_sbl_template_baseline_path(sbl_model)
+        default_path = get_sbl_template_baseline_path()
+        candidates = [preferred, default_path]
+        fallback = self._find_first_existing(candidates)
+        if fallback is not None:
+            return str(fallback)
+
+        # Final fallback: any baseline template in templates folder.
+        any_baseline = sorted(TEMPLATES_DIR.glob("sbl_template_baseline_*.xlsx"))
+        if any_baseline:
+            return str(any_baseline[0])
+        return None
 
     @staticmethod
     def _format_mtime(path: Path) -> str:
@@ -2011,10 +2033,29 @@ class ChecklistFrame(BaseFrame):
             self.output_path.set(path)
 
     def load_baseline_template(self):
-        baseline_path = self.template_service.get_baseline_sbl_path()
-        if not Path(baseline_path).exists():
-            messagebox.showwarning("Baseline template missing", "No baseline template exists yet. Use 'Update Baseline From Source' first.")
+        source = self.source_path.get().strip()
+        sbl_model = None
+        if source and Path(source).exists():
+            try:
+                sbl_model = _get_sbl_model_from_workbook(source)
+            except Exception:
+                sbl_model = None
+
+        baseline_path = self.template_service.resolve_existing_baseline_sbl_path(sbl_model=sbl_model)
+        if baseline_path is None and source and Path(source).exists():
+            try:
+                result = self.template_service.update_baseline_from_sbl(source)
+                baseline_path = result.get("sbl_template")
+                self.append_log(f"Baseline template was missing and has been created from source: {baseline_path}")
+            except Exception as exc:
+                self.logger.write_exception(exc)
+                messagebox.showerror("Baseline template missing", f"No baseline template found, and auto-create failed: {exc}")
+                return
+
+        if not baseline_path or not Path(baseline_path).exists():
+            messagebox.showwarning("Baseline template missing", "No baseline template exists yet. Select a source workbook and use 'Update Baseline From Source'.")
             return
+
         self.source_path.set(baseline_path)
         self.append_log(f"Loaded baseline template as source: {baseline_path}")
 
