@@ -2318,6 +2318,15 @@ class AuditFrame(BaseFrame):
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
 
+    @staticmethod
+    def _coerce_local_only_profile(vm_profile: Dict[str, Any]) -> Dict[str, Any]:
+        targets = vm_profile.setdefault("targets", {})
+        for target_name in SYSTEM_COLUMNS:
+            target_entry = targets.setdefault(target_name, {"vm_name": "", "os_type": "windows"})
+            target_entry["vm_name"] = LOCAL_SENTINEL
+            target_entry["os_type"] = "windows"
+        return vm_profile
+
     def pick_audit(self):
         path = filedialog.askopenfilename(title="Select audit workbook", filetypes=[("Excel files", "*.xlsx *.xlsm"), ("All files", "*.*")])
         if path:
@@ -2355,7 +2364,18 @@ class AuditFrame(BaseFrame):
                 self.after(0, lambda p=min(100, (processed['count'] / total) * 100): self.progress_var.set(p))
                 self.after(0, lambda m=msg: self.append_log(m))
             vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
-            engine = AuditEngine(workbook_service, logger, vm_profile, {"server": self.vcenter_server.get().strip(), "username": self.vcenter_username.get().strip(), "password": self.vcenter_password.get()}, {"username": self.guest_username.get().strip(), "password": self.guest_password.get()})
+            vcenter_server = self.vcenter_server.get().strip()
+            if not vcenter_server:
+                vm_profile = self._coerce_local_only_profile(vm_profile)
+                self.after(0, lambda: self.append_log("No vCenter server configured; forcing local-only scan mode (__LOCAL__) for all targets."))
+
+            engine = AuditEngine(
+                workbook_service,
+                logger,
+                vm_profile,
+                {"server": vcenter_server, "username": self.vcenter_username.get().strip(), "password": self.vcenter_password.get()},
+                {"username": self.guest_username.get().strip(), "password": self.guest_password.get()},
+            )
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
             sbl_model = _get_sbl_model_from_workbook(self.audit_path.get().strip())
