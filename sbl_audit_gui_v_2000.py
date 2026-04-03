@@ -282,7 +282,7 @@ def _new_model_bucket() -> Dict[str, Any]:
 
 def _empty_master_software_list_payload() -> Dict[str, Any]:
     return {
-        "models": {
+        "SBL_models": {
             "GENERAL": _new_model_bucket(),
         },
         "updated_at": datetime.now().isoformat(timespec="seconds"),
@@ -460,10 +460,10 @@ class MasterSoftwarePathService:
         payload = json.loads(self.path.read_text(encoding="utf-8"))
         changed = False
 
-        if "models" not in payload or not isinstance(payload.get("models"), dict):
+        if "SBL_models" not in payload or not isinstance(payload.get("SBL_models"), dict):
             legacy_model = normalize_model_key(payload.get("sbl_model"))
             payload = {
-                "models": {
+                "SBL_models": {
                     legacy_model: {
                         "software_components": payload.get("software_components", {}),
                         "vm_components": payload.get("vm_components", {}),
@@ -473,7 +473,7 @@ class MasterSoftwarePathService:
             }
             changed = True
 
-        models = payload.setdefault("models", {})
+        models = payload.setdefault("SBL_models", {})
         if "GENERAL" not in models:
             models["GENERAL"] = _new_model_bucket()
             changed = True
@@ -602,7 +602,7 @@ class MasterSoftwarePathService:
     ) -> None:
         payload = self.load()
         model_key = normalize_model_key(model_name)
-        models = payload.setdefault("models", {})
+        models = payload.setdefault("SBL_models", {})
         model_bucket = models.setdefault(model_key, _new_model_bucket())
         bucket = model_bucket.setdefault("software_components", {})
         vm_bucket = model_bucket.setdefault("vm_components", {})
@@ -669,7 +669,7 @@ class TemplateAssetService:
             }
 
         payload = {
-            "models": {
+            "SBL_models": {
                 "GENERAL": _new_model_bucket(),
                 model_key: {
                     "software_components": software_components,
@@ -702,13 +702,13 @@ class TemplateAssetService:
         model_key = normalize_model_key(sbl_model)
         if output_json_path.exists():
             payload = json.loads(output_json_path.read_text(encoding="utf-8"))
-            if "models" not in payload or not isinstance(payload.get("models"), dict):
+            if "SBL_models" not in payload or not isinstance(payload.get("SBL_models"), dict):
                 payload = self._blank_master_payload({}, sbl_model="GENERAL")
         else:
             payload = self._blank_master_payload({}, sbl_model="GENERAL")
 
-        model_bucket = payload.setdefault("models", {}).setdefault(model_key, _new_model_bucket())
-        model_bucket["software_components"] = self._blank_master_payload(components, sbl_model=model_key)["models"][model_key]["software_components"]
+        model_bucket = payload.setdefault("SBL_models", {}).setdefault(model_key, _new_model_bucket())
+        model_bucket["software_components"] = self._blank_master_payload(components, sbl_model=model_key)["SBL_models"][model_key]["software_components"]
         payload["updated_at"] = datetime.now().isoformat(timespec="seconds")
         output_json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return str(output_json_path)

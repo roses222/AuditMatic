@@ -98,7 +98,7 @@ def best_registry_match(component_name: str, registry_items: list[str]) -> str:
 
 def main() -> None:
     payload = json.loads(MASTER_JSON.read_text(encoding="utf-8"))
-    models = payload.get("models", {})
+    models = payload.get("SBL_models", {})
 
     registry_items = installed_program_names()
     updated = 0
