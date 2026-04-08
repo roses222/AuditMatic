@@ -1,0 +1,5 @@
+pandas
+openpyxl
+requests
+pyvmomi
+paramiko

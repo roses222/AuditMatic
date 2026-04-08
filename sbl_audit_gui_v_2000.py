@@ -1,4 +1,4 @@
-# Legend/Abreviations:
+# Abreviations:
 # In Reference to:
 # _GENERAL_
 # SBL - Software Build List
@@ -7,9 +7,8 @@
 # TG - Tool Generated
 # UP - User Provided
 
-
-
 import copy
+import base64
 import json
 import os
 import platform
@@ -61,8 +60,15 @@ except Exception:
     vim = None
     PYVMOMI_AVAILABLE = False
 
+try:
+    import paramiko
+    PARAMIKO_AVAILABLE = True
+except Exception:
+    paramiko = None
+    PARAMIKO_AVAILABLE = False
+
 APP_TITLE = "Audit Tool v2"
-APP_GEOMETRY = "1380x920"
+APP_GEOMETRY = "1020x760"
 LOCAL_SENTINEL = "__LOCAL__"
 
 APP_DIR = Path(__file__).resolve().parent
@@ -1007,6 +1013,117 @@ class VSphereService:
         return "WARN", stderr or stdout or "ERROR", f"Guest PowerShell failed on '{vm_name}' with exit code {end_code}"
 
 
+class SSHTunnelService:
+    def __init__(
+        self,
+        target_username: str,
+        target_password: str,
+        target_port: int = 22,
+        gateway_host: str = "",
+        gateway_username: str = "",
+        gateway_password: str = "",
+        gateway_port: int = 22,
+        timeout_seconds: int = 30,
+    ):
+        self.target_username = target_username.strip()
+        self.target_password = target_password
+        self.target_port = target_port
+        self.gateway_host = gateway_host.strip()
+        self.gateway_username = gateway_username.strip()
+        self.gateway_password = gateway_password
+        self.gateway_port = gateway_port
+        self.timeout_seconds = timeout_seconds
+
+    @staticmethod
+    def _encode_powershell(script: str) -> str:
+        return base64.b64encode(script.encode("utf-16le")).decode("ascii")
+
+    def _connect_target(self, target_host: str):
+        if not PARAMIKO_AVAILABLE:
+            raise RuntimeError("paramiko is not installed. Install it with: pip install paramiko")
+
+        target_client = paramiko.SSHClient()
+        target_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        if self.gateway_host:
+            gateway_client = paramiko.SSHClient()
+            gateway_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            gateway_client.connect(
+                hostname=self.gateway_host,
+                port=self.gateway_port,
+                username=self.gateway_username,
+                password=self.gateway_password,
+                timeout=self.timeout_seconds,
+                look_for_keys=False,
+                allow_agent=False,
+            )
+            transport = gateway_client.get_transport()
+            if transport is None:
+                gateway_client.close()
+                raise RuntimeError(f"SSH gateway transport is unavailable for {self.gateway_host}")
+
+            sock = transport.open_channel(
+                "direct-tcpip",
+                (target_host, self.target_port),
+                ("127.0.0.1", 0),
+            )
+            target_client.connect(
+                hostname=target_host,
+                port=self.target_port,
+                username=self.target_username,
+                password=self.target_password,
+                timeout=self.timeout_seconds,
+                look_for_keys=False,
+                allow_agent=False,
+                sock=sock,
+            )
+            return target_client, gateway_client
+
+        target_client.connect(
+            hostname=target_host,
+            port=self.target_port,
+            username=self.target_username,
+            password=self.target_password,
+            timeout=self.timeout_seconds,
+            look_for_keys=False,
+            allow_agent=False,
+        )
+        return target_client, None
+
+    def run_powershell(self, target_host: str, script: str, timeout_seconds: int = 90) -> Tuple[str, str, str]:
+        if not self.target_username or not self.target_password:
+            return "WARN", "NO_SSH_CREDS", f"Missing SSH credentials for target {target_host}"
+        if not target_host:
+            return "WARN", "NO_TARGET", "SSH target host is blank"
+
+        target_client = None
+        gateway_client = None
+        try:
+            target_client, gateway_client = self._connect_target(target_host)
+            encoded = self._encode_powershell(script)
+            command = f"powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand {encoded}"
+            _, stdout, stderr = target_client.exec_command(command, timeout=timeout_seconds)
+            out_text = stdout.read().decode(errors="ignore").strip()
+            err_text = stderr.read().decode(errors="ignore").strip()
+            exit_code = stdout.channel.recv_exit_status()
+            if exit_code == 0:
+                return "PASS", out_text or "BLANK_OUTPUT", f"SSH PowerShell completed on '{target_host}'"
+            return "WARN", err_text or out_text or "ERROR", f"SSH PowerShell failed on '{target_host}' with exit code {exit_code}"
+        except Exception as exc:
+            return "WARN", "SSH_ERROR", f"SSH execution failed on '{target_host}': {exc}"
+        finally:
+            try:
+                if target_client is not None:
+                    target_client.close()
+            except Exception:
+                pass
+            try:
+                if gateway_client is not None:
+                    gateway_client.close()
+            except Exception:
+                pass
+
+
 class VersionRuleResolver:
     @staticmethod
     def extract_file_paths(version_location: str) -> List[str]:
@@ -1558,16 +1675,28 @@ class LocalWindowsScanner:
 
 
 class AuditEngine:
-    def __init__(self, workbook_service: AuditWorkbookService, logger, vm_profile: Dict[str, Any], vcenter_creds: Dict[str, str], guest_creds: Dict[str, str]):
+    def __init__(
+        self,
+        workbook_service: AuditWorkbookService,
+        logger,
+        vm_profile: Dict[str, Any],
+        vcenter_creds: Dict[str, str],
+        guest_creds: Dict[str, str],
+        connection_mode: str = "vsphere",
+        ssh_config: Optional[Dict[str, Any]] = None,
+    ):
         self.workbook_service = workbook_service
         self.logger = logger
         self.vm_profile = vm_profile
         self.vcenter_creds = vcenter_creds
         self.guest_creds = guest_creds
+        self.connection_mode = normalize_text(connection_mode).lower() or "vsphere"
+        self.ssh_config = ssh_config or {}
         self.local_scanner = LocalWindowsScanner()
         self.master_paths = MasterSoftwarePathService()
         self.master_model_name = normalize_model_key(_get_sbl_model_from_workbook(self.workbook_service.file_path))
         self.vsphere_service: Optional[VSphereService] = None
+        self.ssh_service: Optional[SSHTunnelService] = None
 
     def _build_result(self, row: AuditRow, target_name: str, found_version: str, scan_status: str, details: str) -> ScanResult:
         if row.version_locations:
@@ -1626,6 +1755,49 @@ class AuditEngine:
             return self._build_result(row, target_name, "NOT_FOUND", "WARN", f"vm={vm_name} | no candidate file path succeeded | {'; '.join(failures)}")
         return self._build_result(row, target_name, "UNKNOWN", "WARN", f"vm={vm_name} | No implemented scan rule matched VERSION LOCATIONS")
 
+    def _scan_ssh_target(self, row: AuditRow, target_name: str, target_host: str) -> ScanResult:
+        if self.ssh_service is None:
+            return self._build_result(row, target_name, "NO_SSH_SERVICE", "WARN", f"SSH service is not initialized for '{target_host}'")
+
+        rule, payload = VersionRuleResolver.detect_rule(row.version_locations)
+        if rule == "powershell":
+            scan_status, found_version, details = self.ssh_service.run_powershell(target_host, payload["command"])
+            return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details}")
+
+        if rule == "programs_and_features":
+            safe_name = row.software_component.replace("'", "''")
+            script = (
+                "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');"
+                f"$hit = Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {{$_.DisplayName -like '*{safe_name}*'}} | Select-Object -First 1;"
+                "if (-not $hit) { Write-Output 'NOT_FOUND'; exit 4 };"
+                "$v = $hit.DisplayVersion; if (-not $v) { $v = 'FOUND_NO_VERSION' }; Write-Output $v"
+            )
+            scan_status, found_version, details = self.ssh_service.run_powershell(target_host, script)
+            if scan_status == "PASS" and found_version == "NOT_FOUND":
+                scan_status = "FAIL"
+            return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details}")
+
+        if rule == "file_version":
+            failures: List[str] = []
+            for path_value in payload["paths"]:
+                safe_path = path_value.replace("'", "''")
+                script = (
+                    f"$p='{safe_path}';"
+                    "if (-not (Test-Path $p)) { Write-Output 'MISSING_FILE'; exit 3 };"
+                    "$item = Get-Item $p;"
+                    "$ver = $item.VersionInfo.ProductVersion;"
+                    "if (-not $ver) { $ver = $item.VersionInfo.FileVersion };"
+                    "if (-not $ver) { $ver = 'FOUND_NO_VERSION' };"
+                    "Write-Output $ver"
+                )
+                scan_status, found_version, details = self.ssh_service.run_powershell(target_host, script)
+                if scan_status == "PASS" and found_version != "MISSING_FILE":
+                    return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details} | source={path_value}")
+                failures.append(f"{path_value} -> {found_version}")
+            return self._build_result(row, target_name, "NOT_FOUND", "WARN", f"ssh-host={target_host} | no candidate file path succeeded | {'; '.join(failures)}")
+
+        return self._build_result(row, target_name, "UNKNOWN", "WARN", f"ssh-host={target_host} | No implemented scan rule matched VERSION LOCATIONS")
+
     def scan_target_row(self, row: AuditRow, target_name: str) -> ScanResult:
         target_profile = self.vm_profile.get("targets", {}).get(target_name, {})
         vm_name = normalize_text(target_profile.get("vm_name", ""))
@@ -1633,6 +1805,8 @@ class AuditEngine:
             return self._build_result(row, target_name, "PROFILE_NOT_MAPPED", "WARN", f"No VM mapping saved for {target_name}")
         if vm_name.upper() == LOCAL_SENTINEL:
             return self._scan_local(row, target_name)
+        if self.connection_mode == "ssh tunnel":
+            return self._scan_ssh_target(row, target_name, vm_name)
         return self._scan_guest_vm(row, target_name, vm_name)
 
     @staticmethod
@@ -1676,14 +1850,57 @@ class AuditEngine:
                 elif vm_name.upper() == LOCAL_SENTINEL:
                     continue
 
-        needs_vsphere = any(
+        needs_remote = any(
             normalize_text(self.vm_profile.get("targets", {}).get(target, {}).get("vm_name", "")).upper() not in ("", LOCAL_SENTINEL)
             for row in rows for target, mark in row.target_vms.items() if is_x_mark(mark)
         )
 
-        if needs_vsphere:
-            self.logger("Starting VM scan phase...")
-            if not PYVMOMI_AVAILABLE:
+        if needs_remote:
+            self.logger(f"Starting remote scan phase using mode: {self.connection_mode}...")
+            if self.connection_mode == "ssh tunnel":
+                if not PARAMIKO_AVAILABLE:
+                    self.logger("paramiko is not installed; SSH targets will be marked WARN.")
+                    for row in rows:
+                        if not row.software_component:
+                            continue
+                        for target_name, mark in row.target_vms.items():
+                            if not is_x_mark(mark):
+                                continue
+                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                result = self._build_result(
+                                    row,
+                                    target_name,
+                                    "NO_PARAMIKO",
+                                    "WARN",
+                                    f"ssh-host={vm_name} | paramiko is not installed",
+                                )
+                                results.append(result)
+                                self.logger(result.audit_text + f" | {result.details}")
+                else:
+                    self.ssh_service = SSHTunnelService(
+                        target_username=self.guest_creds.get("username", ""),
+                        target_password=self.guest_creds.get("password", ""),
+                        target_port=int(self.ssh_config.get("target_port", 22)),
+                        gateway_host=self.ssh_config.get("gateway_host", ""),
+                        gateway_username=self.ssh_config.get("gateway_username", ""),
+                        gateway_password=self.ssh_config.get("gateway_password", ""),
+                        gateway_port=int(self.ssh_config.get("gateway_port", 22)),
+                    )
+                    self.logger("SSH tunnel mode initialized.")
+                    for row in rows:
+                        if not row.software_component:
+                            continue
+                        for target_name, mark in row.target_vms.items():
+                            if not is_x_mark(mark):
+                                continue
+                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                self.logger(f"Scanning {row.software_component} on {target_name} [SSH={vm_name}]...")
+                                result = self.scan_target_row(row, target_name)
+                                results.append(result)
+                                self.logger(result.audit_text + f" | {result.details}")
+            elif not PYVMOMI_AVAILABLE:
                 self.logger("pyVmomi is not installed; VM targets will be marked WARN.")
                 for row in rows:
                     if not row.software_component:
@@ -1785,7 +2002,8 @@ class App(tk.Tk):
         ensure_project_structure()
         self.title(APP_TITLE)
         self.geometry(APP_GEOMETRY)
-        self.minsize(1240, 800)
+        self.resizable(True, True)
+        self.minsize(800, 600)
         style = ttk.Style(self)
         try:
             style.theme_use("vista")
@@ -2245,17 +2463,25 @@ class ChecklistFrame(BaseFrame):
 class AuditFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
+        self._compact_label_width = 18
         self.profile_service = VMProfileService()
         default_audit = AUDIT_CHECKLIST_DIR / "TG_Audit_Checklist_test.xlsx"
         default_results = AUDIT_RESULTS_DIR / "testing_sbl_RESULTS.xlsx"
         self.audit_path = tk.StringVar(value=str(default_audit))
         self.output_path = tk.StringVar(value=str(default_results))
         self.profile_name = tk.StringVar(value="default_vsphere_profile")
+        self.connection_mode = tk.StringVar(value="vSphere")
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
         self.vcenter_password = tk.StringVar()
         self.guest_username = tk.StringVar()
         self.guest_password = tk.StringVar()
+        self.ssh_gateway_host = tk.StringVar()
+        self.ssh_gateway_port = tk.StringVar(value="22")
+        self.ssh_gateway_username = tk.StringVar()
+        self.ssh_gateway_password = tk.StringVar()
+        self.ssh_target_port = tk.StringVar(value="22")
+        self.show_ssh_settings = tk.BooleanVar(value=False)
         self.status_var = tk.StringVar(value="Status: Ready")
         self.progress_var = tk.DoubleVar(value=0)
         self.logger = FileLogger(LOGS_DIR, "audit_run")
@@ -2263,47 +2489,110 @@ class AuditFrame(BaseFrame):
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
         ttk.Label(top, text="Run Audit", font=("Segoe UI", 16, "bold")).pack(side="left", padx=(12, 0))
-        cfg = ttk.LabelFrame(self, text="Audit Workbook", padding=12)
-        cfg.pack(fill="x", pady=10)
+        cfg = ttk.LabelFrame(self, text="Audit Workbook", padding=8)
+        cfg.pack(fill="x", pady=8)
         self._path_row(cfg, "Audit workbook", self.audit_path, self.pick_audit)
         self._path_row(cfg, "Save audited copy", self.output_path, self.pick_output)
-        creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=12)
-        creds.pack(fill="x", pady=(0, 10))
+        creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
+        creds.pack(fill="x", pady=(0, 8))
         self._entry_row(creds, "VM profile", self.profile_name, button=("Load Profile", self.load_profile_defaults))
-        self._entry_row(creds, "vCenter server", self.vcenter_server)
-        self._entry_row(creds, "vCenter username", self.vcenter_username)
-        self._entry_row(creds, "vCenter password", self.vcenter_password, show="*")
-        self._entry_row(creds, "Guest username", self.guest_username)
-        self._entry_row(creds, "Guest password", self.guest_password, show="*")
+        mode_row = ttk.Frame(creds)
+        mode_row.pack(fill="x", pady=2)
+        ttk.Label(mode_row, text="Connection mode", width=self._compact_label_width).pack(side="left")
+        ttk.Combobox(mode_row, textvariable=self.connection_mode, state="readonly", values=["vSphere", "SSH Tunnel"]).pack(side="left", fill="x", expand=True, padx=(0, 8))
+        toggle_row = ttk.Frame(creds)
+        toggle_row.pack(fill="x", pady=2)
+        ttk.Checkbutton(toggle_row, text="Show SSH tunnel settings", variable=self.show_ssh_settings, command=self._toggle_ssh_section).pack(side="left", padx=(self._compact_label_width * 6, 0))
+        self.vcenter_section = ttk.LabelFrame(creds, text="vCenter Settings", padding=4)
+        self.vcenter_section.pack(fill="x", pady=(4, 0))
+        self._entry_row(self.vcenter_section, "vCenter server", self.vcenter_server)
+        self._entry_row(self.vcenter_section, "vCenter username", self.vcenter_username)
+        self._entry_row(self.vcenter_section, "vCenter password", self.vcenter_password, show="*")
+
+        self.ssh_section = ttk.LabelFrame(creds, text="SSH Tunnel Settings", padding=6)
+        self._entry_pair_row(self.ssh_section, "SSH jump host", self.ssh_gateway_host, "Jump port", self.ssh_gateway_port)
+        self._entry_pair_row(self.ssh_section, "Jump user", self.ssh_gateway_username, "Jump pass", self.ssh_gateway_password, show2="*")
+        self._entry_pair_row(self.ssh_section, "Target SSH user", self.guest_username, "Target port", self.ssh_target_port)
+        self._entry_row(self.ssh_section, "Target SSH pass", self.guest_password, show="*")
         controls = ttk.Frame(self)
-        controls.pack(fill="x", pady=(0, 10))
+        controls.pack(fill="x", pady=(0, 8))
         self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
         self.run_button.pack(side="left")
+        self.probe_button = ttk.Button(controls, text="Test vCenter Probe", command=self.start_probe)
+        self.probe_button.pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
         ttk.Label(controls, textvariable=self.status_var).pack(side="left", padx=(12, 0))
         ttk.Progressbar(self, variable=self.progress_var, maximum=100).pack(fill="x")
-        log_box = ttk.LabelFrame(self, text="Log", padding=8)
-        log_box.pack(fill="both", expand=True, pady=(10, 0))
+        log_box = ttk.LabelFrame(self, text="Log", padding=6)
+        log_box.pack(fill="both", expand=True, pady=(8, 0))
         self.log = tk.Text(log_box, wrap="word")
         self.log.pack(side="left", fill="both", expand=True)
         scroll = ttk.Scrollbar(log_box, orient="vertical", command=self.log.yview)
         scroll.pack(side="right", fill="y")
         self.log.configure(yscrollcommand=scroll.set)
 
+        self.connection_mode.trace_add("write", self._on_connection_mode_changed)
+        self._set_ssh_section_visible(False)
+
     def _path_row(self, parent, label, variable, command):
         row = ttk.Frame(parent)
-        row.pack(fill="x", pady=5)
-        ttk.Label(row, text=label, width=16).pack(side="left")
+        row.pack(fill="x", pady=2)
+        ttk.Label(row, text=label, width=self._compact_label_width).pack(side="left")
         ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
         ttk.Button(row, text="Browse", command=command).pack(side="left")
 
     def _entry_row(self, parent, label, variable, show=None, button=None):
         row = ttk.Frame(parent)
-        row.pack(fill="x", pady=5)
-        ttk.Label(row, text=label, width=16).pack(side="left")
+        row.pack(fill="x", pady=2)
+        ttk.Label(row, text=label, width=self._compact_label_width).pack(side="left")
         ttk.Entry(row, textvariable=variable, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
         if button:
             ttk.Button(row, text=button[0], command=button[1]).pack(side="left")
+
+    def _entry_pair_row(self, parent, label1, var1, label2, var2, show1=None, show2=None):
+        row = ttk.Frame(parent)
+        row.pack(fill="x", pady=2)
+
+        left = ttk.Frame(row)
+        left.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        ttk.Label(left, text=label1, width=16).pack(side="left")
+        ttk.Entry(left, textvariable=var1, show=show1).pack(side="left", fill="x", expand=True)
+
+        right = ttk.Frame(row)
+        right.pack(side="left", fill="x", expand=True, padx=(4, 0))
+        ttk.Label(right, text=label2, width=12).pack(side="left")
+        ttk.Entry(right, textvariable=var2, show=show2).pack(side="left", fill="x", expand=True)
+
+    def _set_ssh_section_visible(self, visible: bool) -> None:
+        if visible:
+            if not self.ssh_section.winfo_ismapped():
+                self.ssh_section.pack(fill="x", pady=(4, 0))
+        else:
+            if self.ssh_section.winfo_ismapped():
+                self.ssh_section.pack_forget()
+
+    def _toggle_ssh_section(self):
+        self._set_ssh_section_visible(bool(self.show_ssh_settings.get()))
+
+    def _on_connection_mode_changed(self, *_):
+        mode = normalize_text(self.connection_mode.get()).lower()
+        if mode == "ssh tunnel":
+            if hasattr(self, "vcenter_section"):
+                self.vcenter_section.pack_forget()
+            self.show_ssh_settings.set(True)
+            self._set_ssh_section_visible(True)
+            if hasattr(self, "probe_button"):
+                self.probe_button.configure(text="Test SSH Probe")
+        else:
+            # Temporarily remove SSH section so vCenter re-inserts before it
+            self._set_ssh_section_visible(False)
+            if hasattr(self, "vcenter_section") and not self.vcenter_section.winfo_ismapped():
+                self.vcenter_section.pack(fill="x", pady=(4, 0))
+            # Restore SSH section after vCenter if toggle is still checked
+            if bool(self.show_ssh_settings.get()):
+                self._set_ssh_section_visible(True)
+            if hasattr(self, "probe_button"):
+                self.probe_button.configure(text="Test vCenter Probe")
 
     def append_log(self, message: str):
         self.log.insert("end", message + "\n")
@@ -2312,6 +2601,13 @@ class AuditFrame(BaseFrame):
 
     def set_status(self, message: str):
         self.status_var.set(message)
+
+    @staticmethod
+    def _parse_int(value: str, default: int) -> int:
+        try:
+            return int(normalize_text(value))
+        except Exception:
+            return default
 
     def load_profile_defaults(self):
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
@@ -2339,12 +2635,104 @@ class AuditFrame(BaseFrame):
 
     def start_audit(self):
         self.run_button.configure(state="disabled")
+        self.probe_button.configure(state="disabled")
         self.progress_var.set(0)
         self.set_status("Status: Running...")
         self.logger = FileLogger(LOGS_DIR, "audit_run")
         self.append_log(f"Opening workbook: {self.audit_path.get()}")
         self.append_log(f"Session log file: {self.logger.get_path()}")
         threading.Thread(target=self._worker, daemon=True).start()
+
+    def start_probe(self):
+        self.run_button.configure(state="disabled")
+        self.probe_button.configure(state="disabled")
+        self.set_status("Status: Probing remote connection...")
+        self.logger = FileLogger(LOGS_DIR, "audit_probe")
+        self.append_log(f"Probe log file: {self.logger.get_path()}")
+        self.append_log("Starting pre-audit connection probe...")
+        threading.Thread(target=self._probe_worker, daemon=True).start()
+
+    def _probe_worker(self):
+        service = None
+        try:
+            mode = normalize_text(self.connection_mode.get()).lower()
+            if mode == "ssh tunnel":
+                if not PARAMIKO_AVAILABLE:
+                    raise RuntimeError("paramiko is not installed. Install with: pip install paramiko")
+                if not self.guest_username.get().strip() or not self.guest_password.get():
+                    raise ValueError("Target SSH username/password are required for SSH probe.")
+
+                ssh_service = SSHTunnelService(
+                    target_username=self.guest_username.get().strip(),
+                    target_password=self.guest_password.get(),
+                    target_port=self._parse_int(self.ssh_target_port.get(), 22),
+                    gateway_host=self.ssh_gateway_host.get().strip(),
+                    gateway_username=self.ssh_gateway_username.get().strip(),
+                    gateway_password=self.ssh_gateway_password.get(),
+                    gateway_port=self._parse_int(self.ssh_gateway_port.get(), 22),
+                )
+                profile = self.profile_service.load_profile(self.profile_name.get().strip())
+                mapped_hosts = [
+                    normalize_text(profile.get("targets", {}).get(name, {}).get("vm_name", ""))
+                    for name in SYSTEM_COLUMNS
+                ]
+                mapped_hosts = sorted({host for host in mapped_hosts if host and host.upper() != LOCAL_SENTINEL})
+                if not mapped_hosts:
+                    self.after(0, lambda: self.append_log("Probe note | No non-local mapped hosts found in profile."))
+                else:
+                    self.after(0, lambda: self.append_log(f"SSH probe start | targets={len(mapped_hosts)}"))
+                    for host in mapped_hosts:
+                        status, output, details = ssh_service.run_powershell(host, "$env:COMPUTERNAME")
+                        self.after(0, lambda host=host, status=status, output=output, details=details: self.append_log(f"Probe target | host={host} | status={status} | output={output} | details={details}"))
+            else:
+                server = self.vcenter_server.get().strip()
+                username = self.vcenter_username.get().strip()
+                password = self.vcenter_password.get()
+                if not server:
+                    raise ValueError("vCenter server is required for probe.")
+                if not username or not password:
+                    raise ValueError("vCenter username/password are required for probe.")
+
+                self.after(0, lambda: self.append_log(f"Connecting to vCenter: {server}"))
+                service = VSphereService(server, username, password, True)
+                service.connect()
+                vm_inventory = service.list_windows_vms()
+                self.after(0, lambda: self.append_log(f"vCenter probe PASS | reachable=True | inventory_count={len(vm_inventory)}"))
+
+                try:
+                    profile = self.profile_service.load_profile(self.profile_name.get().strip())
+                    mapped_vm_names = [
+                        normalize_text(profile.get("targets", {}).get(name, {}).get("vm_name", ""))
+                        for name in SYSTEM_COLUMNS
+                    ]
+                    mapped_vm_names = [name for name in mapped_vm_names if name and name.upper() != LOCAL_SENTINEL]
+                    if mapped_vm_names:
+                        report = service.verify_vm_names(mapped_vm_names)
+                        for vm_name, info in report.items():
+                            self.after(
+                                0,
+                                lambda vm_name=vm_name, info=info: self.append_log(
+                                    f"Probe target | vm={vm_name} | power={info['power_state']} | tools={info['tools_status']} | guest={info['guest_os']}"
+                                ),
+                            )
+                    else:
+                        self.after(0, lambda: self.append_log("Probe note | No non-local mapped VM names found in profile."))
+                except Exception as exc:
+                    self.after(0, lambda: self.append_log(f"Probe warning | Could not load/verify profile mappings: {exc}"))
+
+            self.after(0, lambda: self.set_status("Status: Probe complete"))
+        except Exception as exc:
+            self.logger.write_exception(exc)
+            self.after(0, lambda: self.append_log(f"Probe failed: {exc}"))
+            self.after(0, lambda: self.set_status("Status: Probe failed"))
+        finally:
+            if service is not None:
+                try:
+                    service.disconnect()
+                except Exception:
+                    pass
+            self.after(0, lambda: self.run_button.configure(state="normal"))
+            self.after(0, lambda: self.probe_button.configure(state="normal"))
 
     def _worker(self):
         try:
@@ -2365,7 +2753,8 @@ class AuditFrame(BaseFrame):
                 self.after(0, lambda m=msg: self.append_log(m))
             vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
             vcenter_server = self.vcenter_server.get().strip()
-            if not vcenter_server:
+            mode = normalize_text(self.connection_mode.get()).lower()
+            if mode != "ssh tunnel" and not vcenter_server:
                 vm_profile = self._coerce_local_only_profile(vm_profile)
                 self.after(0, lambda: self.append_log("No vCenter server configured; forcing local-only scan mode (__LOCAL__) for all targets."))
 
@@ -2375,6 +2764,14 @@ class AuditFrame(BaseFrame):
                 vm_profile,
                 {"server": vcenter_server, "username": self.vcenter_username.get().strip(), "password": self.vcenter_password.get()},
                 {"username": self.guest_username.get().strip(), "password": self.guest_password.get()},
+                connection_mode=normalize_text(self.connection_mode.get()),
+                ssh_config={
+                    "gateway_host": self.ssh_gateway_host.get().strip(),
+                    "gateway_port": self._parse_int(self.ssh_gateway_port.get(), 22),
+                    "gateway_username": self.ssh_gateway_username.get().strip(),
+                    "gateway_password": self.ssh_gateway_password.get(),
+                    "target_port": self._parse_int(self.ssh_target_port.get(), 22),
+                },
             )
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
@@ -2396,6 +2793,7 @@ class AuditFrame(BaseFrame):
             self.after(0, lambda: self.set_status("Status: Failed"))
         finally:
             self.after(0, lambda: self.run_button.configure(state="normal"))
+            self.after(0, lambda: self.probe_button.configure(state="normal"))
 
     @staticmethod
     def build_summary(results: List[ScanResult]) -> str:
