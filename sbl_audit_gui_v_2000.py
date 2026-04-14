@@ -2091,6 +2091,14 @@ class ProfileFrame(BaseFrame):
         ttk.Entry(row, textvariable=var, show=show).pack(side="left", fill="x", expand=True)
 
     def append_log(self, message: str):
+        """
+        The function `append_log` inserts a message to a log, scrolls to the end of the log, and writes
+        the message to a logger.
+        
+        :param message: The `message` parameter in the `append_log` method is a string that represents
+        the log message to be appended to the log
+        :type message: str
+        """
         self.log.insert("end", message + "\n")
         self.log.see("end")
         self.logger.write(message)
@@ -2492,7 +2500,7 @@ class AuditFrame(BaseFrame):
         cfg = ttk.LabelFrame(self, text="Audit Workbook", padding=8)
         cfg.pack(fill="x", pady=8)
         self._path_row(cfg, "Audit workbook", self.audit_path, self.pick_audit)
-        self._path_row(cfg, "Save audited copy", self.output_path, self.pick_output)
+        self._path_row(cfg, "Save audited results", self.output_path, self.pick_output)
         creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
         creds.pack(fill="x", pady=(0, 8))
         self._entry_row(creds, "VM profile", self.profile_name, button=("Load Profile", self.load_profile_defaults))
@@ -2556,7 +2564,7 @@ class AuditFrame(BaseFrame):
         left = ttk.Frame(row)
         left.pack(side="left", fill="x", expand=True, padx=(0, 4))
         ttk.Label(left, text=label1, width=16).pack(side="left")
-        ttk.Entry(left, textvariable=var1, show=show1).pack(side="left", fill="x", expand=True)
+        ttk.Entry(left, textvariable=var1, show=show1).pack(side="left", fill="x", expand=True) # type: ignore
 
         right = ttk.Frame(row)
         right.pack(side="left", fill="x", expand=True, padx=(4, 0))
