@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-04-16T00:00:00",
+  "host": "TEST-HOST-01",
+  "registry_entries": [
+    {
+      "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\7-Zip",
+      "display_name": "7-Zip",
+      "display_version": "23.01",
+      "publisher": "7-Zip"
+    },
+    {
+      "path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome",
+      "display_name": "Google Chrome",
+      "display_version": "124.0.6367.119",
+      "publisher": "Google LLC"
+    }
+  ],
+  "notes": "Reusable sample registry snapshot for parser and detection rule tests."
+}
