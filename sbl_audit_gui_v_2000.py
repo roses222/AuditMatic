@@ -2086,6 +2086,7 @@ class ProfileFrame(BaseFrame):
         self.vcenter_password = tk.StringVar()
         self.ignore_ssl = tk.BooleanVar(value=True)
         self.vm_dropdowns: Dict[str, ttk.Combobox] = {}
+        self.target_info: Dict[str, Dict[str, str]] = {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS}
         top = ttk.Frame(self)
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -2106,6 +2107,8 @@ class ProfileFrame(BaseFrame):
             combo = ttk.Combobox(row, state="readonly")
             combo.pack(side="left", fill="x", expand=True)
             self.vm_dropdowns[target_name] = combo
+        # Add button to edit target info
+        ttk.Button(mapping, text="Edit Target Info", command=self.edit_target_info_dialog).pack(side="right", padx=8)
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=10)
         ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
@@ -2116,11 +2119,44 @@ class ProfileFrame(BaseFrame):
         self.log = tk.Text(self, wrap="word", height=20)
         self.log.pack(fill="both", expand=True)
 
-    def _entry_row(self, parent, label, var, show=None):
+    def edit_target_info_dialog(self):
+        dialog = tk.Toplevel(self)
+        dialog.title("Edit Target VM Info")
+        rows = {}
+        for idx, target_name in enumerate(SYSTEM_COLUMNS):
+            info = self.target_info.get(target_name, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
+            row = ttk.Frame(dialog)
+            row.grid(row=idx, column=0, sticky="ew", pady=2)
+            ttk.Label(row, text=target_name, width=18).pack(side="left")
+            vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
+            user_var = tk.StringVar(value=info.get("username", ""))
+            pass_var = tk.StringVar(value=info.get("password", ""))
+            os_var = tk.StringVar(value=info.get("os_type", "windows"))
+            ttk.Entry(row, textvariable=vm_var, width=16).pack(side="left", padx=2)
+            ttk.Entry(row, textvariable=user_var, width=12).pack(side="left", padx=2)
+            ttk.Entry(row, textvariable=pass_var, width=12, show="*").pack(side="left", padx=2)
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=8, state="readonly").pack(side="left", padx=2)
+            rows[target_name] = (vm_var, user_var, pass_var, os_var)
+        def save_and_close():
+            for t, (vm_var, user_var, pass_var, os_var) in rows.items():
+                self.target_info[t] = {
+                    "vm_name": vm_var.get().strip(),
+                    "username": user_var.get().strip(),
+                    "password": pass_var.get().strip(),
+                    "os_type": os_var.get().strip() or "windows"
+                }
+                # Update dropdowns to reflect new VM names
+                self.vm_dropdowns[t].set(vm_var.get().strip() or LOCAL_SENTINEL)
+            dialog.destroy()
+        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(SYSTEM_COLUMNS), column=0, pady=8)
+
+    def _entry_row(self, parent, label, var, show=None, command=None):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=4)
         ttk.Label(row, text=label, width=18).pack(side="left")
-        ttk.Entry(row, textvariable=var, show=show).pack(side="left", fill="x", expand=True)
+        ttk.Entry(row, textvariable=var, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
+        if command is not None:
+            ttk.Button(row, text="Browse", command=command).pack(side="left")
 
     def append_log(self, message: str):
         """
@@ -2155,7 +2191,18 @@ class ProfileFrame(BaseFrame):
             self.append_log(f"ERROR: {exc}")
 
     def save_profile(self):
-        payload = {"vcenter_server": self.vcenter_server.get().strip(), "ignore_ssl": self.ignore_ssl.get(), "targets": {name: {"vm_name": combo.get().strip(), "os_type": "windows"} for name, combo in self.vm_dropdowns.items()}, "last_verified": ""}
+        # Merge dropdowns and target_info for saving
+        for name, combo in self.vm_dropdowns.items():
+            if name not in self.target_info:
+                self.target_info[name] = {"vm_name": combo.get().strip(), "username": "", "password": "", "os_type": "windows"}
+            else:
+                self.target_info[name]["vm_name"] = combo.get().strip()
+        payload = {
+            "vcenter_server": self.vcenter_server.get().strip(),
+            "ignore_ssl": self.ignore_ssl.get(),
+            "targets": self.target_info,
+            "last_verified": ""
+        }
         path = self.profile_service.save_profile(self.profile_name.get().strip(), payload)
         self.append_log(f"Saved profile: {path}")
 
@@ -2163,8 +2210,9 @@ class ProfileFrame(BaseFrame):
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
+        self.target_info = payload.get("targets", {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS})
         for name, combo in self.vm_dropdowns.items():
-            combo.set(payload.get("targets", {}).get(name, {}).get("vm_name", LOCAL_SENTINEL))
+            combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
         self.append_log(f"Loaded profile: {self.profile_name.get().strip()}")
 
     def verify_profile(self):
@@ -2501,6 +2549,64 @@ class ChecklistFrame(BaseFrame):
 
 
 class AuditFrame(BaseFrame):
+    def _init_target_info_table(self, parent):
+        self.target_info_vars = {}
+        self.target_info_dialog = None
+        self.save_targets_btn = None
+        # Place the button next to the profile selection
+        btn = ttk.Button(parent, text="Show/Edit Target VM Info", command=self._show_target_info_dialog)
+        btn.pack(side="left", padx=(8, 0))
+
+    def _show_target_info_dialog(self):
+        if self.target_info_dialog and tk.Toplevel.winfo_exists(self.target_info_dialog):
+            self.target_info_dialog.lift()
+            return
+        self.target_info_dialog = tk.Toplevel(self)
+        self.target_info_dialog.title("Edit Target VM Info")
+        frame = ttk.Frame(self.target_info_dialog, padding=8)
+        frame.pack(fill="both", expand=True)
+        self.target_info_vars = {}
+        header = ttk.Frame(frame)
+        header.pack(fill="x")
+        for col, text in enumerate(["Target", "VM Name", "Username", "Password", "OS Type"]):
+            ttk.Label(header, text=text, width=14 if col else 18, font=("Segoe UI", 9, "bold")).grid(row=0, column=col)
+        profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
+        targets = profile.get("targets", {})
+        for idx, target in enumerate(SYSTEM_COLUMNS):
+            info = targets.get(target, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
+            row = ttk.Frame(frame)
+            row.pack(fill="x")
+            ttk.Label(row, text=target, width=18).grid(row=0, column=0)
+            vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
+            user_var = tk.StringVar(value=info.get("username", ""))
+            pass_var = tk.StringVar(value=info.get("password", ""))
+            os_var = tk.StringVar(value=info.get("os_type", "windows"))
+            ttk.Entry(row, textvariable=vm_var, width=16).grid(row=0, column=1)
+            ttk.Entry(row, textvariable=user_var, width=14).grid(row=0, column=2)
+            ttk.Entry(row, textvariable=pass_var, width=14, show="*").grid(row=0, column=3)
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4)
+            self.target_info_vars[target] = (vm_var, user_var, pass_var, os_var)
+        self.save_targets_btn = ttk.Button(frame, text="Save Target Info to Profile", command=self._save_target_info)
+        self.save_targets_btn.pack(pady=8)
+        self.target_info_dialog.transient(self)
+        self.target_info_dialog.grab_set()
+        self.target_info_dialog.wait_window()
+
+
+    def _save_target_info(self):
+        # Save edited info back to profile
+        profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
+        targets = profile.get("targets", {})
+        for target, (vm_var, user_var, pass_var, os_var) in self.target_info_vars.items():
+            targets[target] = {
+                "vm_name": vm_var.get().strip(),
+                "username": user_var.get().strip(),
+                "password": pass_var.get().strip(),
+                "os_type": os_var.get().strip() or "windows"
+            }
+        profile["targets"] = targets
+        self.profile_service.save_profile(self.profile_name.get().strip(), profile)
+        self.append_log("Saved target VM info to profile.")
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self._compact_label_width = 16
@@ -2511,7 +2617,12 @@ class AuditFrame(BaseFrame):
         default_results = AUDIT_RESULTS_DIR / "testing_sbl_RESULTS.xlsx"
         self.audit_path = tk.StringVar(value=str(default_audit))
         self.output_path = tk.StringVar(value=str(default_results))
-        self.profile_name = tk.StringVar(value="default_vsphere_profile")
+        self.profile_name = tk.StringVar()
+        self.profile_options = self._get_profile_options()
+        if self.profile_options:
+            self.profile_name.set(self.profile_options[0])
+        else:
+            self.profile_name.set("")
         self.connection_mode = tk.StringVar(value="vSphere")
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
@@ -2527,6 +2638,7 @@ class AuditFrame(BaseFrame):
         self.status_var = tk.StringVar(value="Status: Ready")
         self.progress_var = tk.DoubleVar(value=0)
         self.logger = FileLogger(LOGS_DIR, "audit_run")
+        # Only call _init_target_info_table after profile_row is defined (moved below)
         top = ttk.Frame(self)
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -2537,7 +2649,15 @@ class AuditFrame(BaseFrame):
         self._path_row(cfg, "Save audited results", self.output_path, self.pick_output)
         creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
         creds.pack(fill="x", pady=(0, 8))
-        self._entry_row(creds, "VM profile", self.profile_name, button=("Load Profile", self.load_profile_defaults))
+        # Dropdown for VM profiles
+        profile_row = ttk.Frame(creds)
+        profile_row.pack(fill="x", pady=2)
+        ttk.Label(profile_row, text="VM profile", width=self._compact_label_width).pack(side="left")
+        self.profile_dropdown = ttk.Combobox(profile_row, textvariable=self.profile_name, state="readonly", values=self.profile_options)
+        self.profile_dropdown.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        ttk.Button(profile_row, text="Load Profile", command=self.load_profile_defaults).pack(side="left")
+        # Removed duplicate call to _init_target_info_table
+    
         self.fallback_texts = {
             "vSphere": "Use SSH tunnel as fallback if vSphere fails",
             "ssh tunnel": "Use vSphere as fallback if SSH fails",
@@ -2568,6 +2688,9 @@ class AuditFrame(BaseFrame):
         self._entry_half_row(self.ssh_section, "Target SSH password", self.guest_password, show="*", label_width=20)
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=(0, 8))
+        self.local_only = tk.BooleanVar(value=False)
+        # Move the local scan checkbox next to the fallback checkbox
+        ttk.Checkbutton(toggle_row, text="Scan only local machine (ignore VMs)", variable=self.local_only).pack(side="left", padx=(16, 0))
         self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
         self.run_button.pack(side="left")
         self.probe_button = ttk.Button(controls, text="Test vCenter Probe", command=self.start_probe)
@@ -2585,7 +2708,11 @@ class AuditFrame(BaseFrame):
 
         self.connection_mode.trace_add("write", self._on_connection_mode_changed)
         self._set_ssh_section_visible(False)
-
+    def _get_profile_options(self):
+        profiles_dir = PROFILES_DIR
+        if not profiles_dir.exists():
+            return []
+        return [f.stem for f in profiles_dir.glob("*.json") if f.is_file()]
     def _path_row(self, parent, label, variable, command):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
@@ -2681,6 +2808,7 @@ class AuditFrame(BaseFrame):
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
+        # Optionally update other fields if needed
 
     @staticmethod
     def _coerce_local_only_profile(vm_profile: Dict[str, Any]) -> Dict[str, Any]:
@@ -2822,10 +2950,12 @@ class AuditFrame(BaseFrame):
             vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
             vcenter_server = self.vcenter_server.get().strip()
             mode = normalize_text(self.connection_mode.get()).lower()
-            if mode != "ssh tunnel" and not vcenter_server:
+            if self.local_only.get():
+                vm_profile = self._coerce_local_only_profile(vm_profile)
+                self.after(0, lambda: self.append_log("Local-only scan enabled; all targets set to __LOCAL__."))
+            elif mode != "ssh tunnel" and not vcenter_server:
                 vm_profile = self._coerce_local_only_profile(vm_profile)
                 self.after(0, lambda: self.append_log("No vCenter server configured; forcing local-only scan mode (__LOCAL__) for all targets."))
-
             engine = AuditEngine(
                 workbook_service,
                 logger,

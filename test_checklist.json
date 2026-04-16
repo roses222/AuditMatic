@@ -1,0 +1,13 @@
+{
+  "required_software": [
+    "python3",
+    "pip",
+    "open-vm-tools",
+    "paramiko"
+  ],
+  "required_services": [
+    "ssh",
+    "vmtoolsd"
+  ],
+  "notes": "This is a sample checklist for VM compliance testing."
+}
