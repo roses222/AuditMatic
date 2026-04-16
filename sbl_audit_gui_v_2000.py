@@ -1684,6 +1684,7 @@ class AuditEngine:
         guest_creds: Dict[str, str],
         connection_mode: str = "vsphere",
         ssh_config: Optional[Dict[str, Any]] = None,
+        ssh_fallback_enabled: bool = False,
     ):
         self.workbook_service = workbook_service
         self.logger = logger
@@ -1692,6 +1693,7 @@ class AuditEngine:
         self.guest_creds = guest_creds
         self.connection_mode = normalize_text(connection_mode).lower() or "vsphere"
         self.ssh_config = ssh_config or {}
+        self.ssh_fallback_enabled = bool(ssh_fallback_enabled)
         self.local_scanner = LocalWindowsScanner()
         self.master_paths = MasterSoftwarePathService()
         self.master_model_name = normalize_model_key(_get_sbl_model_from_workbook(self.workbook_service.file_path))
@@ -1806,13 +1808,25 @@ class AuditEngine:
         if vm_name.upper() == LOCAL_SENTINEL:
             return self._scan_local(row, target_name)
         if self.connection_mode == "ssh tunnel":
-            return self._scan_ssh_target(row, target_name, vm_name)
+            result = self._scan_ssh_target(row, target_name, vm_name)
+            if (
+                self.ssh_fallback_enabled
+                and result.status in ("WARN", "FAIL")
+                and self.vsphere_service is not None
+            ):
+                self.logger(f"SSH scan failed for {target_name}, trying vSphere fallback...")
+                vm_result = self._scan_guest_vm(row, target_name, vm_name)
+                if vm_result.status == "PASS":
+                    self.logger(f"vSphere fallback succeeded for {target_name}")
+                    return vm_result
+                self.logger(f"vSphere fallback also failed for {target_name}")
+            return result
 
         # vSphere mode - try vSphere first
         result = self._scan_guest_vm(row, target_name, vm_name)
 
         # If fallback is enabled and vSphere failed, try SSH
-        if (self.show_ssh_settings.get() and
+        if (self.ssh_fallback_enabled and
             result.status in ("WARN", "FAIL") and
             self.ssh_service is not None):
             self.logger(f"vSphere scan failed for {target_name}, trying SSH fallback...")
@@ -1874,48 +1888,90 @@ class AuditEngine:
         if needs_remote:
             self.logger(f"Starting remote scan phase using mode: {self.connection_mode}...")
             if self.connection_mode == "ssh tunnel":
-                if not PARAMIKO_AVAILABLE:
-                    self.logger("paramiko is not installed; SSH targets will be marked WARN.")
-                    for row in rows:
-                        if not row.software_component:
-                            continue
-                        for target_name, mark in row.target_vms.items():
-                            if not is_x_mark(mark):
-                                continue
-                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
-                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
-                                result = self._build_result(
-                                    row,
-                                    target_name,
-                                    "NO_PARAMIKO",
-                                    "WARN",
-                                    f"ssh-host={vm_name} | paramiko is not installed",
+                try:
+                    if self.ssh_fallback_enabled:
+                        if not PYVMOMI_AVAILABLE:
+                            self.logger("vSphere fallback enabled, but pyVmomi is not installed; SSH-only mode will be used.")
+                        elif not self.vcenter_creds.get("server", "") or not self.vcenter_creds.get("username", "") or not self.vcenter_creds.get("password", ""):
+                            self.logger("vSphere fallback enabled, but vCenter credentials/server are incomplete; SSH-only mode will be used.")
+                        else:
+                            try:
+                                self.vsphere_service = VSphereService(
+                                    self.vcenter_creds.get("server", ""),
+                                    self.vcenter_creds.get("username", ""),
+                                    self.vcenter_creds.get("password", ""),
+                                    True,
                                 )
-                                results.append(result)
-                                self.logger(result.audit_text + f" | {result.details}")
-                else:
-                    self.ssh_service = SSHTunnelService(
-                        target_username=self.guest_creds.get("username", ""),
-                        target_password=self.guest_creds.get("password", ""),
-                        target_port=int(self.ssh_config.get("target_port", 22)),
-                        gateway_host=self.ssh_config.get("gateway_host", ""),
-                        gateway_username=self.ssh_config.get("gateway_username", ""),
-                        gateway_password=self.ssh_config.get("gateway_password", ""),
-                        gateway_port=int(self.ssh_config.get("gateway_port", 22)),
-                    )
-                    self.logger("SSH tunnel mode initialized.")
-                    for row in rows:
-                        if not row.software_component:
-                            continue
-                        for target_name, mark in row.target_vms.items():
-                            if not is_x_mark(mark):
+                                self.vsphere_service.connect()
+                                self.logger("vSphere fallback service initialized for SSH mode.")
+                            except Exception as exc:
+                                self.vsphere_service = None
+                                self.logger(f"Could not initialize vSphere fallback in SSH mode: {exc}")
+
+                    if not PARAMIKO_AVAILABLE:
+                        if self.ssh_fallback_enabled and self.vsphere_service is not None:
+                            self.logger("paramiko is not installed; attempting vSphere fallback-only scans.")
+                            for row in rows:
+                                if not row.software_component:
+                                    continue
+                                for target_name, mark in row.target_vms.items():
+                                    if not is_x_mark(mark):
+                                        continue
+                                    vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                    if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                        self.logger(f"Scanning {row.software_component} on {target_name} [vSphere fallback={vm_name}]...")
+                                        result = self._scan_guest_vm(row, target_name, vm_name)
+                                        results.append(result)
+                                        self.logger(result.audit_text + f" | {result.details}")
+                        else:
+                            self.logger("paramiko is not installed; SSH targets will be marked WARN.")
+                            for row in rows:
+                                if not row.software_component:
+                                    continue
+                                for target_name, mark in row.target_vms.items():
+                                    if not is_x_mark(mark):
+                                        continue
+                                    vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                    if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                        result = self._build_result(
+                                            row,
+                                            target_name,
+                                            "NO_PARAMIKO",
+                                            "WARN",
+                                            f"ssh-host={vm_name} | paramiko is not installed",
+                                        )
+                                        results.append(result)
+                                        self.logger(result.audit_text + f" | {result.details}")
+                    else:
+                        self.ssh_service = SSHTunnelService(
+                            target_username=self.guest_creds.get("username", ""),
+                            target_password=self.guest_creds.get("password", ""),
+                            target_port=int(self.ssh_config.get("target_port", 22)),
+                            gateway_host=self.ssh_config.get("gateway_host", ""),
+                            gateway_username=self.ssh_config.get("gateway_username", ""),
+                            gateway_password=self.ssh_config.get("gateway_password", ""),
+                            gateway_port=int(self.ssh_config.get("gateway_port", 22)),
+                        )
+                        self.logger("SSH tunnel mode initialized.")
+                        for row in rows:
+                            if not row.software_component:
                                 continue
-                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
-                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
-                                self.logger(f"Scanning {row.software_component} on {target_name} [SSH={vm_name}]...")
-                                result = self.scan_target_row(row, target_name)
-                                results.append(result)
-                                self.logger(result.audit_text + f" | {result.details}")
+                            for target_name, mark in row.target_vms.items():
+                                if not is_x_mark(mark):
+                                    continue
+                                vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                    self.logger(f"Scanning {row.software_component} on {target_name} [SSH={vm_name}]...")
+                                    result = self.scan_target_row(row, target_name)
+                                    results.append(result)
+                                    self.logger(result.audit_text + f" | {result.details}")
+                finally:
+                    if self.vsphere_service is not None:
+                        try:
+                            self.vsphere_service.disconnect()
+                        except Exception:
+                            pass
+                        self.vsphere_service = None
             elif not PYVMOMI_AVAILABLE:
                 self.logger("pyVmomi is not installed; VM targets will be marked WARN.")
                 for row in rows:
@@ -1948,7 +2004,7 @@ class AuditEngine:
                     self.logger("Connected to vSphere.")
 
                     # Initialize SSH service for fallback if enabled
-                    if self.show_ssh_settings.get() and PARAMIKO_AVAILABLE:
+                    if self.ssh_fallback_enabled and PARAMIKO_AVAILABLE:
                         self.ssh_service = SSHTunnelService(
                             target_username=self.guest_creds.get("username", ""),
                             target_password=self.guest_creds.get("password", ""),
@@ -1959,7 +2015,7 @@ class AuditEngine:
                             gateway_port=int(self.ssh_config.get("gateway_port", 22)),
                         )
                         self.logger("SSH tunnel service initialized for fallback.")
-                    elif self.show_ssh_settings.get() and not PARAMIKO_AVAILABLE:
+                    elif self.ssh_fallback_enabled and not PARAMIKO_AVAILABLE:
                         self.logger("SSH fallback enabled but paramiko is not installed; fallback will be skipped.")
 
                     for row in rows:
@@ -2080,7 +2136,7 @@ class ProfileFrame(BaseFrame):
         super().__init__(parent, controller)
         self.profile_service = VMProfileService()
         self.logger = FileLogger(LOGS_DIR, "vm_profile")
-        self.profile_name = tk.StringVar(value="default_vsphere_profile")
+        self.profile_name = tk.StringVar(value="")
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
         self.vcenter_password = tk.StringVar()
@@ -2112,12 +2168,36 @@ class ProfileFrame(BaseFrame):
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=10)
         ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
-        ttk.Button(controls, text="Save Profile", command=self.save_profile).pack(side="left", padx=(8, 0))
+        self.save_profile_button = ttk.Button(controls, text="Save Profile", command=self.save_profile)
+        self.save_profile_button.pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Load Saved Profile", command=self.load_saved_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Verify Profile", command=self.verify_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
         self.log = tk.Text(self, wrap="word", height=20)
         self.log.pack(fill="both", expand=True)
+        self.profile_name.trace_add("write", self._refresh_profile_save_state)
+        self._refresh_profile_save_state()
+
+    def _profile_name_is_valid(self, profile_name: str) -> bool:
+        return bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", profile_name))
+
+    def _get_profile_name_or_warn(self) -> Optional[str]:
+        profile_name = normalize_text(self.profile_name.get())
+        if not profile_name:
+            messagebox.showwarning("Profile name required", "Enter a profile name before saving.")
+            return None
+        if not self._profile_name_is_valid(profile_name):
+            messagebox.showwarning(
+                "Invalid profile name",
+                "Use 1-64 characters: letters, numbers, underscore, or dash. Must start with a letter or number.",
+            )
+            return None
+        return profile_name
+
+    def _refresh_profile_save_state(self, *_):
+        profile_name = normalize_text(self.profile_name.get())
+        is_valid = self._profile_name_is_valid(profile_name)
+        self.save_profile_button.configure(state="normal" if is_valid else "disabled")
 
     def edit_target_info_dialog(self):
         dialog = tk.Toplevel(self)
@@ -2191,39 +2271,59 @@ class ProfileFrame(BaseFrame):
             self.append_log(f"ERROR: {exc}")
 
     def save_profile(self):
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
         # Merge dropdowns and target_info for saving
         for name, combo in self.vm_dropdowns.items():
             if name not in self.target_info:
                 self.target_info[name] = {"vm_name": combo.get().strip(), "username": "", "password": "", "os_type": "windows"}
             else:
                 self.target_info[name]["vm_name"] = combo.get().strip()
+
+        profile_path = self.profile_service.profile_path(profile_name)
+        if profile_path.exists():
+            should_overwrite = messagebox.askyesno(
+                "Overwrite existing profile?",
+                f"Profile '{profile_name}' already exists. Do you want to overwrite it?",
+            )
+            if not should_overwrite:
+                self.append_log(f"Save canceled for existing profile: {profile_name}")
+                return
         payload = {
             "vcenter_server": self.vcenter_server.get().strip(),
             "ignore_ssl": self.ignore_ssl.get(),
             "targets": self.target_info,
             "last_verified": ""
         }
-        path = self.profile_service.save_profile(self.profile_name.get().strip(), payload)
+        path = self.profile_service.save_profile(profile_name, payload)
         self.append_log(f"Saved profile: {path}")
 
     def load_saved_profile(self):
-        payload = self.profile_service.load_profile(self.profile_name.get().strip())
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
+        payload = self.profile_service.load_profile(profile_name)
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
         self.target_info = payload.get("targets", {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS})
         for name, combo in self.vm_dropdowns.items():
             combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
-        self.append_log(f"Loaded profile: {self.profile_name.get().strip()}")
+        self.append_log(f"Loaded profile: {profile_name}")
+
 
     def verify_profile(self):
-        payload = self.profile_service.load_profile(self.profile_name.get().strip())
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
+        payload = self.profile_service.load_profile(profile_name)
         service = self._service()
         service.connect()
         vm_names = [payload.get("targets", {}).get(name, {}).get("vm_name", "") for name in SYSTEM_COLUMNS if payload.get("targets", {}).get(name, {}).get("vm_name", "")]
         report = service.verify_vm_names(vm_names)
         service.disconnect()
         payload["last_verified"] = datetime.now().isoformat(timespec="seconds")
-        self.profile_service.save_profile(self.profile_name.get().strip(), payload)
+        self.profile_service.save_profile(profile_name, payload)
         for vm_name, info in report.items():
             self.append_log(f"{vm_name} | power={info['power_state']} | tools={info['tools_status']} | guest={info['guest_os']}")
 
@@ -2558,7 +2658,7 @@ class AuditFrame(BaseFrame):
         btn.pack(side="left", padx=(8, 0))
 
     def _show_target_info_dialog(self):
-        if self.target_info_dialog and tk.Toplevel.winfo_exists(self.target_info_dialog):
+        if self.target_info_dialog and self.target_info_dialog.winfo_exists():
             self.target_info_dialog.lift()
             return
         self.target_info_dialog = tk.Toplevel(self)
@@ -2607,6 +2707,9 @@ class AuditFrame(BaseFrame):
         profile["targets"] = targets
         self.profile_service.save_profile(self.profile_name.get().strip(), profile)
         self.append_log("Saved target VM info to profile.")
+        if self.target_info_dialog and self.target_info_dialog.winfo_exists():
+            self.target_info_dialog.destroy()
+
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self._compact_label_width = 16
@@ -2656,7 +2759,8 @@ class AuditFrame(BaseFrame):
         self.profile_dropdown = ttk.Combobox(profile_row, textvariable=self.profile_name, state="readonly", values=self.profile_options)
         self.profile_dropdown.pack(side="left", fill="x", expand=True, padx=(0, 8))
         ttk.Button(profile_row, text="Load Profile", command=self.load_profile_defaults).pack(side="left")
-        # Removed duplicate call to _init_target_info_table
+        self._init_target_info_table(profile_row)
+
     
         self.fallback_texts = {
             "vSphere": "Use SSH tunnel as fallback if vSphere fails",
@@ -2970,6 +3074,7 @@ class AuditFrame(BaseFrame):
                     "gateway_password": self.ssh_gateway_password.get(),
                     "target_port": self._parse_int(self.ssh_target_port.get(), 22),
                 },
+                ssh_fallback_enabled=bool(self.show_ssh_settings.get()),
             )
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
