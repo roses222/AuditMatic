@@ -78,6 +78,7 @@ AUDIT_CHECKLIST_DIR = PROJECT_DIR / "Audit Checklist"
 JSON_DIR = PROJECT_DIR / "JSON"
 JSON_RESULTS_DIR = JSON_DIR / "json_result"
 JSON_CHECKLIST_DIR = JSON_DIR / "json_checklist"
+JSON_REGISTRY_SNAPSHOTS_DIR = JSON_DIR / "registry_snapshots"
 PROFILES_DIR = PROJECT_DIR / "profiles" / "vm_profiles"
 LOGS_DIR = PROJECT_DIR / "logs"
 TESTS_DIR = PROJECT_DIR / "tests"
@@ -249,7 +250,7 @@ def compare_versions(expected: str, found: str, scan_status: str) -> Tuple[str, 
 
 
 def ensure_project_structure() -> None:
-    for path in [AUDIT_RESULTS_DIR, AUDIT_CHECKLIST_DIR, JSON_DIR, JSON_RESULTS_DIR, JSON_CHECKLIST_DIR, PROFILES_DIR, LOGS_DIR, TEMPLATES_DIR]:
+    for path in [AUDIT_RESULTS_DIR, AUDIT_CHECKLIST_DIR, JSON_DIR, JSON_RESULTS_DIR, JSON_CHECKLIST_DIR, JSON_REGISTRY_SNAPSHOTS_DIR, PROFILES_DIR, LOGS_DIR, TEMPLATES_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
     if not MASTER_SOFTWARE_LIST_PATH.exists():
@@ -879,6 +880,13 @@ class JsonExportService:
     def write_result_json(base_name: str, payload: Dict[str, Any]) -> str:
         ensure_project_structure()
         output = JSON_RESULTS_DIR / f"{base_name}_{timestamp_str()}.json"
+        output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return str(output)
+
+    @staticmethod
+    def write_registry_snapshot_json(base_name: str, payload: Dict[str, Any]) -> str:
+        ensure_project_structure()
+        output = JSON_REGISTRY_SNAPSHOTS_DIR / f"{base_name}_registry_snapshot_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return str(output)
 
@@ -1598,6 +1606,67 @@ class ChecklistGeneratorService:
 
 
 class LocalWindowsScanner:
+    def capture_registry_snapshot(self) -> Dict[str, Any]:
+        snapshot: Dict[str, Any] = {
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+            "host": socket.gethostname(),
+            "platform": platform.platform(),
+            "status": "ok",
+            "entries": [],
+            "entry_count": 0,
+        }
+        if winreg is None or platform.system().lower() != "windows":
+            snapshot["status"] = "not_supported"
+            snapshot["reason"] = "Registry snapshot requires Windows with winreg support"
+            return snapshot
+
+        roots = [
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+        ]
+        entries: List[Dict[str, str]] = []
+        try:
+            for hive, root in roots:
+                with winreg.OpenKey(hive, root) as base:
+                    for i in range(winreg.QueryInfoKey(base)[0]):
+                        try:
+                            sub_name = winreg.EnumKey(base, i)
+                            with winreg.OpenKey(base, sub_name) as sub:
+                                display_name = normalize_text(winreg.QueryValueEx(sub, "DisplayName")[0])
+                                if not display_name:
+                                    continue
+                                try:
+                                    display_version = normalize_text(winreg.QueryValueEx(sub, "DisplayVersion")[0])
+                                except Exception:
+                                    display_version = ""
+                                try:
+                                    publisher = normalize_text(winreg.QueryValueEx(sub, "Publisher")[0])
+                                except Exception:
+                                    publisher = ""
+
+                                entries.append(
+                                    {
+                                        "registry_key": f"{root}\\{sub_name}",
+                                        "display_name": display_name,
+                                        "display_name_normalized": normalize_header(display_name),
+                                        "display_version": display_version,
+                                        "display_version_normalized": normalize_version(display_version),
+                                        "publisher": publisher,
+                                    }
+                                )
+                        except Exception:
+                            continue
+            entries.sort(key=lambda item: (item["display_name_normalized"], item["display_version_normalized"], item["registry_key"]))
+            snapshot["entries"] = entries
+            snapshot["entry_count"] = len(entries)
+            return snapshot
+        except Exception as exc:
+            snapshot["status"] = "error"
+            snapshot["reason"] = str(exc)
+            snapshot["entries"] = entries
+            snapshot["entry_count"] = len(entries)
+            return snapshot
+
     def find_programs_and_features_version(self, software_name: str) -> Tuple[str, str, str]:
         if winreg is None or platform.system().lower() != "windows":
             return "WARN", "NOT_WINDOWS", "Registry-based scan requires Windows"
@@ -2897,6 +2966,7 @@ class AuditFrame(BaseFrame):
         self.log.insert("end", message + "\n")
         self.log.see("end")
         self.logger.write(message)
+        print(message, flush=True)
 
     def set_status(self, message: str):
         self.status_var.set(message)
@@ -3076,6 +3146,22 @@ class AuditFrame(BaseFrame):
                 },
                 ssh_fallback_enabled=bool(self.show_ssh_settings.get()),
             )
+
+            base_name = Path(self.output_path.get().strip()).stem or "audit_results"
+            try:
+                registry_snapshot = engine.local_scanner.capture_registry_snapshot()
+                registry_snapshot_path = JsonExportService.write_registry_snapshot_json(base_name, registry_snapshot)
+                snapshot_status = normalize_text(registry_snapshot.get("status", "unknown"))
+                snapshot_count = int(registry_snapshot.get("entry_count", 0) or 0)
+                self.after(
+                    0,
+                    lambda path=registry_snapshot_path, status=snapshot_status, count=snapshot_count: self.append_log(
+                        f"Registry snapshot written: {path} | status={status} | entries={count}"
+                    ),
+                )
+            except Exception as snapshot_exc:
+                self.after(0, lambda error_text=str(snapshot_exc): self.append_log(f"Registry snapshot failed: {error_text}"))
+
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
             sbl_model = _get_sbl_model_from_workbook(self.audit_path.get().strip())
