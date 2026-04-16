@@ -1807,7 +1807,23 @@ class AuditEngine:
             return self._scan_local(row, target_name)
         if self.connection_mode == "ssh tunnel":
             return self._scan_ssh_target(row, target_name, vm_name)
-        return self._scan_guest_vm(row, target_name, vm_name)
+
+        # vSphere mode - try vSphere first
+        result = self._scan_guest_vm(row, target_name, vm_name)
+
+        # If fallback is enabled and vSphere failed, try SSH
+        if (self.show_ssh_settings.get() and
+            result.status in ("WARN", "FAIL") and
+            self.ssh_service is not None):
+            self.logger(f"vSphere scan failed for {target_name}, trying SSH fallback...")
+            ssh_result = self._scan_ssh_target(row, target_name, vm_name)
+            if ssh_result.status == "PASS":
+                self.logger(f"SSH fallback succeeded for {target_name}")
+                return ssh_result
+            else:
+                self.logger(f"SSH fallback also failed for {target_name}")
+
+        return result
 
     @staticmethod
     def choose_best_row_result(row_results: List[ScanResult]) -> ScanResult:
@@ -1930,6 +1946,22 @@ class AuditEngine:
                 try:
                     self.vsphere_service.connect()
                     self.logger("Connected to vSphere.")
+
+                    # Initialize SSH service for fallback if enabled
+                    if self.show_ssh_settings.get() and PARAMIKO_AVAILABLE:
+                        self.ssh_service = SSHTunnelService(
+                            target_username=self.guest_creds.get("username", ""),
+                            target_password=self.guest_creds.get("password", ""),
+                            target_port=int(self.ssh_config.get("target_port", 22)),
+                            gateway_host=self.ssh_config.get("gateway_host", ""),
+                            gateway_username=self.ssh_config.get("gateway_username", ""),
+                            gateway_password=self.ssh_config.get("gateway_password", ""),
+                            gateway_port=int(self.ssh_config.get("gateway_port", 22)),
+                        )
+                        self.logger("SSH tunnel service initialized for fallback.")
+                    elif self.show_ssh_settings.get() and not PARAMIKO_AVAILABLE:
+                        self.logger("SSH fallback enabled but paramiko is not installed; fallback will be skipped.")
+
                     for row in rows:
                         if not row.software_component:
                             continue
@@ -2471,8 +2503,10 @@ class ChecklistFrame(BaseFrame):
 class AuditFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        self._compact_label_width = 18
+        self._compact_label_width = 16
         self.profile_service = VMProfileService()
+        self.style = ttk.Style()
+        self.style.configure("Bold.TLabelframe.Label", font=("Segoe UI", 10, "bold"))
         default_audit = AUDIT_CHECKLIST_DIR / "TG_Audit_Checklist_test.xlsx"
         default_results = AUDIT_RESULTS_DIR / "testing_sbl_RESULTS.xlsx"
         self.audit_path = tk.StringVar(value=str(default_audit))
@@ -2504,24 +2538,34 @@ class AuditFrame(BaseFrame):
         creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
         creds.pack(fill="x", pady=(0, 8))
         self._entry_row(creds, "VM profile", self.profile_name, button=("Load Profile", self.load_profile_defaults))
+        self.fallback_texts = {
+            "vSphere": "Use SSH tunnel as fallback if vSphere fails",
+            "ssh tunnel": "Use vSphere as fallback if SSH fails",
+        }
         mode_row = ttk.Frame(creds)
         mode_row.pack(fill="x", pady=2)
         ttk.Label(mode_row, text="Connection mode", width=self._compact_label_width).pack(side="left")
         ttk.Combobox(mode_row, textvariable=self.connection_mode, state="readonly", values=["vSphere", "SSH Tunnel"]).pack(side="left", fill="x", expand=True, padx=(0, 8))
         toggle_row = ttk.Frame(creds)
         toggle_row.pack(fill="x", pady=2)
-        ttk.Checkbutton(toggle_row, text="Show SSH tunnel settings", variable=self.show_ssh_settings, command=self._toggle_ssh_section).pack(side="left", padx=(self._compact_label_width * 6, 0))
-        self.vcenter_section = ttk.LabelFrame(creds, text="vCenter Settings", padding=4)
+        self.fallback_checkbox = ttk.Checkbutton(
+            toggle_row,
+            text=self.fallback_texts[normalize_text(self.connection_mode.get())],
+            variable=self.show_ssh_settings,
+            command=self._toggle_ssh_section,
+        )
+        self.fallback_checkbox.pack(side="left", padx=(self._compact_label_width * 6, 0))
+        self.vcenter_section = ttk.LabelFrame(creds, text="vCenter Settings", padding=4, labelanchor="nw", style="Bold.TLabelframe")
         self.vcenter_section.pack(fill="x", pady=(4, 0))
         self._entry_row(self.vcenter_section, "vCenter server", self.vcenter_server)
         self._entry_row(self.vcenter_section, "vCenter username", self.vcenter_username)
         self._entry_row(self.vcenter_section, "vCenter password", self.vcenter_password, show="*")
 
-        self.ssh_section = ttk.LabelFrame(creds, text="SSH Tunnel Settings", padding=6)
+        self.ssh_section = ttk.LabelFrame(creds, text="SSH Tunnel Settings", padding=6, labelanchor="nw", style="Bold.TLabelframe")
         self._entry_pair_row(self.ssh_section, "SSH jump host", self.ssh_gateway_host, "Jump port", self.ssh_gateway_port)
-        self._entry_pair_row(self.ssh_section, "Jump user", self.ssh_gateway_username, "Jump pass", self.ssh_gateway_password, show2="*")
-        self._entry_pair_row(self.ssh_section, "Target SSH user", self.guest_username, "Target port", self.ssh_target_port)
-        self._entry_row(self.ssh_section, "Target SSH pass", self.guest_password, show="*")
+        self._entry_pair_row(self.ssh_section, "Jump username", self.ssh_gateway_username, "Jump password", self.ssh_gateway_password, show2="*")
+        self._entry_pair_row(self.ssh_section, "Target SSH username", self.guest_username, "Target port", self.ssh_target_port)
+        self._entry_half_row(self.ssh_section, "Target SSH password", self.guest_password, show="*", label_width=20)
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=(0, 8))
         self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
@@ -2549,10 +2593,11 @@ class AuditFrame(BaseFrame):
         ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
         ttk.Button(row, text="Browse", command=command).pack(side="left")
 
-    def _entry_row(self, parent, label, variable, show=None, button=None):
+    def _entry_row(self, parent, label, variable, show=None, button=None, label_width=None):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
-        ttk.Label(row, text=label, width=self._compact_label_width).pack(side="left")
+        width = self._compact_label_width if label_width is None else label_width
+        ttk.Label(row, text=label, width=width).pack(side="left")
         ttk.Entry(row, textvariable=variable, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
         if button:
             ttk.Button(row, text=button[0], command=button[1]).pack(side="left")
@@ -2563,13 +2608,27 @@ class AuditFrame(BaseFrame):
 
         left = ttk.Frame(row)
         left.pack(side="left", fill="x", expand=True, padx=(0, 4))
-        ttk.Label(left, text=label1, width=16).pack(side="left")
+        ttk.Label(left, text=label1, width=20).pack(side="left")
         ttk.Entry(left, textvariable=var1, show=show1).pack(side="left", fill="x", expand=True) # type: ignore
 
         right = ttk.Frame(row)
         right.pack(side="left", fill="x", expand=True, padx=(4, 0))
-        ttk.Label(right, text=label2, width=12).pack(side="left")
+        ttk.Label(right, text=label2, width=16).pack(side="left")
         ttk.Entry(right, textvariable=var2, show=show2).pack(side="left", fill="x", expand=True)
+
+    def _entry_half_row(self, parent, label, variable, show=None, label_width=None):
+        row = ttk.Frame(parent)
+        row.pack(fill="x", pady=2)
+
+        left = ttk.Frame(row)
+        left.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        width = self._compact_label_width if label_width is None else label_width
+        ttk.Label(left, text=label, width=width).pack(side="left")
+        ttk.Entry(left, textvariable=variable, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
+
+        right = ttk.Frame(row)
+        right.pack(side="left", fill="x", expand=True)
+        ttk.Label(right, text="", width=16).pack(side="left")
 
     def _set_ssh_section_visible(self, visible: bool) -> None:
         if visible:
@@ -2580,25 +2639,26 @@ class AuditFrame(BaseFrame):
                 self.ssh_section.pack_forget()
 
     def _toggle_ssh_section(self):
-        self._set_ssh_section_visible(bool(self.show_ssh_settings.get()))
+        self._on_connection_mode_changed()
 
     def _on_connection_mode_changed(self, *_):
         mode = normalize_text(self.connection_mode.get()).lower()
+        self.fallback_checkbox.configure(text=self.fallback_texts.get(mode, self.fallback_texts["vSphere"]))
+
         if mode == "ssh tunnel":
-            if hasattr(self, "vcenter_section"):
-                self.vcenter_section.pack_forget()
-            self.show_ssh_settings.set(True)
             self._set_ssh_section_visible(True)
-            if hasattr(self, "probe_button"):
+            if bool(self.show_ssh_settings.get()):
+                if hasattr(self, "vcenter_section") and not self.vcenter_section.winfo_ismapped():
+                    self.vcenter_section.pack(fill="x", pady=(4, 0))
+            else:
+                if hasattr(self, "vcenter_section") and self.vcenter_section.winfo_ismapped():
+                    self.vcenter_section.pack_forget()
+            if hasattr(self, "probe_button"): 
                 self.probe_button.configure(text="Test SSH Probe")
-        else:
-            # Temporarily remove SSH section so vCenter re-inserts before it
-            self._set_ssh_section_visible(False)
+        else:  # vSphere mode
             if hasattr(self, "vcenter_section") and not self.vcenter_section.winfo_ismapped():
                 self.vcenter_section.pack(fill="x", pady=(4, 0))
-            # Restore SSH section after vCenter if toggle is still checked
-            if bool(self.show_ssh_settings.get()):
-                self._set_ssh_section_visible(True)
+            self._set_ssh_section_visible(bool(self.show_ssh_settings.get()))
             if hasattr(self, "probe_button"):
                 self.probe_button.configure(text="Test vCenter Probe")
 
