@@ -1684,6 +1684,7 @@ class AuditEngine:
         guest_creds: Dict[str, str],
         connection_mode: str = "vsphere",
         ssh_config: Optional[Dict[str, Any]] = None,
+        ssh_fallback_enabled: bool = False,
     ):
         self.workbook_service = workbook_service
         self.logger = logger
@@ -1692,6 +1693,7 @@ class AuditEngine:
         self.guest_creds = guest_creds
         self.connection_mode = normalize_text(connection_mode).lower() or "vsphere"
         self.ssh_config = ssh_config or {}
+        self.ssh_fallback_enabled = bool(ssh_fallback_enabled)
         self.local_scanner = LocalWindowsScanner()
         self.master_paths = MasterSoftwarePathService()
         self.master_model_name = normalize_model_key(_get_sbl_model_from_workbook(self.workbook_service.file_path))
@@ -1806,8 +1808,36 @@ class AuditEngine:
         if vm_name.upper() == LOCAL_SENTINEL:
             return self._scan_local(row, target_name)
         if self.connection_mode == "ssh tunnel":
-            return self._scan_ssh_target(row, target_name, vm_name)
-        return self._scan_guest_vm(row, target_name, vm_name)
+            result = self._scan_ssh_target(row, target_name, vm_name)
+            if (
+                self.ssh_fallback_enabled
+                and result.status in ("WARN", "FAIL")
+                and self.vsphere_service is not None
+            ):
+                self.logger(f"SSH scan failed for {target_name}, trying vSphere fallback...")
+                vm_result = self._scan_guest_vm(row, target_name, vm_name)
+                if vm_result.status == "PASS":
+                    self.logger(f"vSphere fallback succeeded for {target_name}")
+                    return vm_result
+                self.logger(f"vSphere fallback also failed for {target_name}")
+            return result
+
+        # vSphere mode - try vSphere first
+        result = self._scan_guest_vm(row, target_name, vm_name)
+
+        # If fallback is enabled and vSphere failed, try SSH
+        if (self.ssh_fallback_enabled and
+            result.status in ("WARN", "FAIL") and
+            self.ssh_service is not None):
+            self.logger(f"vSphere scan failed for {target_name}, trying SSH fallback...")
+            ssh_result = self._scan_ssh_target(row, target_name, vm_name)
+            if ssh_result.status == "PASS":
+                self.logger(f"SSH fallback succeeded for {target_name}")
+                return ssh_result
+            else:
+                self.logger(f"SSH fallback also failed for {target_name}")
+
+        return result
 
     @staticmethod
     def choose_best_row_result(row_results: List[ScanResult]) -> ScanResult:
@@ -1858,48 +1888,90 @@ class AuditEngine:
         if needs_remote:
             self.logger(f"Starting remote scan phase using mode: {self.connection_mode}...")
             if self.connection_mode == "ssh tunnel":
-                if not PARAMIKO_AVAILABLE:
-                    self.logger("paramiko is not installed; SSH targets will be marked WARN.")
-                    for row in rows:
-                        if not row.software_component:
-                            continue
-                        for target_name, mark in row.target_vms.items():
-                            if not is_x_mark(mark):
-                                continue
-                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
-                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
-                                result = self._build_result(
-                                    row,
-                                    target_name,
-                                    "NO_PARAMIKO",
-                                    "WARN",
-                                    f"ssh-host={vm_name} | paramiko is not installed",
+                try:
+                    if self.ssh_fallback_enabled:
+                        if not PYVMOMI_AVAILABLE:
+                            self.logger("vSphere fallback enabled, but pyVmomi is not installed; SSH-only mode will be used.")
+                        elif not self.vcenter_creds.get("server", "") or not self.vcenter_creds.get("username", "") or not self.vcenter_creds.get("password", ""):
+                            self.logger("vSphere fallback enabled, but vCenter credentials/server are incomplete; SSH-only mode will be used.")
+                        else:
+                            try:
+                                self.vsphere_service = VSphereService(
+                                    self.vcenter_creds.get("server", ""),
+                                    self.vcenter_creds.get("username", ""),
+                                    self.vcenter_creds.get("password", ""),
+                                    True,
                                 )
-                                results.append(result)
-                                self.logger(result.audit_text + f" | {result.details}")
-                else:
-                    self.ssh_service = SSHTunnelService(
-                        target_username=self.guest_creds.get("username", ""),
-                        target_password=self.guest_creds.get("password", ""),
-                        target_port=int(self.ssh_config.get("target_port", 22)),
-                        gateway_host=self.ssh_config.get("gateway_host", ""),
-                        gateway_username=self.ssh_config.get("gateway_username", ""),
-                        gateway_password=self.ssh_config.get("gateway_password", ""),
-                        gateway_port=int(self.ssh_config.get("gateway_port", 22)),
-                    )
-                    self.logger("SSH tunnel mode initialized.")
-                    for row in rows:
-                        if not row.software_component:
-                            continue
-                        for target_name, mark in row.target_vms.items():
-                            if not is_x_mark(mark):
+                                self.vsphere_service.connect()
+                                self.logger("vSphere fallback service initialized for SSH mode.")
+                            except Exception as exc:
+                                self.vsphere_service = None
+                                self.logger(f"Could not initialize vSphere fallback in SSH mode: {exc}")
+
+                    if not PARAMIKO_AVAILABLE:
+                        if self.ssh_fallback_enabled and self.vsphere_service is not None:
+                            self.logger("paramiko is not installed; attempting vSphere fallback-only scans.")
+                            for row in rows:
+                                if not row.software_component:
+                                    continue
+                                for target_name, mark in row.target_vms.items():
+                                    if not is_x_mark(mark):
+                                        continue
+                                    vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                    if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                        self.logger(f"Scanning {row.software_component} on {target_name} [vSphere fallback={vm_name}]...")
+                                        result = self._scan_guest_vm(row, target_name, vm_name)
+                                        results.append(result)
+                                        self.logger(result.audit_text + f" | {result.details}")
+                        else:
+                            self.logger("paramiko is not installed; SSH targets will be marked WARN.")
+                            for row in rows:
+                                if not row.software_component:
+                                    continue
+                                for target_name, mark in row.target_vms.items():
+                                    if not is_x_mark(mark):
+                                        continue
+                                    vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                    if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                        result = self._build_result(
+                                            row,
+                                            target_name,
+                                            "NO_PARAMIKO",
+                                            "WARN",
+                                            f"ssh-host={vm_name} | paramiko is not installed",
+                                        )
+                                        results.append(result)
+                                        self.logger(result.audit_text + f" | {result.details}")
+                    else:
+                        self.ssh_service = SSHTunnelService(
+                            target_username=self.guest_creds.get("username", ""),
+                            target_password=self.guest_creds.get("password", ""),
+                            target_port=int(self.ssh_config.get("target_port", 22)),
+                            gateway_host=self.ssh_config.get("gateway_host", ""),
+                            gateway_username=self.ssh_config.get("gateway_username", ""),
+                            gateway_password=self.ssh_config.get("gateway_password", ""),
+                            gateway_port=int(self.ssh_config.get("gateway_port", 22)),
+                        )
+                        self.logger("SSH tunnel mode initialized.")
+                        for row in rows:
+                            if not row.software_component:
                                 continue
-                            vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
-                            if vm_name and vm_name.upper() != LOCAL_SENTINEL:
-                                self.logger(f"Scanning {row.software_component} on {target_name} [SSH={vm_name}]...")
-                                result = self.scan_target_row(row, target_name)
-                                results.append(result)
-                                self.logger(result.audit_text + f" | {result.details}")
+                            for target_name, mark in row.target_vms.items():
+                                if not is_x_mark(mark):
+                                    continue
+                                vm_name = normalize_text(self.vm_profile.get("targets", {}).get(target_name, {}).get("vm_name", ""))
+                                if vm_name and vm_name.upper() != LOCAL_SENTINEL:
+                                    self.logger(f"Scanning {row.software_component} on {target_name} [SSH={vm_name}]...")
+                                    result = self.scan_target_row(row, target_name)
+                                    results.append(result)
+                                    self.logger(result.audit_text + f" | {result.details}")
+                finally:
+                    if self.vsphere_service is not None:
+                        try:
+                            self.vsphere_service.disconnect()
+                        except Exception:
+                            pass
+                        self.vsphere_service = None
             elif not PYVMOMI_AVAILABLE:
                 self.logger("pyVmomi is not installed; VM targets will be marked WARN.")
                 for row in rows:
@@ -1930,6 +2002,22 @@ class AuditEngine:
                 try:
                     self.vsphere_service.connect()
                     self.logger("Connected to vSphere.")
+
+                    # Initialize SSH service for fallback if enabled
+                    if self.ssh_fallback_enabled and PARAMIKO_AVAILABLE:
+                        self.ssh_service = SSHTunnelService(
+                            target_username=self.guest_creds.get("username", ""),
+                            target_password=self.guest_creds.get("password", ""),
+                            target_port=int(self.ssh_config.get("target_port", 22)),
+                            gateway_host=self.ssh_config.get("gateway_host", ""),
+                            gateway_username=self.ssh_config.get("gateway_username", ""),
+                            gateway_password=self.ssh_config.get("gateway_password", ""),
+                            gateway_port=int(self.ssh_config.get("gateway_port", 22)),
+                        )
+                        self.logger("SSH tunnel service initialized for fallback.")
+                    elif self.ssh_fallback_enabled and not PARAMIKO_AVAILABLE:
+                        self.logger("SSH fallback enabled but paramiko is not installed; fallback will be skipped.")
+
                     for row in rows:
                         if not row.software_component:
                             continue
@@ -2048,12 +2136,13 @@ class ProfileFrame(BaseFrame):
         super().__init__(parent, controller)
         self.profile_service = VMProfileService()
         self.logger = FileLogger(LOGS_DIR, "vm_profile")
-        self.profile_name = tk.StringVar(value="default_vsphere_profile")
+        self.profile_name = tk.StringVar(value="")
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
         self.vcenter_password = tk.StringVar()
         self.ignore_ssl = tk.BooleanVar(value=True)
         self.vm_dropdowns: Dict[str, ttk.Combobox] = {}
+        self.target_info: Dict[str, Dict[str, str]] = {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS}
         top = ttk.Frame(self)
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -2074,21 +2163,80 @@ class ProfileFrame(BaseFrame):
             combo = ttk.Combobox(row, state="readonly")
             combo.pack(side="left", fill="x", expand=True)
             self.vm_dropdowns[target_name] = combo
+        # Add button to edit target info
+        ttk.Button(mapping, text="Edit Target Info", command=self.edit_target_info_dialog).pack(side="right", padx=8)
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=10)
         ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
-        ttk.Button(controls, text="Save Profile", command=self.save_profile).pack(side="left", padx=(8, 0))
+        self.save_profile_button = ttk.Button(controls, text="Save Profile", command=self.save_profile)
+        self.save_profile_button.pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Load Saved Profile", command=self.load_saved_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Verify Profile", command=self.verify_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
         self.log = tk.Text(self, wrap="word", height=20)
         self.log.pack(fill="both", expand=True)
+        self.profile_name.trace_add("write", self._refresh_profile_save_state)
+        self._refresh_profile_save_state()
 
-    def _entry_row(self, parent, label, var, show=None):
+    def _profile_name_is_valid(self, profile_name: str) -> bool:
+        return bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", profile_name))
+
+    def _get_profile_name_or_warn(self) -> Optional[str]:
+        profile_name = normalize_text(self.profile_name.get())
+        if not profile_name:
+            messagebox.showwarning("Profile name required", "Enter a profile name before saving.")
+            return None
+        if not self._profile_name_is_valid(profile_name):
+            messagebox.showwarning(
+                "Invalid profile name",
+                "Use 1-64 characters: letters, numbers, underscore, or dash. Must start with a letter or number.",
+            )
+            return None
+        return profile_name
+
+    def _refresh_profile_save_state(self, *_):
+        profile_name = normalize_text(self.profile_name.get())
+        is_valid = self._profile_name_is_valid(profile_name)
+        self.save_profile_button.configure(state="normal" if is_valid else "disabled")
+
+    def edit_target_info_dialog(self):
+        dialog = tk.Toplevel(self)
+        dialog.title("Edit Target VM Info")
+        rows = {}
+        for idx, target_name in enumerate(SYSTEM_COLUMNS):
+            info = self.target_info.get(target_name, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
+            row = ttk.Frame(dialog)
+            row.grid(row=idx, column=0, sticky="ew", pady=2)
+            ttk.Label(row, text=target_name, width=18).pack(side="left")
+            vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
+            user_var = tk.StringVar(value=info.get("username", ""))
+            pass_var = tk.StringVar(value=info.get("password", ""))
+            os_var = tk.StringVar(value=info.get("os_type", "windows"))
+            ttk.Entry(row, textvariable=vm_var, width=16).pack(side="left", padx=2)
+            ttk.Entry(row, textvariable=user_var, width=12).pack(side="left", padx=2)
+            ttk.Entry(row, textvariable=pass_var, width=12, show="*").pack(side="left", padx=2)
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=8, state="readonly").pack(side="left", padx=2)
+            rows[target_name] = (vm_var, user_var, pass_var, os_var)
+        def save_and_close():
+            for t, (vm_var, user_var, pass_var, os_var) in rows.items():
+                self.target_info[t] = {
+                    "vm_name": vm_var.get().strip(),
+                    "username": user_var.get().strip(),
+                    "password": pass_var.get().strip(),
+                    "os_type": os_var.get().strip() or "windows"
+                }
+                # Update dropdowns to reflect new VM names
+                self.vm_dropdowns[t].set(vm_var.get().strip() or LOCAL_SENTINEL)
+            dialog.destroy()
+        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(SYSTEM_COLUMNS), column=0, pady=8)
+
+    def _entry_row(self, parent, label, var, show=None, command=None):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=4)
         ttk.Label(row, text=label, width=18).pack(side="left")
-        ttk.Entry(row, textvariable=var, show=show).pack(side="left", fill="x", expand=True)
+        ttk.Entry(row, textvariable=var, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
+        if command is not None:
+            ttk.Button(row, text="Browse", command=command).pack(side="left")
 
     def append_log(self, message: str):
         """
@@ -2123,27 +2271,60 @@ class ProfileFrame(BaseFrame):
             self.append_log(f"ERROR: {exc}")
 
     def save_profile(self):
-        payload = {"vcenter_server": self.vcenter_server.get().strip(), "ignore_ssl": self.ignore_ssl.get(), "targets": {name: {"vm_name": combo.get().strip(), "os_type": "windows"} for name, combo in self.vm_dropdowns.items()}, "last_verified": ""}
-        path = self.profile_service.save_profile(self.profile_name.get().strip(), payload)
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
+
+        # Merge dropdowns and target_info for saving
+        for name, combo in self.vm_dropdowns.items():
+            if name not in self.target_info:
+                self.target_info[name] = {"vm_name": combo.get().strip(), "username": "", "password": "", "os_type": "windows"}
+            else:
+                self.target_info[name]["vm_name"] = combo.get().strip()
+
+        profile_path = self.profile_service.profile_path(profile_name)
+        if profile_path.exists():
+            should_overwrite = messagebox.askyesno(
+                "Overwrite existing profile?",
+                f"Profile '{profile_name}' already exists. Do you want to overwrite it?",
+            )
+            if not should_overwrite:
+                self.append_log(f"Save canceled for existing profile: {profile_name}")
+                return
+
+        payload = {
+            "vcenter_server": self.vcenter_server.get().strip(),
+            "ignore_ssl": self.ignore_ssl.get(),
+            "targets": self.target_info,
+            "last_verified": ""
+        }
+        path = self.profile_service.save_profile(profile_name, payload)
         self.append_log(f"Saved profile: {path}")
 
     def load_saved_profile(self):
-        payload = self.profile_service.load_profile(self.profile_name.get().strip())
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
+        payload = self.profile_service.load_profile(profile_name)
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
+        self.target_info = payload.get("targets", {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS})
         for name, combo in self.vm_dropdowns.items():
-            combo.set(payload.get("targets", {}).get(name, {}).get("vm_name", LOCAL_SENTINEL))
-        self.append_log(f"Loaded profile: {self.profile_name.get().strip()}")
+            combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
+        self.append_log(f"Loaded profile: {profile_name}")
 
     def verify_profile(self):
-        payload = self.profile_service.load_profile(self.profile_name.get().strip())
+        profile_name = self._get_profile_name_or_warn()
+        if profile_name is None:
+            return
+        payload = self.profile_service.load_profile(profile_name)
         service = self._service()
         service.connect()
         vm_names = [payload.get("targets", {}).get(name, {}).get("vm_name", "") for name in SYSTEM_COLUMNS if payload.get("targets", {}).get(name, {}).get("vm_name", "")]
         report = service.verify_vm_names(vm_names)
         service.disconnect()
         payload["last_verified"] = datetime.now().isoformat(timespec="seconds")
-        self.profile_service.save_profile(self.profile_name.get().strip(), payload)
+        self.profile_service.save_profile(profile_name, payload)
         for vm_name, info in report.items():
             self.append_log(f"{vm_name} | power={info['power_state']} | tools={info['tools_status']} | guest={info['guest_os']}")
 
@@ -2469,15 +2650,83 @@ class ChecklistFrame(BaseFrame):
 
 
 class AuditFrame(BaseFrame):
+    def _init_target_info_table(self, parent):
+        self.target_info_vars = {}
+        self.target_info_dialog = None
+        self.save_targets_btn = None
+        # Place the button next to the profile selection
+        btn = ttk.Button(parent, text="Show/Edit Target VM Info", command=self._show_target_info_dialog)
+        btn.pack(side="left", padx=(8, 0))
+
+    def _show_target_info_dialog(self):
+        if self.target_info_dialog and self.target_info_dialog.winfo_exists():
+            self.target_info_dialog.lift()
+            return
+        self.target_info_dialog = tk.Toplevel(self)
+        self.target_info_dialog.title("Edit Target VM Info")
+        frame = ttk.Frame(self.target_info_dialog, padding=8)
+        frame.pack(fill="both", expand=True)
+        self.target_info_vars = {}
+        header = ttk.Frame(frame)
+        header.pack(fill="x")
+        for col, text in enumerate(["Target", "VM Name", "Username", "Password", "OS Type"]):
+            ttk.Label(header, text=text, width=14 if col else 18, font=("Segoe UI", 9, "bold")).grid(row=0, column=col)
+        profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
+        targets = profile.get("targets", {})
+        for idx, target in enumerate(SYSTEM_COLUMNS):
+            info = targets.get(target, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
+            row = ttk.Frame(frame)
+            row.pack(fill="x")
+            ttk.Label(row, text=target, width=18).grid(row=0, column=0)
+            vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
+            user_var = tk.StringVar(value=info.get("username", ""))
+            pass_var = tk.StringVar(value=info.get("password", ""))
+            os_var = tk.StringVar(value=info.get("os_type", "windows"))
+            ttk.Entry(row, textvariable=vm_var, width=16).grid(row=0, column=1)
+            ttk.Entry(row, textvariable=user_var, width=14).grid(row=0, column=2)
+            ttk.Entry(row, textvariable=pass_var, width=14, show="*").grid(row=0, column=3)
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4)
+            self.target_info_vars[target] = (vm_var, user_var, pass_var, os_var)
+        self.save_targets_btn = ttk.Button(frame, text="Save Target Info to Profile", command=self._save_target_info)
+        self.save_targets_btn.pack(pady=8)
+        self.target_info_dialog.transient(self)
+        self.target_info_dialog.grab_set()
+        self.target_info_dialog.wait_window()
+
+
+    def _save_target_info(self):
+        # Save edited info back to profile
+        profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
+        targets = profile.get("targets", {})
+        for target, (vm_var, user_var, pass_var, os_var) in self.target_info_vars.items():
+            targets[target] = {
+                "vm_name": vm_var.get().strip(),
+                "username": user_var.get().strip(),
+                "password": pass_var.get().strip(),
+                "os_type": os_var.get().strip() or "windows"
+            }
+        profile["targets"] = targets
+        self.profile_service.save_profile(self.profile_name.get().strip(), profile)
+        self.append_log("Saved target VM info to profile.")
+        if self.target_info_dialog and self.target_info_dialog.winfo_exists():
+            self.target_info_dialog.destroy()
+
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        self._compact_label_width = 18
+        self._compact_label_width = 16
         self.profile_service = VMProfileService()
+        self.style = ttk.Style()
+        self.style.configure("Bold.TLabelframe.Label", font=("Segoe UI", 10, "bold"))
         default_audit = AUDIT_CHECKLIST_DIR / "TG_Audit_Checklist_test.xlsx"
         default_results = AUDIT_RESULTS_DIR / "testing_sbl_RESULTS.xlsx"
         self.audit_path = tk.StringVar(value=str(default_audit))
         self.output_path = tk.StringVar(value=str(default_results))
-        self.profile_name = tk.StringVar(value="default_vsphere_profile")
+        self.profile_name = tk.StringVar()
+        self.profile_options = self._get_profile_options()
+        if self.profile_options:
+            self.profile_name.set(self.profile_options[0])
+        else:
+            self.profile_name.set("")
         self.connection_mode = tk.StringVar(value="vSphere")
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
@@ -2493,6 +2742,7 @@ class AuditFrame(BaseFrame):
         self.status_var = tk.StringVar(value="Status: Ready")
         self.progress_var = tk.DoubleVar(value=0)
         self.logger = FileLogger(LOGS_DIR, "audit_run")
+        # Only call _init_target_info_table after profile_row is defined (moved below)
         top = ttk.Frame(self)
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -2503,27 +2753,48 @@ class AuditFrame(BaseFrame):
         self._path_row(cfg, "Save audited results", self.output_path, self.pick_output)
         creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
         creds.pack(fill="x", pady=(0, 8))
-        self._entry_row(creds, "VM profile", self.profile_name, button=("Load Profile", self.load_profile_defaults))
+        # Dropdown for VM profiles
+        profile_row = ttk.Frame(creds)
+        profile_row.pack(fill="x", pady=2)
+        ttk.Label(profile_row, text="VM profile", width=self._compact_label_width).pack(side="left")
+        self.profile_dropdown = ttk.Combobox(profile_row, textvariable=self.profile_name, state="readonly", values=self.profile_options)
+        self.profile_dropdown.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        ttk.Button(profile_row, text="Load Profile", command=self.load_profile_defaults).pack(side="left")
+        self._init_target_info_table(profile_row)
+    
+        self.fallback_texts = {
+            "vSphere": "Use SSH tunnel as fallback if vSphere fails",
+            "ssh tunnel": "Use vSphere as fallback if SSH fails",
+        }
         mode_row = ttk.Frame(creds)
         mode_row.pack(fill="x", pady=2)
         ttk.Label(mode_row, text="Connection mode", width=self._compact_label_width).pack(side="left")
         ttk.Combobox(mode_row, textvariable=self.connection_mode, state="readonly", values=["vSphere", "SSH Tunnel"]).pack(side="left", fill="x", expand=True, padx=(0, 8))
         toggle_row = ttk.Frame(creds)
         toggle_row.pack(fill="x", pady=2)
-        ttk.Checkbutton(toggle_row, text="Show SSH tunnel settings", variable=self.show_ssh_settings, command=self._toggle_ssh_section).pack(side="left", padx=(self._compact_label_width * 6, 0))
-        self.vcenter_section = ttk.LabelFrame(creds, text="vCenter Settings", padding=4)
+        self.fallback_checkbox = ttk.Checkbutton(
+            toggle_row,
+            text=self.fallback_texts[normalize_text(self.connection_mode.get())],
+            variable=self.show_ssh_settings,
+            command=self._toggle_ssh_section,
+        )
+        self.fallback_checkbox.pack(side="left", padx=(self._compact_label_width * 6, 0))
+        self.vcenter_section = ttk.LabelFrame(creds, text="vCenter Settings", padding=4, labelanchor="nw", style="Bold.TLabelframe")
         self.vcenter_section.pack(fill="x", pady=(4, 0))
         self._entry_row(self.vcenter_section, "vCenter server", self.vcenter_server)
         self._entry_row(self.vcenter_section, "vCenter username", self.vcenter_username)
         self._entry_row(self.vcenter_section, "vCenter password", self.vcenter_password, show="*")
 
-        self.ssh_section = ttk.LabelFrame(creds, text="SSH Tunnel Settings", padding=6)
+        self.ssh_section = ttk.LabelFrame(creds, text="SSH Tunnel Settings", padding=6, labelanchor="nw", style="Bold.TLabelframe")
         self._entry_pair_row(self.ssh_section, "SSH jump host", self.ssh_gateway_host, "Jump port", self.ssh_gateway_port)
-        self._entry_pair_row(self.ssh_section, "Jump user", self.ssh_gateway_username, "Jump pass", self.ssh_gateway_password, show2="*")
-        self._entry_pair_row(self.ssh_section, "Target SSH user", self.guest_username, "Target port", self.ssh_target_port)
-        self._entry_row(self.ssh_section, "Target SSH pass", self.guest_password, show="*")
+        self._entry_pair_row(self.ssh_section, "Jump username", self.ssh_gateway_username, "Jump password", self.ssh_gateway_password, show2="*")
+        self._entry_pair_row(self.ssh_section, "Target SSH username", self.guest_username, "Target port", self.ssh_target_port)
+        self._entry_half_row(self.ssh_section, "Target SSH password", self.guest_password, show="*", label_width=20)
         controls = ttk.Frame(self)
         controls.pack(fill="x", pady=(0, 8))
+        self.local_only = tk.BooleanVar(value=False)
+        # Move the local scan checkbox next to the fallback checkbox
+        ttk.Checkbutton(toggle_row, text="Scan only local machine (ignore VMs)", variable=self.local_only).pack(side="left", padx=(16, 0))
         self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
         self.run_button.pack(side="left")
         self.probe_button = ttk.Button(controls, text="Test vCenter Probe", command=self.start_probe)
@@ -2541,7 +2812,11 @@ class AuditFrame(BaseFrame):
 
         self.connection_mode.trace_add("write", self._on_connection_mode_changed)
         self._set_ssh_section_visible(False)
-
+    def _get_profile_options(self):
+        profiles_dir = PROFILES_DIR
+        if not profiles_dir.exists():
+            return []
+        return [f.stem for f in profiles_dir.glob("*.json") if f.is_file()]
     def _path_row(self, parent, label, variable, command):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
@@ -2549,10 +2824,11 @@ class AuditFrame(BaseFrame):
         ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
         ttk.Button(row, text="Browse", command=command).pack(side="left")
 
-    def _entry_row(self, parent, label, variable, show=None, button=None):
+    def _entry_row(self, parent, label, variable, show=None, button=None, label_width=None):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
-        ttk.Label(row, text=label, width=self._compact_label_width).pack(side="left")
+        width = self._compact_label_width if label_width is None else label_width
+        ttk.Label(row, text=label, width=width).pack(side="left")
         ttk.Entry(row, textvariable=variable, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
         if button:
             ttk.Button(row, text=button[0], command=button[1]).pack(side="left")
@@ -2563,13 +2839,27 @@ class AuditFrame(BaseFrame):
 
         left = ttk.Frame(row)
         left.pack(side="left", fill="x", expand=True, padx=(0, 4))
-        ttk.Label(left, text=label1, width=16).pack(side="left")
+        ttk.Label(left, text=label1, width=20).pack(side="left")
         ttk.Entry(left, textvariable=var1, show=show1).pack(side="left", fill="x", expand=True) # type: ignore
 
         right = ttk.Frame(row)
         right.pack(side="left", fill="x", expand=True, padx=(4, 0))
-        ttk.Label(right, text=label2, width=12).pack(side="left")
+        ttk.Label(right, text=label2, width=16).pack(side="left")
         ttk.Entry(right, textvariable=var2, show=show2).pack(side="left", fill="x", expand=True)
+
+    def _entry_half_row(self, parent, label, variable, show=None, label_width=None):
+        row = ttk.Frame(parent)
+        row.pack(fill="x", pady=2)
+
+        left = ttk.Frame(row)
+        left.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        width = self._compact_label_width if label_width is None else label_width
+        ttk.Label(left, text=label, width=width).pack(side="left")
+        ttk.Entry(left, textvariable=variable, show=show).pack(side="left", fill="x", expand=True, padx=(0, 8))
+
+        right = ttk.Frame(row)
+        right.pack(side="left", fill="x", expand=True)
+        ttk.Label(right, text="", width=16).pack(side="left")
 
     def _set_ssh_section_visible(self, visible: bool) -> None:
         if visible:
@@ -2580,25 +2870,26 @@ class AuditFrame(BaseFrame):
                 self.ssh_section.pack_forget()
 
     def _toggle_ssh_section(self):
-        self._set_ssh_section_visible(bool(self.show_ssh_settings.get()))
+        self._on_connection_mode_changed()
 
     def _on_connection_mode_changed(self, *_):
         mode = normalize_text(self.connection_mode.get()).lower()
+        self.fallback_checkbox.configure(text=self.fallback_texts.get(mode, self.fallback_texts["vSphere"]))
+
         if mode == "ssh tunnel":
-            if hasattr(self, "vcenter_section"):
-                self.vcenter_section.pack_forget()
-            self.show_ssh_settings.set(True)
             self._set_ssh_section_visible(True)
-            if hasattr(self, "probe_button"):
+            if bool(self.show_ssh_settings.get()):
+                if hasattr(self, "vcenter_section") and not self.vcenter_section.winfo_ismapped():
+                    self.vcenter_section.pack(fill="x", pady=(4, 0))
+            else:
+                if hasattr(self, "vcenter_section") and self.vcenter_section.winfo_ismapped():
+                    self.vcenter_section.pack_forget()
+            if hasattr(self, "probe_button"): 
                 self.probe_button.configure(text="Test SSH Probe")
-        else:
-            # Temporarily remove SSH section so vCenter re-inserts before it
-            self._set_ssh_section_visible(False)
+        else:  # vSphere mode
             if hasattr(self, "vcenter_section") and not self.vcenter_section.winfo_ismapped():
                 self.vcenter_section.pack(fill="x", pady=(4, 0))
-            # Restore SSH section after vCenter if toggle is still checked
-            if bool(self.show_ssh_settings.get()):
-                self._set_ssh_section_visible(True)
+            self._set_ssh_section_visible(bool(self.show_ssh_settings.get()))
             if hasattr(self, "probe_button"):
                 self.probe_button.configure(text="Test vCenter Probe")
 
@@ -2621,6 +2912,7 @@ class AuditFrame(BaseFrame):
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
         self.vcenter_server.set(payload.get("vcenter_server", ""))
         self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
+        # Optionally update other fields if needed
 
     @staticmethod
     def _coerce_local_only_profile(vm_profile: Dict[str, Any]) -> Dict[str, Any]:
@@ -2762,10 +3054,12 @@ class AuditFrame(BaseFrame):
             vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
             vcenter_server = self.vcenter_server.get().strip()
             mode = normalize_text(self.connection_mode.get()).lower()
-            if mode != "ssh tunnel" and not vcenter_server:
+            if self.local_only.get():
+                vm_profile = self._coerce_local_only_profile(vm_profile)
+                self.after(0, lambda: self.append_log("Local-only scan enabled; all targets set to __LOCAL__."))
+            elif mode != "ssh tunnel" and not vcenter_server:
                 vm_profile = self._coerce_local_only_profile(vm_profile)
                 self.after(0, lambda: self.append_log("No vCenter server configured; forcing local-only scan mode (__LOCAL__) for all targets."))
-
             engine = AuditEngine(
                 workbook_service,
                 logger,
@@ -2780,6 +3074,7 @@ class AuditFrame(BaseFrame):
                     "gateway_password": self.ssh_gateway_password.get(),
                     "target_port": self._parse_int(self.ssh_target_port.get(), 22),
                 },
+                ssh_fallback_enabled=bool(self.show_ssh_settings.get()),
             )
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
