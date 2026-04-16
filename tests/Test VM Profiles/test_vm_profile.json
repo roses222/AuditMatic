@@ -1,0 +1,14 @@
+[
+  {
+    "name": "TestVM01",
+    "ip": "192.168.1.101",
+    "os": "Ubuntu 22.04",
+    "notes": "Test Linux VM"
+  },
+  {
+    "name": "TestVM02",
+    "ip": "192.168.1.102",
+    "os": "Windows Server 2019",
+    "notes": "Test Windows VM"
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "rules": [
+    {
+      "id": "programs_and_features_7zip",
+      "type": "programs_and_features",
+      "component": "7-Zip",
+      "match": {
+        "display_name_contains": "7-Zip"
+      },
+      "expected_version": "23.01"
+    },
+    {
+      "id": "powershell_arcgis_module",
+      "type": "powershell",
+      "component": "ArcGIS PowerShell DSC Module",
+      "command": "Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version",
+      "expected_version_pattern": "11\\.\\d+"
+    },
+    {
+      "id": "file_version_example",
+      "type": "file_version",
+      "component": "Notepad++",
+      "paths": [
+        "C:\\Program Files\\Notepad++\\notepad++.exe",
+        "C:\\Program Files (x86)\\Notepad++\\notepad++.exe"
+      ],
+      "expected_version": "8.6.0"
+    }
+  ],
+  "notes": "Reusable and extensible sample detection rules for all supported rule types."
+}
