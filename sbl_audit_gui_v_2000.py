@@ -87,6 +87,7 @@ JSON_DIR = PROJECT_DIR / "JSON"
 JSON_RESULTS_DIR = JSON_DIR / "json_result"
 JSON_CHECKLIST_DIR = JSON_DIR / "json_checklist"
 JSON_REGISTRY_SNAPSHOTS_DIR = JSON_DIR / "registry_snapshots"
+JSON_SCAN_JOBS_DIR = JSON_DIR / "scan_jobs"
 PROFILES_DIR = PROJECT_DIR / "profiles" / "vm_profiles"
 LOGS_DIR = PROJECT_DIR / "logs"
 TESTS_DIR = PROJECT_DIR / "tests"
@@ -258,7 +259,18 @@ def compare_versions(expected: str, found: str, scan_status: str) -> Tuple[str, 
 
 
 def ensure_project_structure() -> None:
-    for path in [AUDIT_RESULTS_DIR, AUDIT_CHECKLIST_DIR, JSON_DIR, JSON_RESULTS_DIR, JSON_CHECKLIST_DIR, JSON_REGISTRY_SNAPSHOTS_DIR, PROFILES_DIR, LOGS_DIR, TEMPLATES_DIR]:
+    for path in [
+        AUDIT_RESULTS_DIR,
+        AUDIT_CHECKLIST_DIR,
+        JSON_DIR,
+        JSON_RESULTS_DIR,
+        JSON_CHECKLIST_DIR,
+        JSON_REGISTRY_SNAPSHOTS_DIR,
+        JSON_SCAN_JOBS_DIR,
+        PROFILES_DIR,
+        LOGS_DIR,
+        TEMPLATES_DIR,
+    ]:
         path.mkdir(parents=True, exist_ok=True)
 
     if not MASTER_SOFTWARE_LIST_PATH.exists():
@@ -895,6 +907,13 @@ class JsonExportService:
     def write_registry_snapshot_json(base_name: str, payload: Dict[str, Any]) -> str:
         ensure_project_structure()
         output = JSON_REGISTRY_SNAPSHOTS_DIR / f"{base_name}_registry_snapshot_{timestamp_str()}.json"
+        output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return str(output)
+
+    @staticmethod
+    def write_scan_job_json(base_name: str, payload: Dict[str, Any]) -> str:
+        ensure_project_structure()
+        output = JSON_SCAN_JOBS_DIR / f"{base_name}_scan_job_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return str(output)
 
@@ -1734,6 +1753,44 @@ class ChecklistGeneratorService:
 
 
 class LocalWindowsScanner:
+    @staticmethod
+    def describe_local_detection_commands(software_name: str, version_location: str) -> List[str]:
+        rule, payload = VersionRuleResolver.detect_rule(version_location)
+        commands: List[str] = []
+
+        if rule == "programs_and_features":
+            safe_name = software_name.replace("'", "''")
+            commands.append(
+                "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*',"
+                "'HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');"
+                f"Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {{$_.DisplayName -like '*{safe_name}*'}} | Select-Object -First 1"
+            )
+            return commands
+
+        if rule == "powershell":
+            command = payload.get("command", "")
+            if command:
+                commands.append(command)
+            return commands
+
+        if rule == "file_version":
+            for path_value in payload.get("paths", []):
+                safe_path = path_value.replace("'", "''")
+                commands.append(
+                    f"$p='{safe_path}'; if (Test-Path $p) {{ (Get-Item $p).VersionInfo.ProductVersion }}"
+                )
+            return commands
+
+        commands.append(
+            "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*',"
+            "'HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');"
+            "Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        )
+        for path_value in VersionRuleResolver.extract_file_paths(version_location):
+            safe_path = path_value.replace("'", "''")
+            commands.append(f"$p='{safe_path}'; if (Test-Path $p) {{ (Get-Item $p).VersionInfo.ProductVersion }}")
+        return commands
+
     def capture_registry_snapshot(self) -> Dict[str, Any]:
         snapshot: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -3393,6 +3450,108 @@ class AuditFrame(BaseFrame):
             self.after(0, lambda: self.probe_button.configure(state="normal"))
 
     def _worker(self):
+        started_at = datetime.now().isoformat(timespec="seconds")
+        rows: List[AuditRow] = []
+        results: List[ScanResult] = []
+
+        def build_scan_job_payload(status: str, error_message: str = "") -> Dict[str, Any]:
+            row_by_index = {row.row_index: row for row in rows}
+
+            parsed_rows: List[Dict[str, Any]] = []
+            special_path_list: List[Dict[str, Any]] = []
+            for row in rows:
+                rule, _payload = VersionRuleResolver.detect_rule(row.version_locations)
+                detection_commands = LocalWindowsScanner.describe_local_detection_commands(
+                    row.software_component,
+                    row.version_locations,
+                )
+                marked_targets = [name for name, mark in row.target_vms.items() if is_x_mark(mark)]
+                parsed_entry = {
+                    "worksheet_row": row.row_index,
+                    "software_component": row.software_component,
+                    "current_ci_version": row.current_ci_version,
+                    "sbl_build_version": row.sbl_build_version,
+                    "version_locations": row.version_locations,
+                    "rule": rule,
+                    "marked_targets": marked_targets,
+                    "local_detection_commands": detection_commands,
+                }
+                parsed_rows.append(parsed_entry)
+                if rule != "programs_and_features":
+                    special_path_list.append(parsed_entry)
+
+            local_results: List[Dict[str, Any]] = []
+            for result in results:
+                if result.target_name != "LOCAL_MACHINE":
+                    continue
+                source_row = row_by_index.get(result.worksheet_row)
+                local_results.append(
+                    {
+                        "worksheet_row": result.worksheet_row,
+                        "software_component": result.software_component,
+                        "expected_version": result.expected_version,
+                        "found_version": result.found_version,
+                        "status": result.status,
+                        "audit_text": result.audit_text,
+                        "details": result.details,
+                        "version_locations": source_row.version_locations if source_row else "",
+                        "local_detection_commands": LocalWindowsScanner.describe_local_detection_commands(
+                            result.software_component,
+                            source_row.version_locations if source_row else "",
+                        ) if source_row else [],
+                    }
+                )
+
+            local_summary = {
+                "total": len(local_results),
+                "pass": sum(1 for item in local_results if item["status"] == "PASS"),
+                "fail": sum(1 for item in local_results if item["status"] == "FAIL"),
+                "warn": sum(1 for item in local_results if item["status"] == "WARN"),
+            }
+
+            audit_path_value = self.audit_path.get().strip()
+            output_path_value = self.output_path.get().strip()
+            baseline_name = ""
+            if rows:
+                baseline_name = rows[0].sbl_build_version
+
+            return {
+                "status": status,
+                "started_at": started_at,
+                "completed_at": datetime.now().isoformat(timespec="seconds"),
+                "error": error_message,
+                "sbl_file": {
+                    "name": Path(audit_path_value).name if audit_path_value else "",
+                    "path": audit_path_value,
+                    "baseline_name": baseline_name,
+                    "timestamp": datetime.now().isoformat(timespec="seconds"),
+                    "sbl_model": _get_sbl_model_from_workbook(audit_path_value) if audit_path_value else "UNKNOWN",
+                },
+                "output": {
+                    "workbook_path": output_path_value,
+                    "result_base_name": Path(output_path_value).stem if output_path_value else "audit_results",
+                },
+                "settings": {
+                    "profile_name": self.profile_name.get().strip(),
+                    "connection_mode": normalize_text(self.connection_mode.get()),
+                    "local_only": bool(self.local_only.get()),
+                    "fallback_enabled": bool(self.show_ssh_settings.get()),
+                    "vcenter_server": self.vcenter_server.get().strip(),
+                    "ssh_gateway_host": self.ssh_gateway_host.get().strip(),
+                    "ssh_gateway_port": self._parse_int(self.ssh_gateway_port.get(), 22),
+                    "ssh_target_port": self._parse_int(self.ssh_target_port.get(), 22),
+                },
+                "sbl_parse": {
+                    "row_count": len(parsed_rows),
+                    "rows": parsed_rows,
+                    "special_path_scan_list": special_path_list,
+                },
+                "local_machine_scan": {
+                    "results": local_results,
+                    "comparison_summary": local_summary,
+                },
+            }
+
         try:
             template_service = TemplateAssetService()
             workbook_service = AuditWorkbookService(self.audit_path.get().strip())
@@ -3456,10 +3615,15 @@ class AuditFrame(BaseFrame):
             latest_sbl = template_service.update_latest_sbl(self.output_path.get().strip())
             latest_master = template_service.snapshot_current_master_to_latest(sbl_model=sbl_model)
             json_path = JsonExportService.write_result_json(Path(self.output_path.get()).stem, {"audit_workbook": self.audit_path.get(), "saved_workbook": self.output_path.get(), "profile_name": self.profile_name.get().strip(), "generated_at": datetime.now().isoformat(timespec="seconds"), "results": [asdict(result) for result in results]})
+            scan_job_json_path = JsonExportService.write_scan_job_json(
+                Path(self.output_path.get()).stem,
+                build_scan_job_payload("completed"),
+            )
             summary = self.build_summary(results)
             self.after(0, lambda: self.append_log(summary))
             self.after(0, lambda: self.append_log(f"Saved audited workbook: {self.output_path.get()}"))
             self.after(0, lambda: self.append_log(f"Result JSON written: {json_path}"))
+            self.after(0, lambda: self.append_log(f"Scan job JSON written: {scan_job_json_path}"))
             self.after(0, lambda: self.append_log(f"Updated latest SBL snapshot: {latest_sbl}"))
             self.after(0, lambda: self.append_log(f"Updated latest master software list snapshot: {latest_master}"))
             self.after(0, lambda: self.progress_var.set(100))
@@ -3467,6 +3631,14 @@ class AuditFrame(BaseFrame):
         except Exception as exc:
             self.logger.write_exception(exc)
             self.after(0, lambda: self.append_log(f"ERROR: {exc}"))
+            try:
+                scan_job_json_path = JsonExportService.write_scan_job_json(
+                    Path(self.output_path.get()).stem,
+                    build_scan_job_payload("failed", error_message=str(exc)),
+                )
+                self.after(0, lambda: self.append_log(f"Scan job JSON written (failed run): {scan_job_json_path}"))
+            except Exception as scan_job_exc:
+                self.after(0, lambda: self.append_log(f"Scan job JSON write failed: {scan_job_exc}"))
             self.after(0, lambda: self.set_status("Status: Failed"))
         finally:
             self.after(0, lambda: self.run_button.configure(state="normal"))
