@@ -42,6 +42,13 @@ def ensure_mock_profile() -> None:
         "updated_at": datetime.now().isoformat(timespec="seconds"),
         "vcenter_server": "",
         "ignore_ssl": True,
+        "ssh_tunnel": {
+            "gateway_host": "",
+            "gateway_port": 22,
+            "gateway_username": "",
+            "gateway_password": "",
+            "target_port": 22,
+        },
         "targets": targets,
         "last_verified": "",
     }
