@@ -2457,7 +2457,6 @@ class ProfileFrame(BaseFrame):
         ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
         self.save_profile_button = ttk.Button(controls, text="Save Profile", command=self.save_profile)
         self.save_profile_button.pack(side="left", padx=(8, 0))
-        ttk.Button(controls, text="Load Saved Profile", command=self.load_saved_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Verify Profile", command=self.verify_profile).pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
         self.log = tk.Text(self, wrap="word", height=20)
@@ -2526,7 +2525,7 @@ class ProfileFrame(BaseFrame):
     def _get_profile_name_or_warn(self) -> Optional[str]:
         profile_name = normalize_text(self.profile_name.get())
         if not profile_name:
-            messagebox.showwarning("Profile name required", "Enter a profile name before saving.")
+            messagebox.showwarning("Profile name required", "Enter or select a profile name first.")
             return None
         if not self._profile_name_is_valid(profile_name):
             messagebox.showwarning(
