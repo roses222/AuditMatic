@@ -3,6 +3,8 @@ Test script to monkey-patch VM and SSH connection logic for sbl_audit_gui_v_2000
 Allows GUI testing without real infrastructure.
 """
 import sys
+import json
+from datetime import datetime
 from pathlib import Path
 
 # Allow running this file directly from the tests folder.
@@ -11,6 +13,37 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import sbl_audit_gui_v_2000
+
+
+def ensure_mock_profile() -> None:
+    profiles_dir = sbl_audit_gui_v_2000.PROFILES_DIR
+    profiles_dir.mkdir(parents=True, exist_ok=True)
+    existing_profiles = list(profiles_dir.glob("*.json"))
+    if existing_profiles:
+        print(f"[INFO] Found {len(existing_profiles)} existing profile(s); using existing profiles.")
+        return
+
+    targets = {}
+    for target_name in sbl_audit_gui_v_2000.SYSTEM_COLUMNS:
+        targets[target_name] = {
+            "vm_name": sbl_audit_gui_v_2000.LOCAL_SENTINEL,
+            "username": "",
+            "password": "",
+            "os_type": "windows",
+        }
+
+    profile_payload = {
+        "profile_name": "mock_local_profile",
+        "updated_at": datetime.now().isoformat(timespec="seconds"),
+        "vcenter_server": "",
+        "ignore_ssl": True,
+        "targets": targets,
+        "last_verified": "",
+    }
+
+    profile_path = profiles_dir / "mock_local_profile.json"
+    profile_path.write_text(json.dumps(profile_payload, indent=2), encoding="utf-8")
+    print(f"[INFO] Created mock profile for test GUI: {profile_path}")
 
 # --- Mock vSphere connection ---
 def mock_vsphere_connect(self, *args, **kwargs):
@@ -48,6 +81,8 @@ if hasattr(sbl_audit_gui_v_2000, 'run_local_powershell'):
 # Patch on AuditFrame if method exists
 if hasattr(sbl_audit_gui_v_2000, 'AuditFrame'):
     setattr(sbl_audit_gui_v_2000.AuditFrame, 'run_local_powershell', mock_run_local_powershell)
+
+ensure_mock_profile()
 
 print("[INFO] Monkey-patching complete. Launching GUI...")
 
