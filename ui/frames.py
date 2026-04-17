@@ -13,8 +13,9 @@ import tempfile
 import threading
 from dataclasses import asdict
 from pathlib import Path
+import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
@@ -27,7 +28,7 @@ from services.json_export_service import JsonExportService
 from services.profile_service import PARAMIKO_AVAILABLE, SSHTunnelService, VMProfileService, VSphereService
 from services.template_service import TemplateAssetService, _get_sbl_model_from_workbook
 from services.workbook_service import AuditWorkbookService, ChecklistGeneratorService, VersionRuleResolver, read_software_list_universal_rows
-from utils import (
+from services.utils import (
 	build_target_schema_payload,
 	default_target_columns,
 	detect_header_row_index,
@@ -54,9 +55,12 @@ def confirm_target_column_mapping(
 		return fallback
 
 	preview = "\n".join(f"- {name}" for name in detected)
+	build_label = normalize_text(build_type)
+	if not build_label:
+		build_label = infer_build_type(build_type)
 	message = (
 		f"Detected VM target columns from source:\n{source_path or 'N/A'}\n"
-		f"Build type: {infer_build_type(build_type)}\n\n"
+		f"Build type: {build_label}\n\n"
 		f"Detected columns:\n{preview}\n\n"
 		"Choose Yes to use detected columns, No to use legacy fallback columns, or Cancel to keep current selection."
 	)
@@ -138,6 +142,338 @@ class HomeFrame(BaseFrame):
 		card("Configure VM Profile", f"Map worksheet targets to vSphere VMs or to {LOCAL_SENTINEL} for the machine running the tool.", "Open VM Profile Manager", "ProfileFrame")
 		card("Create Audit Form", "Generate an audit workbook in the approved format and export additional JSON checklist payload.", "Open Checklist Generator", "ChecklistFrame")
 		card("Run Audit", "Scans local targets first, then scans guest VMs through VMware Tools, compares found version against the SBL Build version, and writes PASS/FAIL text to the AUDIT column.", "Open Audit Runner", "AuditFrame")
+		card("Establish Pipeline", "Choose a saved profile, define how audits are triggered, and select where results should be sent.", "Open Pipeline Setup", "PipelineFrame")
+
+
+class PipelineFrame(BaseFrame):
+	"""Pipeline setup frame for trigger and destination configuration."""
+
+	INPUT_SOURCE_OPTIONS = [
+		"File Explorer Folder",
+		"Email Trigger",
+		"Ticket System Trigger",
+		"Database Trigger",
+		"API Trigger",
+	]
+
+	OUTPUT_ACTION_OPTIONS = [
+		"Save to Local Folder",
+		"Save to Remote Folder",
+		"Send Email",
+		"Save to Spreadsheet",
+		"Write to Database",
+	]
+
+	def __init__(self, parent, controller):
+		"""Initialize the PipelineFrame instance."""
+		super().__init__(parent, controller)
+		self.profile_service = VMProfileService()
+		self.profile_options = self._get_profile_options()
+		self.profile_name = tk.StringVar(value=self.profile_options[0] if self.profile_options else "")
+		self.input_source = tk.StringVar(value="File Explorer Folder")
+		self.output_action = tk.StringVar(value="Save to Local Folder")
+		self.status_var = tk.StringVar(value="Status: Ready")
+
+		# Input-specific fields
+		self.input_folder = tk.StringVar(value="")
+		self.email_address = tk.StringVar(value="")
+		self.email_folder = tk.StringVar(value="Inbox")
+		self.email_subject_filter = tk.StringVar(value="")
+		self.ticket_system = tk.StringVar(value="ServiceNow")
+		self.ticket_queue = tk.StringVar(value="")
+		self.ticket_filter = tk.StringVar(value="")
+		self.input_db_connection = tk.StringVar(value="")
+		self.input_db_table = tk.StringVar(value="")
+		self.api_endpoint = tk.StringVar(value="")
+		self.api_token_ref = tk.StringVar(value="")
+
+		# Output-specific fields
+		self.output_local_folder = tk.StringVar(value="")
+		self.output_remote_path = tk.StringVar(value="")
+		self.output_email_recipients = tk.StringVar(value="")
+		self.output_spreadsheet_path = tk.StringVar(value="")
+		self.output_db_connection = tk.StringVar(value="")
+		self.output_db_table = tk.StringVar(value="")
+
+		top = ttk.Frame(self)
+		top.pack(fill="x")
+		ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
+		ttk.Label(top, text="Establish Pipeline", font=("Segoe UI", 16, "bold")).pack(side="left", padx=(12, 0))
+
+		setup = ttk.LabelFrame(self, text="Pipeline Config", padding=12)
+		setup.pack(fill="x", pady=12)
+
+		row1 = ttk.Frame(setup)
+		row1.pack(fill="x", pady=4)
+		ttk.Label(row1, text="Saved profile", width=20).pack(side="left")
+		self.profile_combo = ttk.Combobox(row1, textvariable=self.profile_name, values=self.profile_options, state="readonly")
+		self.profile_combo.pack(side="left", fill="x", expand=True, padx=(0, 8))
+		ttk.Button(row1, text="Refresh", command=self._refresh_profiles).pack(side="left")
+		self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
+
+		row2 = ttk.Frame(setup)
+		row2.pack(fill="x", pady=4)
+		ttk.Label(row2, text="Input source", width=20).pack(side="left")
+		ttk.Combobox(
+			row2,
+			textvariable=self.input_source,
+			state="readonly",
+			values=self.INPUT_SOURCE_OPTIONS,
+		).pack(side="left", fill="x", expand=True)
+		self.input_source.trace_add("write", self._on_input_source_changed)
+
+		self.input_dynamic = ttk.LabelFrame(setup, text="Input Details", padding=8)
+		self.input_dynamic.pack(fill="x", pady=6)
+
+		row4 = ttk.Frame(setup)
+		row4.pack(fill="x", pady=4)
+		ttk.Label(row4, text="Output action", width=20).pack(side="left")
+		ttk.Combobox(
+			row4,
+			textvariable=self.output_action,
+			state="readonly",
+			values=self.OUTPUT_ACTION_OPTIONS,
+		).pack(side="left", fill="x", expand=True)
+		self.output_action.trace_add("write", self._on_output_action_changed)
+
+		self.output_dynamic = ttk.LabelFrame(setup, text="Output Details", padding=8)
+		self.output_dynamic.pack(fill="x", pady=6)
+
+		controls = ttk.Frame(self)
+		controls.pack(fill="x", pady=(0, 8))
+		ttk.Button(controls, text="Save Pipeline To Profile", command=self._save_pipeline_to_profile).pack(side="left")
+		ttk.Label(controls, textvariable=self.status_var).pack(side="left", padx=(12, 0))
+
+		self.log = tk.Text(self, wrap="word", height=16)
+		self.log.pack(fill="both", expand=True)
+
+		self._render_input_fields()
+		self._render_output_fields()
+		self._load_pipeline_from_profile()
+
+	def _get_profile_options(self) -> List[str]:
+		"""Return available saved profile names."""
+		if not PROFILES_DIR.exists():
+			return []
+		return sorted([f.stem for f in PROFILES_DIR.glob("*.json") if f.is_file() and not f.stem.startswith("pipeline_")])
+
+	def _refresh_profiles(self) -> None:
+		"""Refresh saved profile choices."""
+		self.profile_options = self._get_profile_options()
+		self.profile_combo.configure(values=self.profile_options)
+		if self.profile_options and not normalize_text(self.profile_name.get()):
+			self.profile_name.set(self.profile_options[0])
+		self._append_log(f"Refreshed profiles: {len(self.profile_options)} found")
+		self._load_pipeline_from_profile()
+
+	def _render_field(self, parent: ttk.Widget, label: str, variable: tk.StringVar, browse_mode: str = "") -> None:
+		"""Render a labeled entry row with optional browse button."""
+		row = ttk.Frame(parent)
+		row.pack(fill="x", pady=3)
+		ttk.Label(row, text=label, width=20).pack(side="left")
+		ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
+		if browse_mode == "folder":
+			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "folder")).pack(side="left")
+		elif browse_mode == "file":
+			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "file")).pack(side="left")
+
+	def _browse_into(self, variable: tk.StringVar, mode: str) -> None:
+		"""Pick a file/folder and place it in the supplied variable."""
+		if mode == "folder":
+			picked = filedialog.askdirectory(title="Select folder")
+		else:
+			picked = filedialog.askopenfilename(title="Select file")
+		if picked:
+			variable.set(picked)
+
+	def _clear_dynamic(self, container: ttk.Widget) -> None:
+		"""Clear all child widgets from a dynamic form section."""
+		for child in container.winfo_children():
+			child.destroy()
+
+	def _render_input_fields(self) -> None:
+		"""Render input-specific fields for the selected source type."""
+		self._clear_dynamic(self.input_dynamic)
+		source = normalize_text(self.input_source.get())
+		if source == "File Explorer Folder":
+			self._render_field(self.input_dynamic, "Input folder", self.input_folder, browse_mode="folder")
+		elif source == "Email Trigger":
+			self._render_field(self.input_dynamic, "Mailbox", self.email_address)
+			self._render_field(self.input_dynamic, "Mailbox folder", self.email_folder)
+			self._render_field(self.input_dynamic, "Subject filter", self.email_subject_filter)
+		elif source == "Ticket System Trigger":
+			self._render_field(self.input_dynamic, "Ticket system", self.ticket_system)
+			self._render_field(self.input_dynamic, "Queue/Project", self.ticket_queue)
+			self._render_field(self.input_dynamic, "Filter query", self.ticket_filter)
+		elif source == "Database Trigger":
+			self._render_field(self.input_dynamic, "DB connection", self.input_db_connection)
+			self._render_field(self.input_dynamic, "Table/View", self.input_db_table)
+		elif source == "API Trigger":
+			self._render_field(self.input_dynamic, "API endpoint", self.api_endpoint)
+			self._render_field(self.input_dynamic, "Token ref/secret", self.api_token_ref)
+
+	def _render_output_fields(self) -> None:
+		"""Render output-specific fields for the selected action."""
+		self._clear_dynamic(self.output_dynamic)
+		action = normalize_text(self.output_action.get())
+		if action == "Save to Local Folder":
+			self._render_field(self.output_dynamic, "Output folder", self.output_local_folder, browse_mode="folder")
+		elif action == "Save to Remote Folder":
+			self._render_field(self.output_dynamic, "Remote path", self.output_remote_path)
+		elif action == "Send Email":
+			self._render_field(self.output_dynamic, "Recipients", self.output_email_recipients)
+		elif action == "Save to Spreadsheet":
+			self._render_field(self.output_dynamic, "Spreadsheet path", self.output_spreadsheet_path, browse_mode="file")
+		elif action == "Write to Database":
+			self._render_field(self.output_dynamic, "DB connection", self.output_db_connection)
+			self._render_field(self.output_dynamic, "Table", self.output_db_table)
+
+	def _on_input_source_changed(self, *_args) -> None:
+		"""Re-render input fields when source type changes."""
+		self._render_input_fields()
+
+	def _on_output_action_changed(self, *_args) -> None:
+		"""Re-render output fields when action type changes."""
+		self._render_output_fields()
+
+	def _on_profile_changed(self, *_args) -> None:
+		"""Load pipeline data when selected profile changes."""
+		self._load_pipeline_from_profile()
+
+	def _collect_input_config(self) -> Dict[str, str]:
+		"""Collect input-source-specific config fields."""
+		source = normalize_text(self.input_source.get())
+		if source == "File Explorer Folder":
+			return {"folder": normalize_text(self.input_folder.get())}
+		if source == "Email Trigger":
+			return {
+				"mailbox": normalize_text(self.email_address.get()),
+				"folder": normalize_text(self.email_folder.get()),
+				"subject_filter": normalize_text(self.email_subject_filter.get()),
+			}
+		if source == "Ticket System Trigger":
+			return {
+				"system": normalize_text(self.ticket_system.get()),
+				"queue": normalize_text(self.ticket_queue.get()),
+				"filter": normalize_text(self.ticket_filter.get()),
+			}
+		if source == "Database Trigger":
+			return {
+				"connection": normalize_text(self.input_db_connection.get()),
+				"table": normalize_text(self.input_db_table.get()),
+			}
+		if source == "API Trigger":
+			return {
+				"endpoint": normalize_text(self.api_endpoint.get()),
+				"token_ref": normalize_text(self.api_token_ref.get()),
+			}
+		return {}
+
+	def _collect_output_config(self) -> Dict[str, str]:
+		"""Collect output-action-specific config fields."""
+		action = normalize_text(self.output_action.get())
+		if action == "Save to Local Folder":
+			return {"folder": normalize_text(self.output_local_folder.get())}
+		if action == "Save to Remote Folder":
+			return {"remote_path": normalize_text(self.output_remote_path.get())}
+		if action == "Send Email":
+			return {"recipients": normalize_text(self.output_email_recipients.get())}
+		if action == "Save to Spreadsheet":
+			return {"spreadsheet_path": normalize_text(self.output_spreadsheet_path.get())}
+		if action == "Write to Database":
+			return {
+				"connection": normalize_text(self.output_db_connection.get()),
+				"table": normalize_text(self.output_db_table.get()),
+			}
+		return {}
+
+	def _load_pipeline_from_profile(self) -> None:
+		"""Load existing pipeline config from selected profile."""
+		name = normalize_text(self.profile_name.get())
+		if not name:
+			return
+		try:
+			payload = self.profile_service.load_profile(name)
+		except Exception:
+			self._append_log(f"Profile '{name}' not found yet. Save profile first, then save pipeline.")
+			return
+
+		pipelines = payload.get("pipelines", {}) if isinstance(payload, dict) else {}
+		items = pipelines.get("items", {}) if isinstance(pipelines, dict) else {}
+		active = normalize_text(pipelines.get("active", "default")) if isinstance(pipelines, dict) else "default"
+		current = items.get(active, {}) if isinstance(items, dict) else {}
+		if not isinstance(current, dict) or not current:
+			return
+
+		self.input_source.set(normalize_text(current.get("input_source", self.input_source.get())) or self.input_source.get())
+		self.output_action.set(normalize_text(current.get("output_action", self.output_action.get())) or self.output_action.get())
+		self._render_input_fields()
+		self._render_output_fields()
+
+		input_cfg = current.get("input_config", {}) if isinstance(current.get("input_config", {}), dict) else {}
+		output_cfg = current.get("output_config", {}) if isinstance(current.get("output_config", {}), dict) else {}
+
+		self.input_folder.set(normalize_text(input_cfg.get("folder", self.input_folder.get())))
+		self.email_address.set(normalize_text(input_cfg.get("mailbox", self.email_address.get())))
+		self.email_folder.set(normalize_text(input_cfg.get("folder", self.email_folder.get())) or self.email_folder.get())
+		self.email_subject_filter.set(normalize_text(input_cfg.get("subject_filter", self.email_subject_filter.get())))
+		self.ticket_system.set(normalize_text(input_cfg.get("system", self.ticket_system.get())) or self.ticket_system.get())
+		self.ticket_queue.set(normalize_text(input_cfg.get("queue", self.ticket_queue.get())))
+		self.ticket_filter.set(normalize_text(input_cfg.get("filter", self.ticket_filter.get())))
+		self.input_db_connection.set(normalize_text(input_cfg.get("connection", self.input_db_connection.get())))
+		self.input_db_table.set(normalize_text(input_cfg.get("table", self.input_db_table.get())))
+		self.api_endpoint.set(normalize_text(input_cfg.get("endpoint", self.api_endpoint.get())))
+		self.api_token_ref.set(normalize_text(input_cfg.get("token_ref", self.api_token_ref.get())))
+
+		self.output_local_folder.set(normalize_text(output_cfg.get("folder", self.output_local_folder.get())))
+		self.output_remote_path.set(normalize_text(output_cfg.get("remote_path", self.output_remote_path.get())))
+		self.output_email_recipients.set(normalize_text(output_cfg.get("recipients", self.output_email_recipients.get())))
+		self.output_spreadsheet_path.set(normalize_text(output_cfg.get("spreadsheet_path", self.output_spreadsheet_path.get())))
+		self.output_db_connection.set(normalize_text(output_cfg.get("connection", self.output_db_connection.get())))
+		self.output_db_table.set(normalize_text(output_cfg.get("table", self.output_db_table.get())))
+
+		self._append_log(f"Loaded pipeline config from profile '{name}'.")
+
+	def _save_pipeline_to_profile(self) -> None:
+		"""Save pipeline configuration under the selected saved profile."""
+		name = normalize_text(self.profile_name.get())
+		if not name:
+			messagebox.showerror("Pipeline Config", "Select a saved profile first.")
+			return
+		try:
+			payload = self.profile_service.load_profile(name)
+		except Exception:
+			messagebox.showerror("Pipeline Config", f"Profile '{name}' was not found. Create/save the profile first.")
+			return
+
+		pipeline_payload = {
+			"title": "Pipeline Config",
+			"input_source": normalize_text(self.input_source.get()),
+			"input_config": self._collect_input_config(),
+			"output_action": normalize_text(self.output_action.get()),
+			"output_config": self._collect_output_config(),
+			"updated_at": datetime.now().isoformat(timespec="seconds"),
+		}
+
+		pipelines = payload.setdefault("pipelines", {})
+		if not isinstance(pipelines, dict):
+			pipelines = {}
+			payload["pipelines"] = pipelines
+		items = pipelines.setdefault("items", {})
+		if not isinstance(items, dict):
+			items = {}
+			pipelines["items"] = items
+		items["default"] = pipeline_payload
+		pipelines["active"] = "default"
+
+		path = self.profile_service.save_profile(name, payload)
+		self.status_var.set("Status: Pipeline config saved")
+		self._append_log(f"Saved pipeline config to profile '{name}': {path}")
+
+	def _append_log(self, message: str) -> None:
+		"""Append a log line in the local pipeline view."""
+		self.log.insert("end", message + "\n")
+		self.log.see("end")
 
 
 class ProfileFrame(BaseFrame):
@@ -611,7 +947,7 @@ class ChecklistFrame(BaseFrame):
 		form = ttk.LabelFrame(self, text="Main SBL Source", padding=12)
 		form.pack(fill="x", pady=12)
 		self._path_row(form, "Source workbook", self.source_path, self.pick_source)
-		self._path_row(form, "Output workbook", self.output_path, self.pick_output)
+		self._path_row(form, "Output workbook (tool-generated)", self.output_path, self.pick_output)
 
 		controls = ttk.Frame(self)
 		controls.pack(fill="x", pady=(0, 10))
@@ -627,8 +963,8 @@ class ChecklistFrame(BaseFrame):
 
 		template_panel = ttk.LabelFrame(self, text="Template Status", padding=10)
 		template_panel.pack(fill="x", pady=(0, 10))
-		self._template_status_row(template_panel, "Baseline SBL", self.template_baseline_sbl_var)
-		self._template_status_row(template_panel, "Latest SBL", self.template_latest_sbl_var)
+		self._template_status_row(template_panel, "Baseline SBL (authoritative)", self.template_baseline_sbl_var)
+		self._template_status_row(template_panel, "Latest SBL (tool-generated snapshot)", self.template_latest_sbl_var)
 		self._template_status_row(template_panel, "Baseline Master Software List", self.template_baseline_json_var)
 		self._template_status_row(template_panel, "Latest Master Software List", self.template_latest_json_var)
 
@@ -880,9 +1216,9 @@ class ChecklistFrame(BaseFrame):
 			latest_master = self.template_service.snapshot_current_master_to_latest(sbl_model=sbl_model)
 
 			self.after(0, lambda: self.progress_var.set(100))
-			self.after(0, lambda: self.append_log(f"Generated audit form: {output}"))
+			self.after(0, lambda: self.append_log(f"Generated tool-generated audit form: {output}"))
 			self.after(0, lambda: self.append_log(f"Checklist JSON written: {json_path}"))
-			self.after(0, lambda: self.append_log(f"Updated latest SBL snapshot: {latest_sbl}"))
+			self.after(0, lambda: self.append_log(f"Updated latest SBL snapshot (tool-generated): {latest_sbl}"))
 			self.after(0, lambda: self.append_log(f"Updated latest master software list snapshot: {latest_master}"))
 			self.after(0, self.refresh_template_status_panel)
 			self.after(0, lambda: self.set_status("Status: Complete"))
@@ -1060,7 +1396,7 @@ class AuditFrame(BaseFrame):
 		ttk.Label(header, text="VM Name", width=24, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=1, sticky="w", padx=(0, 4))
 		ttk.Label(header, text="Username", width=18, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=2, sticky="w", padx=(0, 4))
 		ttk.Label(header, text="Password", width=18, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=3, sticky="w", padx=(0, 4))
-		ttk.Label(header, text="OS Type", width=10, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=4, sticky="w")
+		ttk.Label(header, text="OS", width=10, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=4, sticky="w")
 		profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
 		targets = profile.get("targets", {})
 		target_names = self._resolve_target_names(profile)
@@ -1130,15 +1466,14 @@ class AuditFrame(BaseFrame):
 		self.profile_service = VMProfileService()
 		self.style = ttk.Style()
 		self.style.configure("Bold.TLabelframe.Label", font=("Segoe UI", 10, "bold"))
-		default_audit = AUDIT_CHECKLIST_DIR / "TG_Audit_Checklist_test.xlsx"
-		default_results = AUDIT_CHECKLIST_DIR.parent / "Audit Results" / "testing_sbl_RESULTS.xlsx"
-		self.audit_path = tk.StringVar(value=str(default_audit))
-		self.output_path = tk.StringVar(value=str(default_results))
+		self.audit_path = tk.StringVar()
+		self.output_path = tk.StringVar()
 		self.profile_name = tk.StringVar()
 		self.profile_options = self._get_profile_options()
 		self.detected_target_columns = default_target_columns()
+		self.detected_local_target_label = "Verification Steps"
 		self.build_type_value = tk.StringVar(value="unknown")
-		self.audit_schema_var = tk.StringVar(value="Build type: unknown | VM targets: legacy fallback")
+		self.audit_schema_var = tk.StringVar(value="Build type: unknown | VM targets: legacy fallback | Local targets: Verification Steps")
 		self.last_schema_source = ""
 		if self.profile_options:
 			self.profile_name.set(self.profile_options[0])
@@ -1325,6 +1660,7 @@ class AuditFrame(BaseFrame):
 			self._set_ssh_section_visible(False)
 			if hasattr(self, "probe_button"):
 				self.probe_button.configure(text="Remote Probe Disabled", state="disabled")
+			self._update_schema_banner()
 			return
 
 		if not self.profile_row.winfo_ismapped():
@@ -1351,6 +1687,26 @@ class AuditFrame(BaseFrame):
 			if hasattr(self, "probe_button"):
 				self.probe_button.configure(text="Test vCenter Probe")
 
+		self._update_schema_banner()
+
+	def _update_schema_banner(self) -> None:
+		"""Refresh the schema summary line based on connection mode and detected columns."""
+		resolved_build_type = normalize_text(self.build_type_value.get()) or "unknown"
+		mode = normalize_text(self.connection_mode.get()).lower()
+		local_label = normalize_text(self.detected_local_target_label) or "Verification Steps"
+		if mode == "local scan only":
+			self.audit_schema_var.set(f"Build type: {resolved_build_type} | VM targets: N/A | Local targets: {local_label}")
+			return
+
+		summary = ", ".join(self.detected_target_columns[:4])
+		if len(self.detected_target_columns) > 4:
+			summary += ", ..."
+		vm_summary = summary or "legacy fallback"
+		vcenter_host = normalize_text(self.vcenter_server.get())
+		if vcenter_host:
+			vm_summary = f"{vm_summary} (vCenter: {vcenter_host})"
+		self.audit_schema_var.set(f"Build type: {resolved_build_type} | VM targets: {vm_summary} | Local targets: {local_label}")
+
 	def append_log(self, message: str):
 		"""Append a line to the audit log and file logger."""
 		self.log.insert("end", message + "\n")
@@ -1370,15 +1726,14 @@ class AuditFrame(BaseFrame):
 		except Exception:
 			return default
 
-	def _apply_detected_schema(self, target_columns: List[str], build_type: str):
+	def _apply_detected_schema(self, target_columns: List[str], build_type: str, local_target_label: str = ""):
 		"""Apply detected target-column and build-type metadata to the UI."""
 		self.detected_target_columns = target_columns or default_target_columns()
-		resolved_build_type = infer_build_type(build_type)
+		resolved_build_type = normalize_text(build_type) or infer_build_type(build_type)
 		self.build_type_value.set(resolved_build_type)
-		summary = ", ".join(self.detected_target_columns[:4])
-		if len(self.detected_target_columns) > 4:
-			summary += ", ..."
-		self.audit_schema_var.set(f"Build type: {resolved_build_type} | VM targets: {summary or 'legacy fallback'}")
+		if normalize_text(local_target_label):
+			self.detected_local_target_label = normalize_text(local_target_label)
+		self._update_schema_banner()
 
 	def _refresh_audit_source_metadata(self, prompt_user: bool = True):
 		"""Refresh detected audit workbook schema from the selected source."""
@@ -1399,7 +1754,7 @@ class AuditFrame(BaseFrame):
 					workbook_service.build_type,
 					current_columns=self.detected_target_columns,
 				) or self.detected_target_columns
-			self._apply_detected_schema(selected_columns, workbook_service.build_type)
+			self._apply_detected_schema(selected_columns, workbook_service.build_type, workbook_service.version_location_header or "")
 			self.last_schema_source = source_path
 		except Exception:
 			self._apply_detected_schema(default_target_columns(), infer_build_type(source_path))
@@ -1409,6 +1764,52 @@ class AuditFrame(BaseFrame):
 		if payload:
 			return resolve_profile_target_columns(payload)
 		return self.detected_target_columns or default_target_columns()
+
+	@staticmethod
+	def _legacy_pipeline_path_for_profile(profile_name: str) -> Path:
+		"""Return legacy pipeline draft path for backward compatibility."""
+		name = normalize_text(profile_name)
+		if not name:
+			return Path("")
+		return PROFILES_DIR / f"pipeline_{name}.json"
+
+	def _resolve_pipeline_for_profile(self, profile_name: str) -> Tuple[Dict[str, Any], str, str]:
+		"""Resolve pipeline payload for a profile from profile section, then legacy file fallback.
+
+		Returns: (pipeline_payload, source, reference)
+		source: profile | legacy-file | none
+		reference: profile path or pipeline file path if available
+		"""
+		name = normalize_text(profile_name)
+		if not name:
+			return {}, "none", ""
+
+		profile_path = self.profile_service.profile_path(name)
+		try:
+			payload = self.profile_service.load_profile(name)
+		except Exception:
+			payload = {}
+
+		if isinstance(payload, dict):
+			pipelines = payload.get("pipelines", {})
+			if isinstance(pipelines, dict):
+				items = pipelines.get("items", {})
+				active = normalize_text(pipelines.get("active", "default")) or "default"
+				if isinstance(items, dict):
+					pipeline = items.get(active, {})
+					if isinstance(pipeline, dict) and pipeline:
+						return pipeline, "profile", str(profile_path)
+
+		legacy_path = self._legacy_pipeline_path_for_profile(name)
+		if legacy_path and legacy_path.exists():
+			try:
+				legacy_payload = json.loads(legacy_path.read_text(encoding="utf-8"))
+				if isinstance(legacy_payload, dict) and legacy_payload:
+					return legacy_payload, "legacy-file", str(legacy_path)
+			except Exception:
+				pass
+
+		return {}, "none", str(profile_path)
 
 	def load_profile_defaults(self):
 		"""Load saved connection defaults and detected target schema from the selected profile."""
@@ -1447,6 +1848,13 @@ class AuditFrame(BaseFrame):
 		else:
 			self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
 
+		selected_profile = normalize_text(self.profile_name.get())
+		pipeline_payload, pipeline_source, pipeline_ref = self._resolve_pipeline_for_profile(selected_profile)
+		if pipeline_payload:
+			self.append_log(f"Pipeline detected for profile '{selected_profile}' [{pipeline_source}]: {pipeline_ref}")
+		else:
+			self.append_log(f"Pipeline not found for profile '{selected_profile}'. Configure one in Establish Pipeline.")
+
 	@staticmethod
 	def _coerce_local_only_profile(vm_profile: Dict[str, Any], target_names: Optional[List[str]] = None) -> Dict[str, Any]:
 		"""Force all target mappings in a profile to the local machine sentinel."""
@@ -1462,6 +1870,10 @@ class AuditFrame(BaseFrame):
 		path = filedialog.askopenfilename(title="Select audit workbook", filetypes=[("Excel files", "*.xlsx *.xlsm"), ("All files", "*.*")])
 		if path:
 			self.audit_path.set(path)
+			if not self.output_path.get().strip():
+				source_stem = Path(path).stem
+				auto_output = AUDIT_CHECKLIST_DIR.parent / "Audit Results" / f"{source_stem}_RESULTS.xlsx"
+				self.output_path.set(str(auto_output))
 			self._refresh_audit_source_metadata(prompt_user=True)
 
 	def pick_output(self):
@@ -1474,6 +1886,25 @@ class AuditFrame(BaseFrame):
 		"""Start a standard audit run."""
 		self._audit_profile_override = None
 		self._audit_mode_label = "standard"
+
+		selected_profile = normalize_text(self.profile_name.get())
+		pipeline_payload, pipeline_source, pipeline_ref = self._resolve_pipeline_for_profile(selected_profile)
+		pipeline_exists = bool(pipeline_payload)
+		if selected_profile and not pipeline_exists:
+			proceed = messagebox.askyesno(
+				"Pipeline Not Established",
+				(
+					f"No pipeline is established for profile '{selected_profile}'.\n\n"
+					"Continue this audit run anyway?"
+				),
+			)
+			if not proceed:
+				self.append_log(f"Audit start cancelled: profile '{selected_profile}' has no established pipeline.")
+				self.set_status("Status: Ready")
+				return
+		elif selected_profile and pipeline_exists:
+			self.append_log(f"Pipeline check PASS for profile '{selected_profile}' [{pipeline_source}]: {pipeline_ref}")
+
 		self.run_button.configure(state="disabled")
 		self.quick_run_button.configure(state="disabled")
 		self.probe_button.configure(state="disabled")
@@ -1648,7 +2079,7 @@ class AuditFrame(BaseFrame):
 					pass
 			self.after(0, lambda: self.run_button.configure(state="normal"))
 			self.after(0, lambda: self.quick_run_button.configure(state="normal"))
-			self.after(0, lambda: self.probe_button.configure(state="normal"))
+			self.after(0, self._on_connection_mode_changed)
 
 	def _worker(self):
 		"""Execute the main audit workflow on a worker thread."""
@@ -1660,9 +2091,12 @@ class AuditFrame(BaseFrame):
 		normalized_from_fallback = False
 		temp_json_path = ""
 		temp_xlsx_path = ""
+		job_id = ""
 
 		def build_scan_job_payload(status: str, error_message: str = "") -> Dict[str, Any]:
 			"""Build the scan-job JSON payload for the current run."""
+			selected_profile_name = "quick_audit_scan" if self._audit_profile_override is not None else self.profile_name.get().strip()
+			pipeline_payload, pipeline_source, pipeline_ref = self._resolve_pipeline_for_profile(selected_profile_name)
 			row_by_index = {row.row_index: row for row in rows}
 
 			parsed_rows: List[Dict[str, Any]] = []
@@ -1722,6 +2156,7 @@ class AuditFrame(BaseFrame):
 			baseline_name = rows[0].sbl_build_version if rows else ""
 
 			return {
+				"job_id": job_id,
 				"status": status,
 				"started_at": started_at,
 				"completed_at": datetime.now().isoformat(timespec="seconds"),
@@ -1739,7 +2174,7 @@ class AuditFrame(BaseFrame):
 					"result_base_name": Path(output_path_value).stem if output_path_value else "audit_results",
 				},
 				"settings": {
-					"profile_name": "quick_audit_scan" if self._audit_profile_override is not None else self.profile_name.get().strip(),
+					"profile_name": selected_profile_name,
 					"audit_mode": self._audit_mode_label,
 					"build_type": self.build_type_value.get(),
 					"connection_mode": normalize_text(self.connection_mode.get()),
@@ -1749,6 +2184,11 @@ class AuditFrame(BaseFrame):
 					"ssh_gateway_host": self.ssh_gateway_host.get().strip(),
 					"ssh_gateway_port": self._parse_int(self.ssh_gateway_port.get(), 22),
 					"ssh_target_port": self._parse_int(self.ssh_target_port.get(), 22),
+					"pipeline_established": bool(pipeline_payload),
+					"pipeline_source": pipeline_source,
+					"pipeline_reference": pipeline_ref,
+					"pipeline_input_source": normalize_text(pipeline_payload.get("input_source", "")) if pipeline_payload else "",
+					"pipeline_output_action": normalize_text(pipeline_payload.get("output_action", "")) if pipeline_payload else "",
 				},
 				"sbl_parse": {
 					"target_columns": list(self.detected_target_columns),
@@ -1908,7 +2348,7 @@ class AuditFrame(BaseFrame):
 					pass
 			self.after(0, lambda: self.run_button.configure(state="normal"))
 			self.after(0, lambda: self.quick_run_button.configure(state="normal"))
-			self.after(0, lambda: self.probe_button.configure(state="normal"))
+			self.after(0, self._on_connection_mode_changed)
 			self._audit_profile_override = None
 			self._audit_mode_label = "standard"
 
@@ -1918,7 +2358,14 @@ class AuditFrame(BaseFrame):
 		passed = sum(1 for r in results if r.status == "PASS")
 		failed = sum(1 for r in results if r.status == "FAIL")
 		warned = sum(1 for r in results if r.status == "WARN")
-		return f"Summary | Total target checks: {len(results)} | PASS: {passed} | FAIL: {failed} | WARN: {warned}"
+		failed_higher = sum(1 for r in results if r.status == "FAIL" and "result=HIGHER_THAN_EXPECTED" in (r.audit_text or ""))
+		failed_lower = sum(1 for r in results if r.status == "FAIL" and "result=LOWER_THAN_EXPECTED" in (r.audit_text or ""))
+		failed_other = max(0, failed - failed_higher - failed_lower)
+
+		return (
+			f"Summary | Total target checks: {len(results)} | PASS: {passed} | FAIL: {failed} | WARN: {warned}\n"
+			f"FAIL breakdown | HIGHER_THAN_EXPECTED: {failed_higher} | LOWER_THAN_EXPECTED: {failed_lower} | OTHER_FAIL: {failed_other}"
+		)
 
 
-__all__ = ["BaseFrame", "HomeFrame", "ProfileFrame", "ChecklistFrame", "AuditFrame"]
+__all__ = ["BaseFrame", "HomeFrame", "ProfileFrame", "ChecklistFrame", "AuditFrame", "PipelineFrame"]

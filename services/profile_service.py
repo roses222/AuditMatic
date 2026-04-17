@@ -12,8 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from config import PROFILES_DIR
-from utils import normalize_text, ensure_project_structure
-from utils import normalize_text
+from services.utils import normalize_text, ensure_project_structure
 
 try:
     from cryptography.fernet import Fernet, InvalidToken

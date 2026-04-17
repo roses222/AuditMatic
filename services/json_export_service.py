@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from config import JSON_CHECKLIST_DIR, JSON_RESULTS_DIR, JSON_REGISTRY_SNAPSHOTS_DIR, JSON_SCAN_JOBS_DIR
-from utils import timestamp_str, ensure_project_structure
+from services.utils import timestamp_str, ensure_project_structure
 
 
 class JsonExportService:

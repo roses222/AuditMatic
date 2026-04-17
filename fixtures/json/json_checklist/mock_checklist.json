@@ -1,0 +1,44 @@
+{
+  "_file_purpose": "Checklist template. Represents parsed SBL rows and target applicability before scans run.",
+  "_how_to_use": "Use this structure for checklist exports. checklist_items should align to workbook rows used for auditing.",
+  "checklist_name": "mock_checklist",
+  "generated_at": "2026-04-17T14:32:00",
+  "baseline_version": "BASELINE_MOCK_v3.2",
+  "target_systems": [
+    "ArcGIS_Portal",
+    "GIS_Server"
+  ],
+  "total_items": 3,
+  "checklist_items": [
+    {
+      "row_number": 2,
+      "software_component": "ArcGIS Enterprise Portal",
+      "sbl_version": "11.3.0",
+      "version_locations": "Programs and Features",
+      "detection_rule": "programs_and_features",
+      "targeted_systems": [
+        "LOCAL_MACHINE"
+      ]
+    },
+    {
+      "row_number": 3,
+      "software_component": "Python",
+      "sbl_version": "3.9.7",
+      "version_locations": "File Version",
+      "detection_rule": "file_version",
+      "targeted_systems": [
+        "GIS_Server"
+      ]
+    },
+    {
+      "row_number": 4,
+      "software_component": "PostgreSQL",
+      "sbl_version": "12.5",
+      "version_locations": "File Version",
+      "detection_rule": "file_version",
+      "targeted_systems": [
+        "ArcGIS_Portal"
+      ]
+    }
+  ]
+}

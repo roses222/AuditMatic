@@ -4,8 +4,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from config import APP_GEOMETRY, APP_TITLE
-from ui.frames import AuditFrame, ChecklistFrame, HomeFrame, ProfileFrame
-from utils import _create_example_files
+from ui.frames import AuditFrame, ChecklistFrame, HomeFrame, PipelineFrame, ProfileFrame
+from services.utils import _create_mock_files
 
 
 class App(tk.Tk):
@@ -14,7 +14,7 @@ class App(tk.Tk):
 	def __init__(self):
 		"""Initialize the App instance."""
 		super().__init__()
-		_create_example_files()
+		_create_mock_files()
 		self.title(APP_TITLE)
 		self.geometry(APP_GEOMETRY)
 		self.resizable(True, True)
@@ -29,7 +29,7 @@ class App(tk.Tk):
 		container.rowconfigure(0, weight=1)
 		container.columnconfigure(0, weight=1)
 		self.frames = {}
-		for frame_cls in (HomeFrame, ProfileFrame, ChecklistFrame, AuditFrame):
+		for frame_cls in (HomeFrame, ProfileFrame, ChecklistFrame, AuditFrame, PipelineFrame):
 			frame = frame_cls(container, self)
 			self.frames[frame_cls.__name__] = frame
 			frame.grid(row=0, column=0, sticky="nsew")

@@ -20,7 +20,7 @@ from openpyxl.styles import PatternFill
 from config import TEMPLATES_DIR
 from models import AuditRow, WorkbookSchema
 from services.file_logger import FileLogger
-from utils import (
+from services.utils import (
     default_target_columns,
     detect_header_row_index,
     detect_target_columns,
@@ -216,12 +216,26 @@ def read_software_list_universal_rows(
 
         software_col = _select_column(columns, [r"software\s*component", r"\bcomponent\b", r"\bsoftware\b", r"\bname\b"])
         current_col = _select_column(columns, [r"current\s*ci\s*version", r"current\s*version", r"expected\s*version", r"\bci\s*version\b"])
-        version_col = _select_column(columns, [r"version\s*locations?", r"\bversion\s*location\b", r"\blocation\b", r"\bpath\b", r"\brule\b"])
+        version_col = _select_column(
+            columns,
+            [
+                r"version\s*locations?",
+                r"\bversion\s*location\b",
+                r"\bverification\s*steps?\b",
+                r"\bverification\b",
+                r"\blocation\b",
+                r"\bpath\b",
+                r"\brule\b",
+            ],
+        )
         displayed_col = _select_column(columns, [r"displayed\s*name", r"display\s*name"])
         id_col = _select_column(columns, [r"cm\s*tool\s*id\s*number", r"\btool\s*id\b", r"\bid\b"])
 
         if not software_col:
             _dbg("software_component column not found in dataframe candidate")
+            return []
+        if not version_col:
+            _dbg("version_locations column not found in dataframe candidate")
             return []
 
         _dbg(
@@ -244,12 +258,18 @@ def read_software_list_universal_rows(
         output_rows: List[Dict[str, Any]] = []
         for _, row in df.iterrows():
             software_component = normalize_text(row.get(software_src, ""))
-            if not software_component:
+            if not software_component or software_component.lower() == "nan":
                 continue
             displayed_name = normalize_text(row.get(displayed_src, "")) if displayed_src else software_component
             expected_version = normalize_text(row.get(current_src, "")) if current_src else ""
             version_locations = extract_path_from_version_location(row.get(version_src, "")) if version_src else ""
+            if expected_version.lower() == "nan":
+                expected_version = ""
+            if version_locations.lower() in ("", "nan", "version locations", "version location"):
+                continue
             cm_id = normalize_text(row.get(id_src, "")) if id_src else ""
+            if cm_id.lower() == "nan":
+                cm_id = ""
 
             selected_cols = {software_src, current_src, version_src, displayed_src, id_src}
             target_vms: Dict[str, str] = {}
@@ -275,11 +295,31 @@ def read_software_list_universal_rows(
         _dbg(f"dataframe_rows_in={len(df)} dataframe_rows_out={len(output_rows)}")
         return output_rows
 
+    def _score_rows(rows: List[Dict[str, Any]]) -> int:
+        """Score parsed rows: prefer candidates with actionable VERSION LOCATIONS rules."""
+        non_empty_locations = 0
+        known_rule_rows = 0
+        placeholder_locations = 0
+        for row in rows:
+            version_locations = normalize_text(row.get("VERSION LOCATIONS", ""))
+            if not version_locations:
+                continue
+            non_empty_locations += 1
+            rule, _ = VersionRuleResolver.detect_rule(version_locations)
+            if rule != "unknown":
+                known_rule_rows += 1
+            if version_locations.lower() in ("version locations", "version location"):
+                placeholder_locations += 1
+        return (known_rule_rows * 10) + non_empty_locations - (placeholder_locations * 10)
+
     if format_type == "excel":
         primary_header = detect_header_row_index(file_path, format_type)
-        header_candidates: List[int] = [primary_header, 0, 1, 2, 3, 4, 5]
+        header_candidates: List[int] = [primary_header, *list(range(0, 21))]
         _dbg(f"excel_header_candidates={header_candidates}")
         seen: set = set()
+        best_rows: List[Dict[str, Any]] = []
+        best_header_index: Optional[int] = None
+        best_score = -1
         for header_index in header_candidates:
             if header_index in seen or header_index < 0:
                 continue
@@ -292,8 +332,15 @@ def read_software_list_universal_rows(
             _dbg(f"header_index={header_index} read_ok columns={list(df.columns)}")
             normalized_rows = _from_dataframe(df)
             if normalized_rows:
-                _dbg(f"selected_header_index={header_index}")
-                return normalized_rows
+                score = _score_rows(normalized_rows)
+                _dbg(f"header_index={header_index} candidate_rows={len(normalized_rows)} score={score}")
+                if score > best_score:
+                    best_score = score
+                    best_rows = normalized_rows
+                    best_header_index = header_index
+        if best_rows:
+            _dbg(f"selected_header_index={best_header_index}")
+            return best_rows
         raise ValueError("Unable to detect required columns in workbook using universal parser")
 
     if format_type == "csv":
@@ -321,8 +368,8 @@ def read_software_list_universal_rows(
     raise ValueError(f"Unsupported format for universal row reader: {format_type}")
 
 
-def _create_example_audit_checklist_workbook(file_path: Path) -> None:
-    """Create an example audit checklist workbook."""
+def _create_mock_audit_checklist_workbook(file_path: Path) -> None:
+    """Create a mock audit checklist workbook."""
     wb = Workbook()
     ws = wb.active
     ws.title = "Checklist"
@@ -353,8 +400,8 @@ def _create_example_audit_checklist_workbook(file_path: Path) -> None:
     wb.save(file_path)
 
 
-def _create_example_audit_results_workbook(file_path: Path) -> None:
-    """Create an example audit results workbook."""
+def _create_mock_audit_results_workbook(file_path: Path) -> None:
+    """Create a mock audit results workbook."""
     baseline_template = TEMPLATES_DIR / "sbl_template_baseline_GEOINT_FD.xlsx"
     if baseline_template.exists():
         shutil.copy2(baseline_template, file_path)
@@ -488,6 +535,16 @@ def _create_example_audit_results_workbook(file_path: Path) -> None:
     wb.save(file_path)
 
 
+def _create_example_audit_checklist_workbook(file_path: Path) -> None:
+    """Backward-compatible wrapper for old example seed naming."""
+    _create_mock_audit_checklist_workbook(file_path)
+
+
+def _create_example_audit_results_workbook(file_path: Path) -> None:
+    """Backward-compatible wrapper for old example seed naming."""
+    _create_mock_audit_results_workbook(file_path)
+
+
 # Version rule and path metadata detection
 class VersionRuleResolver:
     """Resolve VERSION LOCATIONS text into concrete scan rules and payloads."""
@@ -511,6 +568,8 @@ class VersionRuleResolver:
         upper = normalize_text(version_location).upper()
         if "PROGRAMS AND FEATURES" in upper:
             return "programs_and_features", {}
+        if "START MENU" in upper:
+            return "manual_steps", {"instructions": version_location}
         if upper.startswith("POWERSHELL:"):
             return "powershell", {"command": version_location.split(":", 1)[1].strip()}
         paths = VersionRuleResolver.extract_file_paths(version_location)
@@ -592,6 +651,33 @@ class AuditWorkbookService:
         self.schema: Optional[WorkbookSchema] = None
         self.build_type = infer_build_type(file_path)
 
+    def _extract_build_identifier(self) -> str:
+        """Extract a build identifier from workbook values (e.g., 'CGW-L-N 2.0.2.2')."""
+        if self.header_row_index is None or not self.column_map:
+            return ""
+
+        software_col = self.column_map.get("SOFTWARE COMPONENT")
+        if not software_col:
+            return ""
+
+        candidate_headers: List[str] = []
+        for header in (self.sbl_build_header, self.audit_header, self.current_ci_header):
+            if header and header in self.column_map:
+                candidate_headers.append(header)
+
+        # Match values containing a version-like suffix and leading build text.
+        build_pattern = re.compile(r"[A-Za-z]+[-_A-Za-z0-9\s]*\d+\.\d+(?:\.\d+){0,3}")
+        max_row = min(self.worksheet.max_row, (self.header_row_index or 1) + 20)
+        for row_idx in range((self.header_row_index or 1) + 1, max_row + 1):
+            software_component = normalize_text(self.worksheet.cell(row_idx, software_col).value)
+            if not software_component:
+                continue
+            for header in candidate_headers:
+                value = normalize_text(self.worksheet.cell(row_idx, self.column_map[header]).value)
+                if value and build_pattern.search(value):
+                    return value
+        return ""
+
     def _detect_target_headers(self, raw_headers: List[str], headers_by_name: Dict[str, int]) -> List[str]:
         """Internal helper for detect target headers."""
         header_positions = {header: idx for idx, header in enumerate(raw_headers)}
@@ -618,7 +704,9 @@ class AuditWorkbookService:
             return detected
 
         legacy_present = [header for header in default_target_columns() if header in headers_by_name]
-        return legacy_present
+        if legacy_present:
+            return legacy_present
+        return default_target_columns()
 
     def detect_header_row(self, search_limit: int = 20) -> int:
         """Find the row containing required audit headers within the search window."""
@@ -630,11 +718,15 @@ class AuditWorkbookService:
             }
             has_software = "SOFTWARE COMPONENT" in normalized
             has_current_ci = any("CURRENT CI VERSION" in header for header in normalized)
-            has_version_loc = "VERSION LOCATION" in normalized or "VERSION LOCATIONS" in normalized
+            has_version_loc = (
+                "VERSION LOCATION" in normalized
+                or "VERSION LOCATIONS" in normalized
+                or any("VERIFICATION" in header for header in normalized)
+            )
             if has_software and has_current_ci and has_version_loc:
                 self.header_row_index = row_idx
                 return row_idx
-        raise ValueError("Could not find header row with SOFTWARE COMPONENT, CURRENT CI VERSION, and VERSION LOCATION(S).")
+        raise ValueError("Could not find header row with SOFTWARE COMPONENT, CURRENT CI VERSION, and VERSION LOCATION(S)/VERIFICATION column.")
 
     def build_column_map(self) -> Dict[str, int]:
         """Map normalized header text to column indexes and detect target columns."""
@@ -654,7 +746,12 @@ class AuditWorkbookService:
             None,
         )
         self.version_location_header = next(
-            (header for header in raw_headers if normalize_header(header) in ("VERSION LOCATION", "VERSION LOCATIONS")),
+            (
+                header
+                for header in raw_headers
+                if normalize_header(header) in ("VERSION LOCATION", "VERSION LOCATIONS")
+                or "VERIFICATION" in normalize_header(header)
+            ),
             None,
         )
         if not self.sbl_build_header or not self.audit_header or not self.current_ci_header or not self.version_location_header:
@@ -681,6 +778,9 @@ class AuditWorkbookService:
                 and header not in self.target_columns
             ],
         )
+        extracted_build = self._extract_build_identifier()
+        if extracted_build:
+            self.build_type = extracted_build
         return headers_by_name
 
     def iter_audit_rows(self) -> List[AuditRow]:

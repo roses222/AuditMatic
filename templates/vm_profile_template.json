@@ -1,14 +1,65 @@
 {
-  "profile_name": "<PROFILE_NAME>",
-  "vcenter_server": "",
+  "profile_name": "your_profile_name",
+  "updated_at": "YYYY-MM-DDTHH:MM:SS",
+  "vcenter_server": "vcenter.your.domain",
+  "vcenter_username": "domain\\your_username",
+  "vcenter_password": "",
   "ignore_ssl": true,
-  "targets": {
-    "ArcGIS_WebAdaptor": {"vm_name": "", "os_type": "windows"},
-    "ArcGIS_Portal": {"vm_name": "", "os_type": "windows"},
-    "ArcGIS_HostingServer": {"vm_name": "", "os_type": "windows"},
-    "ArcGIS_DS1": {"vm_name": "", "os_type": "windows"},
-    "ArcGIS_DS2": {"vm_name": "", "os_type": "windows"},
-    "GCS_Management": {"vm_name": "", "os_type": "windows"}
+  "source_sbl_path": "path/to/your/source_workbook.xlsx",
+  "build_type": "unknown",
+  "target_schema": {
+    "source_path": "path/to/your/source_workbook.xlsx",
+    "target_columns": [
+      "ArcGIS_WebAdaptor",
+      "ArcGIS_Portal",
+      "ArcGIS_HostingServer",
+      "ArcGIS_DS1",
+      "ArcGIS_DS2",
+      "GCS_Management"
+    ],
+    "build_type": "unknown",
+    "legacy_fallback": [
+      "ArcGIS_WebAdaptor",
+      "ArcGIS_Portal",
+      "ArcGIS_HostingServer",
+      "ArcGIS_DS1",
+      "ArcGIS_DS2",
+      "GCS_Management"
+    ]
   },
-  "last_verified": ""
+  "ssh_tunnel": {
+    "gateway_host": "bastion.your.domain",
+    "gateway_port": "22",
+    "gateway_username": "domain\\your_gateway_user",
+    "gateway_password": "",
+    "target_port": "22"
+  },
+  "targets": {
+    "ArcGIS_WebAdaptor": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"},
+    "ArcGIS_Portal": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"},
+    "ArcGIS_HostingServer": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"},
+    "ArcGIS_DS1": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"},
+    "ArcGIS_DS2": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"},
+    "GCS_Management": {"vm_name": "your-vm-name-or-__LOCAL__", "os_type": "windows"}
+  },
+  "pipelines": {
+    "active": "default",
+    "items": {
+      "default": {
+        "title": "Pipeline Config",
+        "input_source": "Watch Folder",
+        "input_config": {
+          "folder": "path/to/watch/folder"
+        },
+        "output_action": "Save to Local Folder",
+        "output_config": {
+          "folder": "path/to/output/folder"
+        },
+        "updated_at": "YYYY-MM-DDTHH:MM:SS"
+      }
+    }
+  },
+  "last_verified": "YYYY-MM-DDTHH:MM:SS",
+  "credentials_encrypted": false,
+  "credentials_scheme": "plain"
 }

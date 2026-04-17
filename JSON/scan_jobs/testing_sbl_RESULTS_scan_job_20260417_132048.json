@@ -1,0 +1,2913 @@
+{
+  "status": "completed",
+  "started_at": "2026-04-17T13:20:47",
+  "completed_at": "2026-04-17T13:20:48",
+  "error": "",
+  "sbl_file": {
+    "name": "N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1.xlsx",
+    "path": "C:/Users/cornetct/Downloads/N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1.xlsx",
+    "normalized_path": "C:\\Users\\cornetct\\AppData\\Local\\Temp\\tmpgz4t55wf.xlsx",
+    "baseline_name": "",
+    "timestamp": "2026-04-17T13:20:48",
+    "sbl_model": "UNKNOWN"
+  },
+  "output": {
+    "workbook_path": "C:\\Users\\cornetct\\OneDrive - US Navy-flankspeed\\Desktop\\Repos\\AuditMatic\\Audit Results\\testing_sbl_RESULTS.xlsx",
+    "result_base_name": "testing_sbl_RESULTS"
+  },
+  "settings": {
+    "profile_name": "mock_local_profile",
+    "audit_mode": "standard",
+    "build_type": "unknown",
+    "connection_mode": "Local Scan Only",
+    "local_only": true,
+    "fallback_enabled": false,
+    "vcenter_server": "",
+    "ssh_gateway_host": "",
+    "ssh_gateway_port": 22,
+    "ssh_target_port": 22
+  },
+  "sbl_parse": {
+    "target_columns": [
+      "ArcGIS_WebAdaptor",
+      "ArcGIS_Portal",
+      "ArcGIS_HostingServer",
+      "ArcGIS_DS1",
+      "ArcGIS_DS2",
+      "GCS_Management"
+    ],
+    "row_count": 79,
+    "rows": [
+      {
+        "worksheet_row": 2,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 3,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 4,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 5,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 7,
+        "software_component": "",
+        "current_ci_version": "GEOINT FD 1.0.2.0",
+        "sbl_build_version": "GEOINT FD 1.0.2.1",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "current_ci_version": "CGW-L-N 2.0.2.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 10,
+        "software_component": "nan",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "7-Zip",
+        "current_ci_version": "25.01.00.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 12,
+        "software_component": "ActivID ActivClient x64",
+        "current_ci_version": "9.5.0.9097",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 13,
+        "software_component": "ActivePerl",
+        "current_ci_version": "5.28.0000",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 14,
+        "software_component": "Admiralty TotalTide Fleet",
+        "current_ci_version": "25.1.1.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 15,
+        "software_component": "Adobe Acrobat Pro DC",
+        "current_ci_version": "25.001.20997",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Earth",
+        "current_ci_version": "2.3.0.4289",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 17,
+        "software_component": "ArcGIS Pro",
+        "current_ci_version": "3.5.2.57366",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 18,
+        "software_component": "ArcGIS Aviation Airports",
+        "current_ci_version": "3.5.205",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 19,
+        "software_component": "ArcGIS Aviation Charting",
+        "current_ci_version": "3.5.222",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 20,
+        "software_component": "ArcGIS Data Interoperability",
+        "current_ci_version": "3.5.57344",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 21,
+        "software_component": "ArcGIS Defense Mapping",
+        "current_ci_version": "3.5.470",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS for Office",
+        "current_ci_version": "2022.1.0.278",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "ArcGIS Pro Help",
+        "current_ci_version": "13.5.0.57366",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 24,
+        "software_component": "MTI Plugin",
+        "current_ci_version": "3",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 25,
+        "software_component": "ArcGIS Production Mapping",
+        "current_ci_version": "3.5.480",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 26,
+        "software_component": "Axway Desktop Validator",
+        "current_ci_version": "5.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 27,
+        "software_component": "ENVI",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 28,
+        "software_component": "ENVI Deep Learning",
+        "current_ci_version": "3.0.1.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 29,
+        "software_component": "ENVI Photogrammetry",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "ENVI PY For ArcGIS Pro",
+        "current_ci_version": "1.7",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 31,
+        "software_component": "Interactive Data Language (IDL)",
+        "current_ci_version": "9.1.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 32,
+        "software_component": "FileZilla Client",
+        "current_ci_version": "3.67.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 33,
+        "software_component": "FileZilla Server",
+        "current_ci_version": "1.9.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 34,
+        "software_component": "FSR in a Box",
+        "current_ci_version": "1.1.2.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 35,
+        "software_component": "GeoPDF Tools (64-bit)",
+        "current_ci_version": "8.1.2.11",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 36,
+        "software_component": "GEOTRANS",
+        "current_ci_version": "3.9.0.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 37,
+        "software_component": "Google Chrome",
+        "current_ci_version": "144.0.7559.60",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 38,
+        "software_component": "Google Earth Enterprise Client",
+        "current_ci_version": "7.3.6.9796",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 39,
+        "software_component": "ImgBurn",
+        "current_ci_version": "2.5.8.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 40,
+        "software_component": "Java",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 41,
+        "software_component": "Java (64-bit)",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 42,
+        "software_component": "Mako Client",
+        "current_ci_version": "2.0.23.1787644eb",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 43,
+        "software_component": "Microsoft ASP .NET Core - Shared Framework (x64)",
+        "current_ci_version": "8.0.22.25528",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 44,
+        "software_component": "Microsoft Edge",
+        "current_ci_version": "143.0.3650.139",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft ODBC Driver 17 for SQL Server",
+        "current_ci_version": "17.10.6.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft Excel",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft OneNote",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Outlook",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Powerpoint",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 51,
+        "software_component": "Microsoft Word",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "current_ci_version": "11.1.3366.16",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "current_ci_version": "26100.7623",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "current_ci_version": "4.18.25110.6",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 55,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "current_ci_version": "1.443.689.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 56,
+        "software_component": "Mozilla Firefox Extended Support Release (ESR)",
+        "current_ci_version": "140.7.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++",
+        "current_ci_version": "8.8.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "current_ci_version": "2.2.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 59,
+        "software_component": "OpenSSL",
+        "current_ci_version": "1.1.1v",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Pulse Secure Setup Client Activex Control",
+        "current_ci_version": "9.1.4983",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 61,
+        "software_component": "Rainmeter",
+        "current_ci_version": "4.5.18.3727",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 62,
+        "software_component": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "current_ci_version": "1.17.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 63,
+        "software_component": "Secure Email Marking Plug-in (SEMP)",
+        "current_ci_version": "6.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 64,
+        "software_component": "Sentinel Protection Installer",
+        "current_ci_version": "7.6.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 65,
+        "software_component": "Solar/Lunar Almanac Prediction (SLAP)",
+        "current_ci_version": "1.5",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 66,
+        "software_component": "SOCET GXP",
+        "current_ci_version": "4.6.0.3.267",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 67,
+        "software_component": "SOCET Developers Toolkit",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 68,
+        "software_component": "SOCET GXP PostgreSQL",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 69,
+        "software_component": "GXP Common Video Filters",
+        "current_ci_version": "21.0.2.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 70,
+        "software_component": "GXP Ffmpeg",
+        "current_ci_version": "7.0.2.6.57",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "GXP License Manager",
+        "current_ci_version": "19.1.6.3",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 72,
+        "software_component": "Swift XMPP Client",
+        "current_ci_version": "4.0.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 73,
+        "software_component": "TAKX",
+        "current_ci_version": "5.4.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 74,
+        "software_component": "Thunderbolt Software",
+        "current_ci_version": "1.52.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "Trimble Business Center - USMC Topographic Survey Edition",
+        "current_ci_version": "3.61",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 76,
+        "software_component": "WinFlash",
+        "current_ci_version": "1.2.1.7",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 77,
+        "software_component": "VideoLAN Connector (VLC) Media Player",
+        "current_ci_version": "3.0.21",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Videx Pro",
+        "current_ci_version": "4.6.0.7660",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 79,
+        "software_component": "Registry Values",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 80,
+        "software_component": "Software Baseline Freeze Date",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 81,
+        "software_component": "CUI",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      }
+    ],
+    "special_path_scan_list": [
+      {
+        "worksheet_row": 2,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 3,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 4,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 5,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 7,
+        "software_component": "",
+        "current_ci_version": "GEOINT FD 1.0.2.0",
+        "sbl_build_version": "GEOINT FD 1.0.2.1",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "current_ci_version": "CGW-L-N 2.0.2.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 10,
+        "software_component": "nan",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "7-Zip",
+        "current_ci_version": "25.01.00.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 12,
+        "software_component": "ActivID ActivClient x64",
+        "current_ci_version": "9.5.0.9097",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 13,
+        "software_component": "ActivePerl",
+        "current_ci_version": "5.28.0000",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 14,
+        "software_component": "Admiralty TotalTide Fleet",
+        "current_ci_version": "25.1.1.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 15,
+        "software_component": "Adobe Acrobat Pro DC",
+        "current_ci_version": "25.001.20997",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Earth",
+        "current_ci_version": "2.3.0.4289",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 17,
+        "software_component": "ArcGIS Pro",
+        "current_ci_version": "3.5.2.57366",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 18,
+        "software_component": "ArcGIS Aviation Airports",
+        "current_ci_version": "3.5.205",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 19,
+        "software_component": "ArcGIS Aviation Charting",
+        "current_ci_version": "3.5.222",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 20,
+        "software_component": "ArcGIS Data Interoperability",
+        "current_ci_version": "3.5.57344",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 21,
+        "software_component": "ArcGIS Defense Mapping",
+        "current_ci_version": "3.5.470",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS for Office",
+        "current_ci_version": "2022.1.0.278",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "ArcGIS Pro Help",
+        "current_ci_version": "13.5.0.57366",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 24,
+        "software_component": "MTI Plugin",
+        "current_ci_version": "3",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 25,
+        "software_component": "ArcGIS Production Mapping",
+        "current_ci_version": "3.5.480",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 26,
+        "software_component": "Axway Desktop Validator",
+        "current_ci_version": "5.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 27,
+        "software_component": "ENVI",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 28,
+        "software_component": "ENVI Deep Learning",
+        "current_ci_version": "3.0.1.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 29,
+        "software_component": "ENVI Photogrammetry",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "ENVI PY For ArcGIS Pro",
+        "current_ci_version": "1.7",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 31,
+        "software_component": "Interactive Data Language (IDL)",
+        "current_ci_version": "9.1.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 32,
+        "software_component": "FileZilla Client",
+        "current_ci_version": "3.67.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 33,
+        "software_component": "FileZilla Server",
+        "current_ci_version": "1.9.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 34,
+        "software_component": "FSR in a Box",
+        "current_ci_version": "1.1.2.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 35,
+        "software_component": "GeoPDF Tools (64-bit)",
+        "current_ci_version": "8.1.2.11",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 36,
+        "software_component": "GEOTRANS",
+        "current_ci_version": "3.9.0.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 37,
+        "software_component": "Google Chrome",
+        "current_ci_version": "144.0.7559.60",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 38,
+        "software_component": "Google Earth Enterprise Client",
+        "current_ci_version": "7.3.6.9796",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 39,
+        "software_component": "ImgBurn",
+        "current_ci_version": "2.5.8.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 40,
+        "software_component": "Java",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 41,
+        "software_component": "Java (64-bit)",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 42,
+        "software_component": "Mako Client",
+        "current_ci_version": "2.0.23.1787644eb",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 43,
+        "software_component": "Microsoft ASP .NET Core - Shared Framework (x64)",
+        "current_ci_version": "8.0.22.25528",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 44,
+        "software_component": "Microsoft Edge",
+        "current_ci_version": "143.0.3650.139",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft ODBC Driver 17 for SQL Server",
+        "current_ci_version": "17.10.6.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft Excel",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft OneNote",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Outlook",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Powerpoint",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 51,
+        "software_component": "Microsoft Word",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "current_ci_version": "11.1.3366.16",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "current_ci_version": "26100.7623",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "current_ci_version": "4.18.25110.6",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 55,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "current_ci_version": "1.443.689.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 56,
+        "software_component": "Mozilla Firefox Extended Support Release (ESR)",
+        "current_ci_version": "140.7.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++",
+        "current_ci_version": "8.8.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "current_ci_version": "2.2.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 59,
+        "software_component": "OpenSSL",
+        "current_ci_version": "1.1.1v",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Pulse Secure Setup Client Activex Control",
+        "current_ci_version": "9.1.4983",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 61,
+        "software_component": "Rainmeter",
+        "current_ci_version": "4.5.18.3727",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 62,
+        "software_component": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "current_ci_version": "1.17.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 63,
+        "software_component": "Secure Email Marking Plug-in (SEMP)",
+        "current_ci_version": "6.1",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 64,
+        "software_component": "Sentinel Protection Installer",
+        "current_ci_version": "7.6.9",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 65,
+        "software_component": "Solar/Lunar Almanac Prediction (SLAP)",
+        "current_ci_version": "1.5",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 66,
+        "software_component": "SOCET GXP",
+        "current_ci_version": "4.6.0.3.267",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 67,
+        "software_component": "SOCET Developers Toolkit",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 68,
+        "software_component": "SOCET GXP PostgreSQL",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 69,
+        "software_component": "GXP Common Video Filters",
+        "current_ci_version": "21.0.2.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 70,
+        "software_component": "GXP Ffmpeg",
+        "current_ci_version": "7.0.2.6.57",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "GXP License Manager",
+        "current_ci_version": "19.1.6.3",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 72,
+        "software_component": "Swift XMPP Client",
+        "current_ci_version": "4.0.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 73,
+        "software_component": "TAKX",
+        "current_ci_version": "5.4.2",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 74,
+        "software_component": "Thunderbolt Software",
+        "current_ci_version": "1.52.0.0",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "Trimble Business Center - USMC Topographic Survey Edition",
+        "current_ci_version": "3.61",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 76,
+        "software_component": "WinFlash",
+        "current_ci_version": "1.2.1.7",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 77,
+        "software_component": "VideoLAN Connector (VLC) Media Player",
+        "current_ci_version": "3.0.21",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Videx Pro",
+        "current_ci_version": "4.6.0.7660",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 79,
+        "software_component": "Registry Values",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 80,
+        "software_component": "Software Baseline Freeze Date",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 81,
+        "software_component": "CUI",
+        "current_ci_version": "nan",
+        "sbl_build_version": "",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      }
+    ]
+  },
+  "local_machine_scan": {
+    "results": [
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Geospatial Intelligence Foundation",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 10,
+        "software_component": "nan",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for nan",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "7-Zip",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for 7-Zip",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 12,
+        "software_component": "ActivID ActivClient x64",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ActivID ActivClient x64",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 13,
+        "software_component": "ActivePerl",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ActivePerl",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 14,
+        "software_component": "Admiralty TotalTide Fleet",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Admiralty TotalTide Fleet",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 15,
+        "software_component": "Adobe Acrobat Pro DC",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Adobe Acrobat Pro DC",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Earth",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Earth",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 17,
+        "software_component": "ArcGIS Pro",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Pro",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 18,
+        "software_component": "ArcGIS Aviation Airports",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Aviation Airports",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 19,
+        "software_component": "ArcGIS Aviation Charting",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Aviation Charting",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 20,
+        "software_component": "ArcGIS Data Interoperability",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Data Interoperability",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 21,
+        "software_component": "ArcGIS Defense Mapping",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Defense Mapping",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS for Office",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS for Office",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "ArcGIS Pro Help",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Pro Help",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 24,
+        "software_component": "MTI Plugin",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for MTI Plugin",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 25,
+        "software_component": "ArcGIS Production Mapping",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ArcGIS Production Mapping",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 26,
+        "software_component": "Axway Desktop Validator",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Axway Desktop Validator",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 27,
+        "software_component": "ENVI",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ENVI",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 28,
+        "software_component": "ENVI Deep Learning",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ENVI Deep Learning",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 29,
+        "software_component": "ENVI Photogrammetry",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ENVI Photogrammetry",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "ENVI PY For ArcGIS Pro",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ENVI PY For ArcGIS Pro",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 31,
+        "software_component": "Interactive Data Language (IDL)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Interactive Data Language (IDL)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 32,
+        "software_component": "FileZilla Client",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for FileZilla Client",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 33,
+        "software_component": "FileZilla Server",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for FileZilla Server",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 34,
+        "software_component": "FSR in a Box",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for FSR in a Box",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 35,
+        "software_component": "GeoPDF Tools (64-bit)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for GeoPDF Tools (64-bit)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 36,
+        "software_component": "GEOTRANS",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for GEOTRANS",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 37,
+        "software_component": "Google Chrome",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Google Chrome",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 38,
+        "software_component": "Google Earth Enterprise Client",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Google Earth Enterprise Client",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 39,
+        "software_component": "ImgBurn",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for ImgBurn",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 40,
+        "software_component": "Java",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Java",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 41,
+        "software_component": "Java (64-bit)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Java (64-bit)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 42,
+        "software_component": "Mako Client",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Mako Client",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 43,
+        "software_component": "Microsoft ASP .NET Core - Shared Framework (x64)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft ASP .NET Core - Shared Framework (x64)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 44,
+        "software_component": "Microsoft Edge",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Edge",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft ODBC Driver 17 for SQL Server",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft ODBC Driver 17 for SQL Server",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Office LTSC Professional Plus 2024",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft Excel",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Excel",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft OneNote",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft OneNote",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Outlook",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Outlook",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Powerpoint",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Powerpoint",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 51,
+        "software_component": "Microsoft Word",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Word",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Windows 11 LTSC 2024",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Windows Defender Antimalware Client Version",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 55,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Microsoft Windows Defender Antivirus Definitions",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 56,
+        "software_component": "Mozilla Firefox Extended Support Release (ESR)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Mozilla Firefox Extended Support Release (ESR)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Notepad++",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Notepad++ (64-bit) ComparePlus Plugin",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 59,
+        "software_component": "OpenSSL",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for OpenSSL",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Pulse Secure Setup Client Activex Control",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Pulse Secure Setup Client Activex Control",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 61,
+        "software_component": "Rainmeter",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Rainmeter",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 62,
+        "software_component": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 63,
+        "software_component": "Secure Email Marking Plug-in (SEMP)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Secure Email Marking Plug-in (SEMP)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 64,
+        "software_component": "Sentinel Protection Installer",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Sentinel Protection Installer",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 65,
+        "software_component": "Solar/Lunar Almanac Prediction (SLAP)",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Solar/Lunar Almanac Prediction (SLAP)",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 66,
+        "software_component": "SOCET GXP",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for SOCET GXP",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 67,
+        "software_component": "SOCET Developers Toolkit",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for SOCET Developers Toolkit",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 68,
+        "software_component": "SOCET GXP PostgreSQL",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for SOCET GXP PostgreSQL",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 69,
+        "software_component": "GXP Common Video Filters",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for GXP Common Video Filters",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 70,
+        "software_component": "GXP Ffmpeg",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for GXP Ffmpeg",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "GXP License Manager",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for GXP License Manager",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 72,
+        "software_component": "Swift XMPP Client",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Swift XMPP Client",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 73,
+        "software_component": "TAKX",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for TAKX",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 74,
+        "software_component": "Thunderbolt Software",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Thunderbolt Software",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "Trimble Business Center - USMC Topographic Survey Edition",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Trimble Business Center - USMC Topographic Survey Edition",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 76,
+        "software_component": "WinFlash",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for WinFlash",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 77,
+        "software_component": "VideoLAN Connector (VLC) Media Player",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for VideoLAN Connector (VLC) Media Player",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Videx Pro",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Videx Pro",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 79,
+        "software_component": "Registry Values",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Registry Values",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 80,
+        "software_component": "Software Baseline Freeze Date",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for Software Baseline Freeze Date",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 81,
+        "software_component": "CUI",
+        "expected_version": "",
+        "found_version": "UNKNOWN",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=UNKNOWN",
+        "details": "local-machine | No implemented scan rule matched VERSION LOCATIONS for CUI",
+        "version_locations": "",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      }
+    ],
+    "comparison_summary": {
+      "total": 74,
+      "pass": 0,
+      "fail": 0,
+      "warn": 74
+    }
+  }
+}

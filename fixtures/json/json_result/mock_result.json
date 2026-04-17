@@ -1,0 +1,46 @@
+{
+  "_file_purpose": "Audit result template. Stores pass/fail/warn outcomes after version comparisons are complete.",
+  "_how_to_use": "Use one results entry per evaluated component/target check. results_summary should match counts in results.",
+  "audit_workbook": "C:\\path\\to\\mock_audit_workbook.xlsx",
+  "saved_workbook": "C:\\path\\to\\audit_results\\mock_audit_results.xlsx",
+  "profile_name": "mock_profile",
+  "generated_at": "2026-04-17T14:35:30",
+  "total_audits": 3,
+  "results_summary": {
+    "pass": 1,
+    "fail": 1,
+    "warn": 1
+  },
+  "results": [
+    {
+      "worksheet_row": 2,
+      "software_component": "ArcGIS Enterprise Portal",
+      "expected_version": "11.3.0",
+      "found_version": "11.3.0",
+      "status": "PASS",
+      "audit_text": "PASS | result=MATCH | expected=11.3.0 | found=11.3.0",
+      "target_name": "LOCAL_MACHINE",
+      "details": "Verified via Programs and Features registry"
+    },
+    {
+      "worksheet_row": 3,
+      "software_component": "Python",
+      "expected_version": "3.9.7",
+      "found_version": "3.9.8",
+      "status": "WARN",
+      "audit_text": "WARN | result=HIGHER_THAN_EXPECTED | expected=3.9.7 | found=3.9.8",
+      "target_name": "LOCAL_MACHINE",
+      "details": "Newer patch version detected than expected"
+    },
+    {
+      "worksheet_row": 4,
+      "software_component": "PostgreSQL",
+      "expected_version": "12.5",
+      "found_version": "NOT_FOUND",
+      "status": "FAIL",
+      "audit_text": "FAIL | result=NOT_FOUND | expected=12.5 | found=NOT_FOUND",
+      "target_name": "LOCAL_MACHINE",
+      "details": "Software not installed or not found at specified path"
+    }
+  ]
+}

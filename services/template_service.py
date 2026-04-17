@@ -20,7 +20,7 @@ from config import (
 )
 from models import AuditRow, WorkbookSchema
 from services.file_logger import FileLogger
-from utils import (
+from services.utils import (
     _empty_master_software_list_payload,
     _new_model_bucket,
     auto_fit_columns,
@@ -169,8 +169,11 @@ class TemplateAssetService:
         }
 
     def update_latest_sbl(self, sbl_path: str) -> str:
-        """Latest SBL snapshots are disabled; baseline template remains the source of truth."""
-        return "disabled (latest SBL template snapshots are not used)"
+        """Copy the given SBL workbook to the model-specific latest-snapshot path."""
+        sbl_model = _get_sbl_model_from_workbook(sbl_path)
+        latest_path = get_sbl_template_latest_path(sbl_model)
+        shutil.copy2(sbl_path, latest_path)
+        return str(latest_path)
 
     def snapshot_current_master_to_latest(self, sbl_model: str = None) -> str:
         """Keep the canonical master software list in JSON folder only."""
@@ -212,6 +215,7 @@ class TemplateAssetService:
 
         targets = {
             "baseline_sbl": get_sbl_template_baseline_path(sbl_model),
+            "latest_sbl": get_sbl_template_latest_path(sbl_model),
             "baseline_master_list": get_master_json_template_baseline_path(sbl_model),
         }
         status: Dict[str, Dict[str, str]] = {}
@@ -221,11 +225,6 @@ class TemplateAssetService:
                 "exists": "Yes" if path.exists() else "No",
                 "updated": self._format_mtime(path),
             }
-        status["latest_sbl"] = {
-            "path": "(disabled)",
-            "exists": "No",
-            "updated": "Disabled",
-        }
         status["latest_master_list"] = {
             "path": str(MASTER_SOFTWARE_LIST_PATH),
             "exists": "Yes" if MASTER_SOFTWARE_LIST_PATH.exists() else "No",

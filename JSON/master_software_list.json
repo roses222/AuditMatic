@@ -4,9 +4,9 @@
       "software_components": {
         "7-Zip": {
           "path": "Programs and Features",
-          "path_last_verified_date": "",
+          "path_last_verified_date": "2026-04-17T13:49:37",
           "notes": "Tracked in VMs: ArcGIS_WebAdaptor, ArcGIS_Portal, ArcGIS_HostingServer, ArcGIS_DS1, ArcGIS_DS2, GCS_Management",
-          "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+          "coded_path": "Programs and Features",
           "generic_name": "7-Zip",
           "registry_name": "",
           "tracked_in_vms": [
@@ -17,7 +17,7 @@
             "ArcGIS_DS2",
             "GCS_Management"
           ],
-          "verification_source": "programs_and_features"
+          "verification_source": "unknown"
         },
         "Adobe Acrobat Reader DC": {
           "path": "Programs and Features",
@@ -68,16 +68,16 @@
         },
         "Google Chrome": {
           "path": "Programs and Features",
-          "path_last_verified_date": "",
+          "path_last_verified_date": "2026-04-17T13:49:57",
           "notes": "Tracked in VMs: ArcGIS_WebAdaptor, GCS_Management",
-          "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+          "coded_path": "Programs and Features",
           "generic_name": "Google Chrome",
           "registry_name": "",
           "tracked_in_vms": [
             "ArcGIS_WebAdaptor",
             "GCS_Management"
           ],
-          "verification_source": "programs_and_features"
+          "verification_source": "unknown"
         },
         "Microsoft Visual C++ 2015-2022 Redistributable (x64)": {
           "path": "Programs and Features",
@@ -95,6 +95,696 @@
             "GCS_Management"
           ],
           "verification_source": "programs_and_features"
+        },
+        "Geospatial Intelligence Foundation": {
+          "generic_name": "Geospatial Intelligence Foundation",
+          "registry_name": "",
+          "path": "Geospatial Intelligence Foundation",
+          "coded_path": "Geospatial Intelligence Foundation",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:14:06",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)": {
+          "generic_name": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+          "registry_name": "",
+          "path": "System: 2.0.2.2 Software: 2.0.2.2",
+          "coded_path": "System: 2.0.2.2 Software: 2.0.2.2",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ActivID ActivClient x64": {
+          "generic_name": "ActivID ActivClient x64",
+          "registry_name": "",
+          "path": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+          "coded_path": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ActivePerl": {
+          "generic_name": "ActivePerl",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Admiralty TotalTide Fleet": {
+          "generic_name": "Admiralty TotalTide Fleet",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Adobe Acrobat Pro DC": {
+          "generic_name": "Adobe Acrobat Pro DC",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Earth": {
+          "generic_name": "ArcGIS Earth",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Pro": {
+          "generic_name": "ArcGIS Pro",
+          "registry_name": "",
+          "path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+          "coded_path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:47",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Aviation Airports": {
+          "generic_name": "ArcGIS Aviation Airports",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:48",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Aviation Charting": {
+          "generic_name": "ArcGIS Aviation Charting",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:49",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Data Interoperability": {
+          "generic_name": "ArcGIS Data Interoperability",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:50",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Defense Mapping": {
+          "generic_name": "ArcGIS Defense Mapping",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:51",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS for Office": {
+          "generic_name": "ArcGIS for Office",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:52",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Pro Help": {
+          "generic_name": "ArcGIS Pro Help",
+          "registry_name": "",
+          "path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe",
+          "coded_path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:53",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "MTI Plugin": {
+          "generic_name": "MTI Plugin",
+          "registry_name": "",
+          "path": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "coded_path": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:54",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Production Mapping": {
+          "generic_name": "ArcGIS Production Mapping",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:55",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Axway Desktop Validator": {
+          "generic_name": "Axway Desktop Validator",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:55",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI": {
+          "generic_name": "ENVI",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:55",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI Deep Learning": {
+          "generic_name": "ENVI Deep Learning",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:55",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI Photogrammetry": {
+          "generic_name": "ENVI Photogrammetry",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:55",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI PY For ArcGIS Pro": {
+          "generic_name": "ENVI PY For ArcGIS Pro",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:56",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Interactive Data Language (IDL)": {
+          "generic_name": "Interactive Data Language (IDL)",
+          "registry_name": "",
+          "path": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe",
+          "coded_path": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FileZilla Client": {
+          "generic_name": "FileZilla Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FileZilla Server": {
+          "generic_name": "FileZilla Server",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FSR in a Box": {
+          "generic_name": "FSR in a Box",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GeoPDF Tools (64-bit)": {
+          "generic_name": "GeoPDF Tools (64-bit)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GEOTRANS": {
+          "generic_name": "GEOTRANS",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Google Earth Enterprise Client": {
+          "generic_name": "Google Earth Enterprise Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ImgBurn": {
+          "generic_name": "ImgBurn",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Java": {
+          "generic_name": "Java",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Java (64-bit)": {
+          "generic_name": "Java (64-bit)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Mako Client": {
+          "generic_name": "Mako Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft ASP .NET Core - Shared Framework (x64)": {
+          "generic_name": "Microsoft ASP .NET Core - Shared Framework (x64)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Edge": {
+          "generic_name": "Microsoft Edge",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft ODBC Driver 17 for SQL Server": {
+          "generic_name": "Microsoft ODBC Driver 17 for SQL Server",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Office LTSC Professional Plus 2024": {
+          "generic_name": "Microsoft Office LTSC Professional Plus 2024",
+          "registry_name": "",
+          "path": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "coded_path": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Excel": {
+          "generic_name": "Microsoft Excel",
+          "registry_name": "",
+          "path": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "coded_path": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft OneNote": {
+          "generic_name": "Microsoft OneNote",
+          "registry_name": "",
+          "path": "Start Menu > OneNote > File > Account > About OneNote",
+          "coded_path": "Start Menu > OneNote > File > Account > About OneNote",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Outlook": {
+          "generic_name": "Microsoft Outlook",
+          "registry_name": "",
+          "path": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+          "coded_path": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Powerpoint": {
+          "generic_name": "Microsoft Powerpoint",
+          "registry_name": "",
+          "path": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "coded_path": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Word": {
+          "generic_name": "Microsoft Word",
+          "registry_name": "",
+          "path": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "coded_path": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft System CLR Types for SQL Server 2012 (x64)": {
+          "generic_name": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:49:57",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows 11 LTSC 2024": {
+          "generic_name": "Microsoft Windows 11 LTSC 2024",
+          "registry_name": "",
+          "path": "Start Menu > Type Winver > Look for OS Build",
+          "coded_path": "Start Menu > Type Winver > Look for OS Build",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:03",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows Defender Antimalware Client Version": {
+          "generic_name": "Microsoft Windows Defender Antimalware Client Version",
+          "registry_name": "",
+          "path": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "coded_path": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:04",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows Defender Antivirus Definitions": {
+          "generic_name": "Microsoft Windows Defender Antivirus Definitions",
+          "registry_name": "",
+          "path": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "coded_path": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:05",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Mozilla Firefox Extended Support Release (ESR)": {
+          "generic_name": "Mozilla Firefox Extended Support Release (ESR)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:05",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Notepad++": {
+          "generic_name": "Notepad++",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:05",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Notepad++ (64-bit) ComparePlus Plugin": {
+          "generic_name": "Notepad++ (64-bit) ComparePlus Plugin",
+          "registry_name": "",
+          "path": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "coded_path": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:06",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "OpenSSL": {
+          "generic_name": "OpenSSL",
+          "registry_name": "",
+          "path": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe",
+          "coded_path": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Pulse Secure Setup Client Activex Control": {
+          "generic_name": "Pulse Secure Setup Client Activex Control",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Rainmeter": {
+          "generic_name": "Rainmeter",
+          "registry_name": "",
+          "path": "C:\\Users\\Public\\Geoint_Rainmeter",
+          "coded_path": "C:\\Users\\Public\\Geoint_Rainmeter",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SALSA (Surveyor's Applications for Least Squares Adjustment)": {
+          "generic_name": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Secure Email Marking Plug-in (SEMP)": {
+          "generic_name": "Secure Email Marking Plug-in (SEMP)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Sentinel Protection Installer": {
+          "generic_name": "Sentinel Protection Installer",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Solar/Lunar Almanac Prediction (SLAP)": {
+          "generic_name": "Solar/Lunar Almanac Prediction (SLAP)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:14",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET GXP": {
+          "generic_name": "SOCET GXP",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET Developers Toolkit": {
+          "generic_name": "SOCET Developers Toolkit",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET GXP PostgreSQL": {
+          "generic_name": "SOCET GXP PostgreSQL",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP Common Video Filters": {
+          "generic_name": "GXP Common Video Filters",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP Ffmpeg": {
+          "generic_name": "GXP Ffmpeg",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP License Manager": {
+          "generic_name": "GXP License Manager",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Swift XMPP Client": {
+          "generic_name": "Swift XMPP Client",
+          "registry_name": "",
+          "path": "Start Menu > Swift > Click \"About Swift\"",
+          "coded_path": "Start Menu > Swift > Click \"About Swift\"",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:28",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "TAKX": {
+          "generic_name": "TAKX",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:28",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Thunderbolt Software": {
+          "generic_name": "Thunderbolt Software",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:28",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Trimble Business Center - USMC Topographic Survey Edition": {
+          "generic_name": "Trimble Business Center - USMC Topographic Survey Edition",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:28",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "WinFlash": {
+          "generic_name": "WinFlash",
+          "registry_name": "",
+          "path": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+          "coded_path": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:41",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "VideoLAN Connector (VLC) Media Player": {
+          "generic_name": "VideoLAN Connector (VLC) Media Player",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:41",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Videx Pro": {
+          "generic_name": "Videx Pro",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:41",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Software Baseline Freeze Date": {
+          "generic_name": "Software Baseline Freeze Date",
+          "registry_name": "",
+          "path": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "coded_path": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T13:50:41",
+          "notes": "",
+          "tracked_in_vms": []
         }
       },
       "vm_components": {
@@ -264,7 +954,763 @@
           "tracked_software": []
         }
       }
+    },
+    "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)": {
+      "software_components": {
+        "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)": {
+          "generic_name": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+          "registry_name": "",
+          "path": "System: 2.0.2.2 Software: 2.0.2.2",
+          "coded_path": "System: 2.0.2.2 Software: 2.0.2.2",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:33",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "7-Zip": {
+          "generic_name": "7-Zip",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:33",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ActivID ActivClient x64": {
+          "generic_name": "ActivID ActivClient x64",
+          "registry_name": "",
+          "path": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe > Right-click and select Properties > Details Tab > File Version",
+          "coded_path": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe > Right-click and select Properties > Details Tab > File Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:33",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ActivePerl": {
+          "generic_name": "ActivePerl",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Admiralty TotalTide Fleet": {
+          "generic_name": "Admiralty TotalTide Fleet",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Adobe Acrobat Pro DC": {
+          "generic_name": "Adobe Acrobat Pro DC",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Earth": {
+          "generic_name": "ArcGIS Earth",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:38:35",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Pro": {
+          "generic_name": "ArcGIS Pro",
+          "registry_name": "",
+          "path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe > Right-Click and select Properties > Details tab > Product Version",
+          "coded_path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe > Right-Click and select Properties > Details tab > Product Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:15",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Aviation Airports": {
+          "generic_name": "ArcGIS Aviation Airports",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:17",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Aviation Charting": {
+          "generic_name": "ArcGIS Aviation Charting",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:18",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Data Interoperability": {
+          "generic_name": "ArcGIS Data Interoperability",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:20",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Defense Mapping": {
+          "generic_name": "ArcGIS Defense Mapping",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:22",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS for Office": {
+          "generic_name": "ArcGIS for Office",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:23",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Pro Help": {
+          "generic_name": "ArcGIS Pro Help",
+          "registry_name": "",
+          "path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe > Right-Click and select Properties > Details tab > Product Version",
+          "coded_path": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe > Right-Click and select Properties > Details tab > Product Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:26",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "MTI Plugin": {
+          "generic_name": "MTI Plugin",
+          "registry_name": "",
+          "path": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "coded_path": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:28",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ArcGIS Production Mapping": {
+          "generic_name": "ArcGIS Production Mapping",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:30",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Axway Desktop Validator": {
+          "generic_name": "Axway Desktop Validator",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:30",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI": {
+          "generic_name": "ENVI",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:30",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI Deep Learning": {
+          "generic_name": "ENVI Deep Learning",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:31",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI Photogrammetry": {
+          "generic_name": "ENVI Photogrammetry",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:31",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ENVI PY For ArcGIS Pro": {
+          "generic_name": "ENVI PY For ArcGIS Pro",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:33",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Interactive Data Language (IDL)": {
+          "generic_name": "Interactive Data Language (IDL)",
+          "registry_name": "",
+          "path": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe > Right-Click and select properties > Details tab > Product Version",
+          "coded_path": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe > Right-Click and select properties > Details tab > Product Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FileZilla Client": {
+          "generic_name": "FileZilla Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FileZilla Server": {
+          "generic_name": "FileZilla Server",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:34",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "FSR in a Box": {
+          "generic_name": "FSR in a Box",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:35",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GeoPDF Tools (64-bit)": {
+          "generic_name": "GeoPDF Tools (64-bit)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:35",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GEOTRANS": {
+          "generic_name": "GEOTRANS",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:35",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Google Chrome": {
+          "generic_name": "Google Chrome",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:35",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Google Earth Enterprise Client": {
+          "generic_name": "Google Earth Enterprise Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:36",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "ImgBurn": {
+          "generic_name": "ImgBurn",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:36",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Java": {
+          "generic_name": "Java",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:36",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Java (64-bit)": {
+          "generic_name": "Java (64-bit)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Mako Client": {
+          "generic_name": "Mako Client",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft ASP .NET Core - Shared Framework (x64)": {
+          "generic_name": "Microsoft ASP .NET Core - Shared Framework (x64)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Edge": {
+          "generic_name": "Microsoft Edge",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft ODBC Driver 17 for SQL Server": {
+          "generic_name": "Microsoft ODBC Driver 17 for SQL Server",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Office LTSC Professional Plus 2024": {
+          "generic_name": "Microsoft Office LTSC Professional Plus 2024",
+          "registry_name": "",
+          "path": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "coded_path": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Excel": {
+          "generic_name": "Microsoft Excel",
+          "registry_name": "",
+          "path": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "coded_path": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft OneNote": {
+          "generic_name": "Microsoft OneNote",
+          "registry_name": "",
+          "path": "Start Menu > OneNote > File > Account > About OneNote",
+          "coded_path": "Start Menu > OneNote > File > Account > About OneNote",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Outlook": {
+          "generic_name": "Microsoft Outlook",
+          "registry_name": "",
+          "path": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+          "coded_path": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:39",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Powerpoint": {
+          "generic_name": "Microsoft Powerpoint",
+          "registry_name": "",
+          "path": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "coded_path": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:39",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Word": {
+          "generic_name": "Microsoft Word",
+          "registry_name": "",
+          "path": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "coded_path": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:39",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft System CLR Types for SQL Server 2012 (x64)": {
+          "generic_name": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:39:40",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows 11 LTSC 2024": {
+          "generic_name": "Microsoft Windows 11 LTSC 2024",
+          "registry_name": "",
+          "path": "Start Menu > Type Winver > Look for OS Build",
+          "coded_path": "Start Menu > Type Winver > Look for OS Build",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:00",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows Defender Antimalware Client Version": {
+          "generic_name": "Microsoft Windows Defender Antimalware Client Version",
+          "registry_name": "",
+          "path": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "coded_path": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:02",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Microsoft Windows Defender Antivirus Definitions": {
+          "generic_name": "Microsoft Windows Defender Antivirus Definitions",
+          "registry_name": "",
+          "path": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "coded_path": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:04",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Mozilla Firefox Extended Support Release (ESR)": {
+          "generic_name": "Mozilla Firefox Extended Support Release (ESR)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:04",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Notepad++": {
+          "generic_name": "Notepad++",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:04",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Notepad++ (64-bit) ComparePlus Plugin": {
+          "generic_name": "Notepad++ (64-bit) ComparePlus Plugin",
+          "registry_name": "",
+          "path": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "coded_path": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:05",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "OpenSSL": {
+          "generic_name": "OpenSSL",
+          "registry_name": "",
+          "path": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe> Right-Click and select Properties > Details Tab > Product Version",
+          "coded_path": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe> Right-Click and select Properties > Details Tab > Product Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:21",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Pulse Secure Setup Client Activex Control": {
+          "generic_name": "Pulse Secure Setup Client Activex Control",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:21",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Rainmeter": {
+          "generic_name": "Rainmeter",
+          "registry_name": "",
+          "path": "C:\\Users\\Public\\Geoint_Rainmeter > Right click Rainmeter.exe > Properties > Details tab > Product Version",
+          "coded_path": "C:\\Users\\Public\\Geoint_Rainmeter > Right click Rainmeter.exe > Properties > Details tab > Product Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SALSA (Surveyor's Applications for Least Squares Adjustment)": {
+          "generic_name": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Secure Email Marking Plug-in (SEMP)": {
+          "generic_name": "Secure Email Marking Plug-in (SEMP)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Sentinel Protection Installer": {
+          "generic_name": "Sentinel Protection Installer",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Solar/Lunar Almanac Prediction (SLAP)": {
+          "generic_name": "Solar/Lunar Almanac Prediction (SLAP)",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET GXP": {
+          "generic_name": "SOCET GXP",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET Developers Toolkit": {
+          "generic_name": "SOCET Developers Toolkit",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:37",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "SOCET GXP PostgreSQL": {
+          "generic_name": "SOCET GXP PostgreSQL",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP Common Video Filters": {
+          "generic_name": "GXP Common Video Filters",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP Ffmpeg": {
+          "generic_name": "GXP Ffmpeg",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "GXP License Manager": {
+          "generic_name": "GXP License Manager",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:38",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Swift XMPP Client": {
+          "generic_name": "Swift XMPP Client",
+          "registry_name": "",
+          "path": "Start Menu > Swift > Click \"About Swift\"",
+          "coded_path": "Start Menu > Swift > Click \"About Swift\"",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:52",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "TAKX": {
+          "generic_name": "TAKX",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:52",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Thunderbolt Software": {
+          "generic_name": "Thunderbolt Software",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:53",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Trimble Business Center - USMC Topographic Survey Edition": {
+          "generic_name": "Trimble Business Center - USMC Topographic Survey Edition",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:40:53",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "WinFlash": {
+          "generic_name": "WinFlash",
+          "registry_name": "",
+          "path": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe > Right click and select Properties > Details tab > File Version",
+          "coded_path": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe > Right click and select Properties > Details tab > File Version",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:08",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "VideoLAN Connector (VLC) Media Player": {
+          "generic_name": "VideoLAN Connector (VLC) Media Player",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:09",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Videx Pro": {
+          "generic_name": "Videx Pro",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Programs and Features",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:09",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Registry Values": {
+          "generic_name": "Registry Values",
+          "registry_name": "",
+          "path": "Registry Values",
+          "coded_path": "Registry Values",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:09",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "Software Baseline Freeze Date": {
+          "generic_name": "Software Baseline Freeze Date",
+          "registry_name": "",
+          "path": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "coded_path": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:09",
+          "notes": "",
+          "tracked_in_vms": []
+        },
+        "CUI": {
+          "generic_name": "CUI",
+          "registry_name": "",
+          "path": "CUI",
+          "coded_path": "CUI",
+          "verification_source": "unknown",
+          "path_last_verified_date": "2026-04-17T14:41:09",
+          "notes": "",
+          "tracked_in_vms": []
+        }
+      },
+      "vm_components": {
+        "ArcGIS_WebAdaptor": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_Portal": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_HostingServer": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_DS1": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_DS2": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "GCS_Management": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        }
+      }
     }
   },
-  "updated_at": "2026-04-17T05:40:41"
+  "updated_at": "2026-04-17T14:41:09"
 }

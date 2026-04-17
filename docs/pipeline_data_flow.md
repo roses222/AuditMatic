@@ -113,13 +113,21 @@ This document shows how data moves through the main pipelines in AuditMatic, wha
 - Scan jobs: `JSON/scan_jobs/`
 
 ### Auto-Recovery Examples
-On app startup, `_create_example_files()` recreates missing example files individually if they were deleted:
-- `example_registry_snapshot.json`
-- `example_checklist.json`
-- `example_result.json`
-- `example_scan_job.json`
-- `example_audit_checklist.xlsx`
-- `example_audit_results.xlsx`
+On app startup, `_create_mock_files()` recreates missing mock files individually if they were deleted:
+- `mock_registry_snapshot.json`
+- `mock_checklist.json`
+- `mock_result.json`
+- `mock_scan_job.json`
+- `mock_audit_checklist.xlsx`
+- `mock_audit_results.xlsx`
+
+### Canonical Fixture Location
+Realistic mock samples used for testing are stored under `fixtures/` as canonical fixtures:
+- `fixtures/profiles/`
+- `fixtures/json/`
+- `fixtures/workbooks/`
+
+Runtime copies under `profiles/`, `JSON/`, and workbook output folders may still exist for compatibility.
 
 ---
 

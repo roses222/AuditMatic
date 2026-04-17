@@ -1,0 +1,14 @@
+{
+  "description": "Canonical realistic mock artifacts for testing",
+  "updated_at": "2026-04-17T00:00:00",
+  "files": [
+    "fixtures/profiles/mock_local_profile.json",
+    "fixtures/profiles/mock_production_profile.json",
+    "fixtures/json/registry_snapshots/mock_registry_snapshot.json",
+    "fixtures/json/json_checklist/mock_checklist.json",
+    "fixtures/json/json_result/mock_result.json",
+    "fixtures/json/scan_jobs/mock_scan_job.json",
+    "fixtures/workbooks/checklist/mock_audit_checklist.xlsx",
+    "fixtures/workbooks/results/mock_audit_results.xlsx"
+  ]
+}

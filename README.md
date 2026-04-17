@@ -17,6 +17,7 @@ python main.py
 ```
 
 For the long-form reference copy, see [docs/README_FULL.md](docs/README_FULL.md).
+Refactor notes are in [docs/REFACTOR_GUIDE.md](docs/REFACTOR_GUIDE.md).
 
 ## Main Entry Points
 
@@ -52,7 +53,8 @@ Suggested desktop shortcut setup:
 - `config.py`: application constants and paths
 - `models.py`: dataclasses for audit rows/results/schema
 - `utils.py`: shared helpers and project bootstrap utilities
-- `sbl_audit_gui_v_2000.py`: legacy compatibility fallback (not the primary path)
+- `scripts/`: utility launchers and standalone helper scripts (`quick_audit_scan.py`, diagnostics, test readers)
+- `legacy/sbl_audit_gui_v_2000.py`: archived legacy GUI module (root `sbl_audit_gui_v_2000.py` remains as a compatibility shim)
 
 ## Requirements
 
@@ -140,7 +142,7 @@ If remote dependencies are unavailable, local scan paths can still be used by ma
 ## Testing Helpers
 
 - `tests/Test Scripts/test_gui_mock.py` launches the GUI with mocked remote behavior.
-- `quick_audit_scan.py` provides an accelerated quick-audit flow with minimal UI steps.
+- `quick_audit_scan.py` (root compatibility launcher) and `scripts/quick_audit_scan.py` provide the accelerated quick-audit flow.
 
 ## Branches
 

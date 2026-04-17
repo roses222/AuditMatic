@@ -1,0 +1,52 @@
+{
+  "status": "failed",
+  "started_at": "2026-04-17T13:20:05",
+  "completed_at": "2026-04-17T13:20:05",
+  "error": "Unable to detect required columns in workbook using universal parser",
+  "sbl_file": {
+    "name": "TG_Audit_Checklist_test.xlsx",
+    "path": "C:\\Users\\cornetct\\OneDrive - US Navy-flankspeed\\Desktop\\Repos\\AuditMatic\\Audit Checklist\\TG_Audit_Checklist_test.xlsx",
+    "normalized_path": "C:\\Users\\cornetct\\OneDrive - US Navy-flankspeed\\Desktop\\Repos\\AuditMatic\\Audit Checklist\\TG_Audit_Checklist_test.xlsx",
+    "baseline_name": "",
+    "timestamp": "2026-04-17T13:20:05",
+    "sbl_model": "UNKNOWN"
+  },
+  "output": {
+    "workbook_path": "C:\\Users\\cornetct\\OneDrive - US Navy-flankspeed\\Desktop\\Repos\\AuditMatic\\Audit Results\\testing_sbl_RESULTS.xlsx",
+    "result_base_name": "testing_sbl_RESULTS"
+  },
+  "settings": {
+    "profile_name": "mock_local_profile",
+    "audit_mode": "standard",
+    "build_type": "custom",
+    "connection_mode": "Local Scan Only",
+    "local_only": true,
+    "fallback_enabled": false,
+    "vcenter_server": "",
+    "ssh_gateway_host": "",
+    "ssh_gateway_port": 22,
+    "ssh_target_port": 22
+  },
+  "sbl_parse": {
+    "target_columns": [
+      "ArcGIS_WebAdaptor",
+      "ArcGIS_Portal",
+      "ArcGIS_HostingServer",
+      "ArcGIS_DS1",
+      "ArcGIS_DS2",
+      "GCS_Management"
+    ],
+    "row_count": 0,
+    "rows": [],
+    "special_path_scan_list": []
+  },
+  "local_machine_scan": {
+    "results": [],
+    "comparison_summary": {
+      "total": 0,
+      "pass": 0,
+      "fail": 0,
+      "warn": 0
+    }
+  }
+}

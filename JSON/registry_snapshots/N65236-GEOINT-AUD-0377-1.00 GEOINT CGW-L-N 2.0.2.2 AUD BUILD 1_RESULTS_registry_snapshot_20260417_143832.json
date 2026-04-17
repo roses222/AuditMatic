@@ -1,0 +1,1561 @@
+{
+  "generated_at": "2026-04-17T14:38:32",
+  "host": "BBSFPT3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "status": "ok",
+  "entries": [
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23170F69-40C1-2702-2600-000001000000}",
+      "display_name": "7-Zip 26.00 (x64 edition)",
+      "display_name_normalized": "7-ZIP 26.00 (X64 EDITION)",
+      "display_version": "26.00.00.0",
+      "display_version_normalized": "26.00.00.0",
+      "publisher": "Igor Pavlov"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{62465596-C2C9-466F-AA67-7E63CAAB0A04}",
+      "display_name": "ActivClient",
+      "display_name_normalized": "ACTIVCLIENT",
+      "display_version": "8.4.0",
+      "display_version_normalized": "8.4.0",
+      "publisher": "HID Global"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Adminorg",
+      "display_name": "Adminorg.dod.mil:Global:Gov:_United States:_DOD:USN:SECNAV WASHINGTON DC:CNO WASHINGTON DC:COMNAVWARSYSCOM SAN DIEGO CA:NIWC ATLANTIC CHARLESTON SC:;0000058609",
+      "display_name_normalized": "ADMINORG.DOD.MIL:GLOBAL:GOV:_UNITED STATES:_DOD:USN:SECNAV WASHINGTON DC:CNO WASHINGTON DC:COMNAVWARSYSCOM SAN DIEGO CA:NIWC ATLANTIC CHARLESTON SC:;0000058609",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AC76BA86-7AD7-1033-7B44-AC0F074E4100}",
+      "display_name": "Adobe Acrobat Reader",
+      "display_name_normalized": "ADOBE ACROBAT READER",
+      "display_version": "25.001.21288",
+      "display_version_normalized": "25.001.21288",
+      "publisher": "Adobe Systems Incorporated"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AC76BA86-0804-1033-1959-018244601120}",
+      "display_name": "Adobe Refresh Manager",
+      "display_name_normalized": "ADOBE REFRESH MANAGER",
+      "display_version": "1.8.0",
+      "display_version_normalized": "1.8.0",
+      "publisher": "Adobe Systems Incorporated"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{10CA1677-8F02-3131-F25C-780BAB52E468}",
+      "display_name": "Application Verifier x64 External Package",
+      "display_name_normalized": "APPLICATION VERIFIER X64 EXTERNAL PACKAGE",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6591F69E-6588-4980-81ED-C8FCBD7EC4B8}_is1",
+      "display_name": "Azure Data Studio",
+      "display_name_normalized": "AZURE DATA STUDIO",
+      "display_version": "1.52.0",
+      "display_version_normalized": "1.52.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ccsafa",
+      "display_name": "ccsafa.dod.mil:Global:FLTCYBERCOM UIC: 00055:;0000057285",
+      "display_name_normalized": "CCSAFA.DOD.MIL:GLOBAL:FLTCYBERCOM UIC: 00055:;0000057285",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7E265513-8CDA-4631-B696-F40D983F3B07}_is1",
+      "display_name": "CDBurnerXP",
+      "display_name_normalized": "CDBURNERXP",
+      "display_version": "4.5.8.7128",
+      "display_version_normalized": "4.5.8.7128",
+      "publisher": "CDBurnerXP"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\cndsp",
+      "display_name": "cndsp.dod.mil:Global:Gov:USCYBERCOM:NAVY CYBER DEFENSE OPERATIONS COMMAND:;0000065927",
+      "display_name_normalized": "CNDSP.DOD.MIL:GLOBAL:GOV:USCYBERCOM:NAVY CYBER DEFENSE OPERATIONS COMMAND:;0000065927",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\cocomaor",
+      "display_name": "cocomaor.dod.mil:Global:FLTCYBERCOM:;00055",
+      "display_name_normalized": "COCOMAOR.DOD.MIL:GLOBAL:FLTCYBERCOM:;00055",
+      "display_version": "2024-06-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{592160C7-DADD-4CF9-B58E-B8DB7426B58B}",
+      "display_name": "Configuration Manager Client",
+      "display_name_normalized": "CONFIGURATION MANAGER CLIENT",
+      "display_version": "5.00.9135.1000",
+      "display_version_normalized": "5.00.9135.1000",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{FD194197-C203-44F1-BC0A-B314AEB5B2C2}",
+      "display_name": "DameWare Mini Remote Control Service",
+      "display_name_normalized": "DAMEWARE MINI REMOTE CONTROL SERVICE",
+      "display_version": "12.3.2.5",
+      "display_version_normalized": "12.3.2.5",
+      "publisher": "SolarWinds"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{D066B018-448B-40C5-9034-259BBCC49351}",
+      "display_name": "DefaultPackMSI",
+      "display_name_normalized": "DEFAULTPACKMSI",
+      "display_version": "4.6.2.0",
+      "display_version_normalized": "4.6.2.0",
+      "publisher": "Microsoft"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1417A607-95A5-4DD1-A50E-8D444C73285F}",
+      "display_name": "Dell ControlVault Host Components Installer 64 bit",
+      "display_name_normalized": "DELL CONTROLVAULT HOST COMPONENTS INSTALLER 64 BIT",
+      "display_version": "5.15.14.19",
+      "display_version_normalized": "5.15.14.19",
+      "publisher": "Broadcom Limited"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AC76BA86-7AD7-2530-0000-AC17084FC500}",
+      "display_name": "Extended Asian Language font pack for Adobe Acrobat Reader",
+      "display_name_normalized": "EXTENDED ASIAN LANGUAGE FONT PACK FOR ADOBE ACROBAT READER",
+      "display_version": "23.008.20421",
+      "display_version_normalized": "23.008.20421",
+      "publisher": "Adobe Systems Incorporated"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\geolocation",
+      "display_name": "geolocation.dod.mil:Global:UNITE:S CAR:JT BASE CHAS:CHRLSNWS:;0000031405",
+      "display_name_normalized": "GEOLOCATION.DOD.MIL:GLOBAL:UNITE:S CAR:JT BASE CHAS:CHRLSNWS:;0000031405",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1",
+      "display_name": "Git",
+      "display_name_normalized": "GIT",
+      "display_version": "2.53.0",
+      "display_version_normalized": "2.53.0",
+      "publisher": "The Git Development Community"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{792941F6-22D4-4653-8D81-0F1B67DDBBE9}",
+      "display_name": "GlobalProtect",
+      "display_name_normalized": "GLOBALPROTECT",
+      "display_version": "6.3.3",
+      "display_version_normalized": "6.3.3",
+      "publisher": "Palo Alto Networks"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{D1528E30-D992-3AB9-8128-7DC535E41601}",
+      "display_name": "Google Chrome",
+      "display_name_normalized": "GOOGLE CHROME",
+      "display_version": "147.0.7727.102",
+      "display_version_normalized": "147.0.7727.102",
+      "publisher": "Google LLC"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{19888DE5-EB49-44E7-B755-37E04D14FD78}",
+      "display_name": "HID Credential Management Client",
+      "display_name_normalized": "HID CREDENTIAL MANAGEMENT CLIENT",
+      "display_version": "4.0.293",
+      "display_version_normalized": "4.0.293",
+      "publisher": "HID Global Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A4B8B224-95E7-4C9B-ADF3-159EC6D707E4}",
+      "display_name": "Horizon HTML5 Multimedia Redirection Client",
+      "display_name_normalized": "HORIZON HTML5 MULTIMEDIA REDIRECTION CLIENT",
+      "display_version": "8.17.0",
+      "display_version_normalized": "8.17.0",
+      "publisher": "Omnissa, LLC."
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1D8E6291-B0D5-35EC-8441-6616F567A0F7}.KB2565063",
+      "display_name": "Hotfix for Microsoft Visual C++ 2010 x64 Redistributable (KB2565063)",
+      "display_name_normalized": "HOTFIX FOR MICROSOFT VISUAL C++ 2010 X64 REDISTRIBUTABLE (KB2565063)",
+      "display_version": "1",
+      "display_version_normalized": "1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{95D3D528-8F5B-436E-ADC6-6F184B13F1B0}",
+      "display_name": "Integration Services",
+      "display_name_normalized": "INTEGRATION SERVICES",
+      "display_version": "15.0.2000.229",
+      "display_version_normalized": "15.0.2000.229",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5d87c163-3e35-4153-9ba6-942e947ce7b1}",
+      "display_name": "Intel\u00ae Software Installer",
+      "display_name_normalized": "INTEL\u00ae SOFTWARE INSTALLER",
+      "display_version": "23.110.0.5",
+      "display_version_normalized": "23.110.0.5",
+      "publisher": "Intel Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{71024AE4-039E-4CA4-87B4-2F32180481F0}",
+      "display_name": "Java 8 Update 481",
+      "display_name_normalized": "JAVA 8 UPDATE 481",
+      "display_version": "8.0.4810.10",
+      "display_version_normalized": "8.0.4810.10",
+      "publisher": "Oracle Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{4A03706F-666A-4037-7777-5F2748764D10}",
+      "display_name": "Java Auto Updater",
+      "display_name_normalized": "JAVA AUTO UPDATER",
+      "display_version": "2.8.481.10",
+      "display_version_normalized": "2.8.481.10",
+      "publisher": "Oracle Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{63AAA877-5536-9481-2385-28A082100D78}",
+      "display_name": "Kits Configuration Installer",
+      "display_name_normalized": "KITS CONFIGURATION INSTALLER",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E2063055-36A9-4E0C-AB0E-A7B0F0416CC8}",
+      "display_name": "MER for ePO",
+      "display_name_normalized": "MER FOR EPO",
+      "display_version": "4.4.0.0",
+      "display_version_normalized": "4.4.0.0",
+      "publisher": "Musarubra US LLC"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{ACBF202C-A6AA-4C85-8DEE-D77F9BDC20AA}",
+      "display_name": "Microsoft .NET Framework 4.8 SDK",
+      "display_name_normalized": "MICROSOFT .NET FRAMEWORK 4.8 SDK",
+      "display_version": "4.8.03752",
+      "display_version_normalized": "4.8.03752",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{531D0272-1CD3-45E1-A5EE-CF57F50AD452}",
+      "display_name": "Microsoft .NET Framework 4.8 Targeting Pack",
+      "display_name_normalized": "MICROSOFT .NET FRAMEWORK 4.8 TARGETING PACK",
+      "display_version": "4.8.03752",
+      "display_version_normalized": "4.8.03752",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{55218133-14C8-4372-A748-614DE61D6AAA}",
+      "display_name": "Microsoft .NET Host - 8.0.25 (x64)",
+      "display_name_normalized": "MICROSOFT .NET HOST - 8.0.25 (X64)",
+      "display_version": "64.100.48707",
+      "display_version_normalized": "64.100.48707",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A42EAA28-C0A1-4712-A109-796202435469}",
+      "display_name": "Microsoft .NET Host FX Resolver - 8.0.23 (x64)",
+      "display_name_normalized": "MICROSOFT .NET HOST FX RESOLVER - 8.0.23 (X64)",
+      "display_version": "64.92.45415",
+      "display_version_normalized": "64.92.45415",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{D0E1D031-D6BB-43A5-BD42-175C0C4EE245}",
+      "display_name": "Microsoft .NET Host FX Resolver - 8.0.25 (x64)",
+      "display_name_normalized": "MICROSOFT .NET HOST FX RESOLVER - 8.0.25 (X64)",
+      "display_version": "64.100.48707",
+      "display_version_normalized": "64.100.48707",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{39884818-B550-4209-9A49-81F9D21F6012}",
+      "display_name": "Microsoft .NET Runtime - 8.0.23 (x64)",
+      "display_name_normalized": "MICROSOFT .NET RUNTIME - 8.0.23 (X64)",
+      "display_version": "64.92.45415",
+      "display_version_normalized": "64.92.45415",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{99B0C384-9362-4D4E-8DAF-23CA44E306E8}",
+      "display_name": "Microsoft .NET Runtime - 8.0.25 (x64)",
+      "display_name_normalized": "MICROSOFT .NET RUNTIME - 8.0.25 (X64)",
+      "display_version": "64.100.48707",
+      "display_version_normalized": "64.100.48707",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\O365ProPlusRetail - en-us",
+      "display_name": "Microsoft 365 Apps for enterprise - en-us",
+      "display_name_normalized": "MICROSOFT 365 APPS FOR ENTERPRISE - EN-US",
+      "display_version": "16.0.19725.20170",
+      "display_version_normalized": "16.0.19725.20170",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7EA2A3F7-A6D2-4D28-B3C4-4C32BCF4A0A2}",
+      "display_name": "Microsoft Analysis Services OLE DB Provider",
+      "display_name_normalized": "MICROSOFT ANALYSIS SERVICES OLE DB PROVIDER",
+      "display_version": "15.0.2000.832",
+      "display_version_normalized": "15.0.2000.832",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8CE89D3D-FBC5-4964-B6AD-2F52060304C3}",
+      "display_name": "Microsoft Analysis Services OLE DB Provider",
+      "display_name_normalized": "MICROSOFT ANALYSIS SERVICES OLE DB PROVIDER",
+      "display_version": "15.0.2000.832",
+      "display_version_normalized": "15.0.2000.832",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{DA5EF248-8290-3EFC-BAA6-3C5E1CFA7186}",
+      "display_name": "Microsoft Edge",
+      "display_name_normalized": "MICROSOFT EDGE",
+      "display_version": "147.0.3912.60",
+      "display_version_normalized": "147.0.3912.60",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft EdgeWebView",
+      "display_name": "Microsoft Edge WebView2 Runtime",
+      "display_name_normalized": "MICROSOFT EDGE WEBVIEW2 RUNTIME",
+      "display_version": "147.0.3912.60",
+      "display_version_normalized": "147.0.3912.60",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Help Viewer 2.3",
+      "display_name": "Microsoft Help Viewer 2.3",
+      "display_name_normalized": "MICROSOFT HELP VIEWER 2.3",
+      "display_version": "2.3.28307",
+      "display_version_normalized": "2.3.28307",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{99DC6816-30B2-32EB-9E12-AF8944C4FA4E}",
+      "display_name": "Microsoft Help Viewer 2.3",
+      "display_name_normalized": "MICROSOFT HELP VIEWER 2.3",
+      "display_version": "2.3.28307",
+      "display_version_normalized": "2.3.28307",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{577552FE-AA33-4914-90A4-5C995847BB8E}",
+      "display_name": "Microsoft NetBanner",
+      "display_name_normalized": "MICROSOFT NETBANNER",
+      "display_version": "2.1.161",
+      "display_version_normalized": "2.1.161",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C2B448D2-11CE-4BC4-9F7F-B22D20CE1EBE}",
+      "display_name": "Microsoft NetBanner",
+      "display_name_normalized": "MICROSOFT NETBANNER",
+      "display_version": "2.3.181",
+      "display_version_normalized": "2.3.181",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0E0F96AC-80DE-4400-A40C-429D63293651}",
+      "display_name": "Microsoft ODBC Driver 17 for SQL Server",
+      "display_name_normalized": "MICROSOFT ODBC DRIVER 17 FOR SQL SERVER",
+      "display_version": "17.10.6.1",
+      "display_version_normalized": "17.10.6.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{76EB75D2-CCF6-41A9-90B6-922DE9146276}",
+      "display_name": "Microsoft OLE DB Driver for SQL Server",
+      "display_name_normalized": "MICROSOFT OLE DB DRIVER FOR SQL SERVER",
+      "display_version": "18.7.4.0",
+      "display_version_normalized": "18.7.4.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe",
+      "display_name": "Microsoft OneDrive",
+      "display_name_normalized": "MICROSOFT ONEDRIVE",
+      "display_version": "26.055.0323.0004",
+      "display_version_normalized": "26.055.0323.0004",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6549B04F-E826-4E0A-8C3F-388540F08541}",
+      "display_name": "Microsoft Policy Platform",
+      "display_name_normalized": "MICROSOFT POLICY PLATFORM",
+      "display_version": "68.1.1010.0",
+      "display_version_normalized": "68.1.1010.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9D93D367-A2CC-4378-BD63-79EF3FE76C78}",
+      "display_name": "Microsoft SQL Server 2012 Native Client",
+      "display_name_normalized": "MICROSOFT SQL SERVER 2012 NATIVE CLIENT",
+      "display_version": "11.4.7462.6",
+      "display_version_normalized": "11.4.7462.6",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{09a17706-821c-4c52-8fcd-ace4783362bb}",
+      "display_name": "Microsoft SQL Server Management Studio - 18.12.1",
+      "display_name_normalized": "MICROSOFT SQL SERVER MANAGEMENT STUDIO - 18.12.1",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}",
+      "display_name": "Microsoft Teams Meeting Add-in for Microsoft Office",
+      "display_name_normalized": "MICROSOFT TEAMS MEETING ADD-IN FOR MICROSOFT OFFICE",
+      "display_version": "1.25.28902",
+      "display_version_normalized": "1.25.28902",
+      "publisher": "Microsoft"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C6FD611E-7EFE-488C-A0E0-974C09EF6473}",
+      "display_name": "Microsoft Update Health Tools",
+      "display_name_normalized": "MICROSOFT UPDATE HEALTH TOOLS",
+      "display_version": "5.72.0.0",
+      "display_version_normalized": "5.72.0.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1D8E6291-B0D5-35EC-8441-6616F567A0F7}",
+      "display_name": "Microsoft Visual C++ 2010 x64 Redistributable - 10.0.40219",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2010 X64 REDISTRIBUTABLE - 10.0.40219",
+      "display_version": "10.0.40219",
+      "display_version_normalized": "10.0.40219",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}",
+      "display_name": "Microsoft Visual C++ 2010 x86 Redistributable - 10.0.40219",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2010 X86 REDISTRIBUTABLE - 10.0.40219",
+      "display_version": "10.0.40219",
+      "display_version_normalized": "10.0.40219",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{f65db027-aff3-4070-886a-0d87064aabb1}",
+      "display_name": "Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.30501",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2013 REDISTRIBUTABLE (X86) - 12.0.30501",
+      "display_version": "12.0.30501.0",
+      "display_version_normalized": "12.0.30501.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}",
+      "display_name": "Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.21005",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2013 X86 ADDITIONAL RUNTIME - 12.0.21005",
+      "display_version": "12.0.21005",
+      "display_version_normalized": "12.0.21005",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}",
+      "display_name": "Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.21005",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2013 X86 MINIMUM RUNTIME - 12.0.21005",
+      "display_version": "12.0.21005",
+      "display_version_normalized": "12.0.21005",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AECD4ED0-8A3B-41E9-92D1-6BEE0374CCAF}",
+      "display_name": "Microsoft Visual C++ 2022 X64 Additional Runtime - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2022 X64 ADDITIONAL RUNTIME - 14.50.35719",
+      "display_version": "14.50.35719",
+      "display_version_normalized": "14.50.35719",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{61B44572-8722-4DAF-8ACF-8E742D30BCC5}",
+      "display_name": "Microsoft Visual C++ 2022 X64 Minimum Runtime - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2022 X64 MINIMUM RUNTIME - 14.50.35719",
+      "display_version": "14.50.35719",
+      "display_version_normalized": "14.50.35719",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{773AD50D-AAE6-4BA1-AD01-B5A38874C840}",
+      "display_name": "Microsoft Visual C++ 2022 X86 Additional Runtime - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2022 X86 ADDITIONAL RUNTIME - 14.50.35719",
+      "display_version": "14.50.35719",
+      "display_version_normalized": "14.50.35719",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5A0DFA55-3851-45BC-8B20-95EA4BF5812D}",
+      "display_name": "Microsoft Visual C++ 2022 X86 Minimum Runtime - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ 2022 X86 MINIMUM RUNTIME - 14.50.35719",
+      "display_version": "14.50.35719",
+      "display_version_normalized": "14.50.35719",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{91ee571b-0e8a-4c65-9eaf-2e2f5fc60c00}",
+      "display_name": "Microsoft Visual C++ v14 Redistributable (x64) - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ V14 REDISTRIBUTABLE (X64) - 14.50.35719",
+      "display_version": "14.50.35719.0",
+      "display_version_normalized": "14.50.35719.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0e4ccf1b-d073-4cfe-8a24-e86185719b56}",
+      "display_name": "Microsoft Visual C++ v14 Redistributable (x86) - 14.50.35719",
+      "display_name_normalized": "MICROSOFT VISUAL C++ V14 REDISTRIBUTABLE (X86) - 14.50.35719",
+      "display_version": "14.50.35719.0",
+      "display_version_normalized": "14.50.35719.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{EA457B21-F73E-494C-ACAB-524FDE069978}_is1",
+      "display_name": "Microsoft Visual Studio Code",
+      "display_name_normalized": "MICROSOFT VISUAL STUDIO CODE",
+      "display_version": "1.114.0",
+      "display_version_normalized": "1.114.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{f895a2f1-ae3f-4212-8af1-7fa1f8c212ea}",
+      "display_name": "Microsoft Visual Studio Tools for Applications 2017",
+      "display_name_normalized": "MICROSOFT VISUAL STUDIO TOOLS FOR APPLICATIONS 2017",
+      "display_version": "15.0.27520",
+      "display_version_normalized": "15.0.27520",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AFFB9D8D-6E58-38A0-A7DD-F6F1F4247B36}",
+      "display_name": "Microsoft Visual Studio Tools for Applications 2017 x64 Hosting Support",
+      "display_name_normalized": "MICROSOFT VISUAL STUDIO TOOLS FOR APPLICATIONS 2017 X64 HOSTING SUPPORT",
+      "display_version": "15.0.27520",
+      "display_version_normalized": "15.0.27520",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9594C97E-6A20-38B3-81BB-2778C4780BE1}",
+      "display_name": "Microsoft Visual Studio Tools for Applications 2017 x86 Hosting Support",
+      "display_name_normalized": "MICROSOFT VISUAL STUDIO TOOLS FOR APPLICATIONS 2017 X86 HOSTING SUPPORT",
+      "display_version": "15.0.27520",
+      "display_version_normalized": "15.0.27520",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{29177194-CD94-4A2D-97A4-EF77738E995A}",
+      "display_name": "Microsoft Windows Desktop Runtime - 8.0.23 (x64)",
+      "display_name_normalized": "MICROSOFT WINDOWS DESKTOP RUNTIME - 8.0.23 (X64)",
+      "display_version": "64.92.45458",
+      "display_version_normalized": "64.92.45458",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{d653912d-5c24-4e13-9238-531257889178}",
+      "display_name": "Microsoft Windows Desktop Runtime - 8.0.23 (x64)",
+      "display_name_normalized": "MICROSOFT WINDOWS DESKTOP RUNTIME - 8.0.23 (X64)",
+      "display_version": "8.0.23.35609",
+      "display_version_normalized": "8.0.23.35609",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C5343D9A-9640-4351-90D2-F6CF157C208E}",
+      "display_name": "Microsoft Windows Desktop Runtime - 8.0.25 (x64)",
+      "display_name_normalized": "MICROSOFT WINDOWS DESKTOP RUNTIME - 8.0.25 (X64)",
+      "display_version": "64.100.48707",
+      "display_version_normalized": "64.100.48707",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{64c75e04-ef03-4544-b153-24860eac8d23}",
+      "display_name": "Microsoft Windows Desktop Runtime - 8.0.25 (x64)",
+      "display_name_normalized": "MICROSOFT WINDOWS DESKTOP RUNTIME - 8.0.25 (X64)",
+      "display_version": "8.0.25.35812",
+      "display_version_normalized": "8.0.25.35812",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Mozilla Firefox",
+      "display_name": "Mozilla Firefox (x64 en-US)",
+      "display_name_normalized": "MOZILLA FIREFOX (X64 EN-US)",
+      "display_version": "149.0.2",
+      "display_version_normalized": "149.0.2",
+      "publisher": "Mozilla"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MozillaMaintenanceService",
+      "display_name": "Mozilla Maintenance Service",
+      "display_name_normalized": "MOZILLA MAINTENANCE SERVICE",
+      "display_version": "149.0.2",
+      "display_version_normalized": "149.0.2",
+      "publisher": "Mozilla"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{DB4DB790-64DD-1902-4BF2-833B3B6DBCA1}",
+      "display_name": "MSI Development Tools",
+      "display_name_normalized": "MSI DEVELOPMENT TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6d36315d-13ec-40b0-81bf-9d74ab34feb7}",
+      "display_name": "Nessus Agent (x64)",
+      "display_name_normalized": "NESSUS AGENT (X64)",
+      "display_version": "11.1.2.20013",
+      "display_version_normalized": "11.1.2.20013",
+      "publisher": "Tenable, Inc."
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Notepad++",
+      "display_name": "Notepad++ (64-bit x64)",
+      "display_name_normalized": "NOTEPAD++ (64-BIT X64)",
+      "display_version": "8.9.3",
+      "display_version_normalized": "8.9.3",
+      "publisher": "Notepad++ Team"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{90160000-008C-0000-1000-0000000FF1CE}",
+      "display_name": "Office 16 Click-to-Run Extensibility Component",
+      "display_name_normalized": "OFFICE 16 CLICK-TO-RUN EXTENSIBILITY COMPONENT",
+      "display_version": "16.0.19725.20170",
+      "display_version_normalized": "16.0.19725.20170",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{90160000-007E-0000-1000-0000000FF1CE}",
+      "display_name": "Office 16 Click-to-Run Licensing Component",
+      "display_name_normalized": "OFFICE 16 CLICK-TO-RUN LICENSING COMPONENT",
+      "display_version": "16.0.19029.20244",
+      "display_version_normalized": "16.0.19029.20244",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{90160000-008C-0409-1000-0000000FF1CE}",
+      "display_name": "Office 16 Click-to-Run Localization Component",
+      "display_name_normalized": "OFFICE 16 CLICK-TO-RUN LOCALIZATION COMPONENT",
+      "display_version": "16.0.13929.20216",
+      "display_version_normalized": "16.0.13929.20216",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{EB025864-E249-42F1-9D44-019C080D0D5D}",
+      "display_name": "Omnissa Horizon Client",
+      "display_name_normalized": "OMNISSA HORIZON CLIENT",
+      "display_version": "8.17.0.42163",
+      "display_version_normalized": "8.17.0.42163",
+      "publisher": "Omnissa, LLC"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{49f911eb-a5a5-4a5a-97e0-d7ae58c1f143}",
+      "display_name": "Omnissa Horizon Client",
+      "display_name_normalized": "OMNISSA HORIZON CLIENT",
+      "display_version": "8.17.0.42163",
+      "display_version_normalized": "8.17.0.42163",
+      "publisher": "Omnissa, LLC"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\operationalaccreditation",
+      "display_name": "operationalaccreditation.dod.mil:Global:USN:NARE:;0000187365",
+      "display_name_normalized": "OPERATIONALACCREDITATION.DOD.MIL:GLOBAL:USN:NARE:;0000187365",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Ownorg",
+      "display_name": "Ownorg.dod.mil:Global:Gov:_United States:DOD:USN:31698:00011:00039:65236;0000058609",
+      "display_name_normalized": "OWNORG.DOD.MIL:GLOBAL:GOV:_UNITED STATES:DOD:USN:31698:00011:00039:65236;0000058609",
+      "display_version": "2023-05-12 12:00:00.000",
+      "display_version_normalized": "00.000",
+      "publisher": "COAMS-DISA"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{ED41CD4E-33BB-400C-AB20-B09388DC83EF}",
+      "display_name": "PuTTY release 0.83 (64-bit)",
+      "display_name_normalized": "PUTTY RELEASE 0.83 (64-BIT)",
+      "display_version": "0.83.0.0",
+      "display_version_normalized": "0.83.0.0",
+      "publisher": "Simon Tatham"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{4F2409EE-96F4-4C58-A167-194F2F4EE6F0}",
+      "display_name": "Python 3.13.12 Add to Path (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 ADD TO PATH (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BBCBD533-9613-4577-906B-B3A470B9E1B8}",
+      "display_name": "Python 3.13.12 Core Interpreter (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 CORE INTERPRETER (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E1D27B32-9460-4CA4-8C80-8C836590F4E8}",
+      "display_name": "Python 3.13.12 Development Libraries (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 DEVELOPMENT LIBRARIES (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{4295758B-5533-475F-9FE9-CB167F80F860}",
+      "display_name": "Python 3.13.12 Documentation (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 DOCUMENTATION (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BA11DC40-D663-489B-9AD7-32CEEBA6E5B7}",
+      "display_name": "Python 3.13.12 Executables (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 EXECUTABLES (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{3109416F-FC01-47BA-B0DE-4C92BD85E295}",
+      "display_name": "Python 3.13.12 pip Bootstrap (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 PIP BOOTSTRAP (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0F7FDE9B-EE0E-4CB4-BC90-4D2FC678A4CF}",
+      "display_name": "Python 3.13.12 Standard Library (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 STANDARD LIBRARY (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{01358359-22AF-4F65-8427-DBE4E9C6E10A}",
+      "display_name": "Python 3.13.12 Tcl/Tk Support (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 TCL/TK SUPPORT (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0A2B0DED-4902-4E4B-AB03-B326F6551E20}",
+      "display_name": "Python 3.13.12 Test Suite (64-bit)",
+      "display_name_normalized": "PYTHON 3.13.12 TEST SUITE (64-BIT)",
+      "display_version": "3.13.12150.0",
+      "display_version_normalized": "3.13.12150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8D190621-B91A-4664-8506-C21DEEF6690A}",
+      "display_name": "Python 3.14.4 Add to Path (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 ADD TO PATH (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C72ADAF1-CF64-4C34-9485-2EE63BF0EA8B}",
+      "display_name": "Python 3.14.4 Core Interpreter (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 CORE INTERPRETER (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7C0B1F9F-EF7E-4CCF-BF13-84B2B9EC0272}",
+      "display_name": "Python 3.14.4 Development Libraries (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 DEVELOPMENT LIBRARIES (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A69DA17D-3DBA-4A57-B9AF-7ED9696E3EF6}",
+      "display_name": "Python 3.14.4 Documentation (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 DOCUMENTATION (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{2269A76D-370C-462C-B5AB-56758AABB756}",
+      "display_name": "Python 3.14.4 Executables (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 EXECUTABLES (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E841439F-9F10-4B58-BA75-7B6A71565A28}",
+      "display_name": "Python 3.14.4 pip Bootstrap (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 PIP BOOTSTRAP (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6C0E5B22-995D-4D14-94D2-9F556CF4812E}",
+      "display_name": "Python 3.14.4 Standard Library (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 STANDARD LIBRARY (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{19AB4ED7-05CC-4497-9935-AF829093B5CE}",
+      "display_name": "Python 3.14.4 Tcl/Tk Support (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 TCL/TK SUPPORT (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E67B3149-FEEE-4623-A24B-9C096A09D789}",
+      "display_name": "Python 3.14.4 Test Suite (64-bit)",
+      "display_name_normalized": "PYTHON 3.14.4 TEST SUITE (64-BIT)",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{63F5D8C4-D931-4B71-8B2D-FAAC7A862CC7}",
+      "display_name": "Python 3.8.1 Add to Path (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 ADD TO PATH (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F94E2016-28A6-4FCC-B5A1-D2D9757AF26A}",
+      "display_name": "Python 3.8.1 Core Interpreter (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 CORE INTERPRETER (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{913F572C-BF38-4E44-9065-7E1B024D43FB}",
+      "display_name": "Python 3.8.1 Development Libraries (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 DEVELOPMENT LIBRARIES (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{3FE61A1E-16AE-4702-81A6-C9F6CE3586EB}",
+      "display_name": "Python 3.8.1 Documentation (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 DOCUMENTATION (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{D6160A7A-D48F-48A6-8E5D-FECBE5901D82}",
+      "display_name": "Python 3.8.1 Executables (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 EXECUTABLES (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{912206BD-EA52-4586-8A89-BD7716E5BD50}",
+      "display_name": "Python 3.8.1 pip Bootstrap (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 PIP BOOTSTRAP (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7E83F4DD-B376-4158-90C3-4E9AE54D0AB3}",
+      "display_name": "Python 3.8.1 Standard Library (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 STANDARD LIBRARY (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{96BBA29C-F949-4DF7-9221-EEE7F7D66377}",
+      "display_name": "Python 3.8.1 Tcl/Tk Support (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 TCL/TK SUPPORT (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{64A5FC80-95DB-4CA0-AA8A-C4D652BBC96E}",
+      "display_name": "Python 3.8.1 Test Suite (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 TEST SUITE (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F0D5C7E7-4ECE-425F-BD33-8091DB57A31F}",
+      "display_name": "Python 3.8.1 Utility Scripts (64-bit)",
+      "display_name_normalized": "PYTHON 3.8.1 UTILITY SCRIPTS (64-BIT)",
+      "display_version": "3.8.1150.0",
+      "display_version_normalized": "3.8.1150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{CF2C2B82-E540-4ACE-B007-DF0C216EFC40}",
+      "display_name": "Python Launcher",
+      "display_name_normalized": "PYTHON LAUNCHER",
+      "display_version": "3.14.4150.0",
+      "display_version_normalized": "3.14.4150.0",
+      "publisher": "Python Software Foundation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F132AF7F-7BCA-4EDE-8A7C-958108FE7DBC}",
+      "display_name": "Realtek Audio Driver",
+      "display_name_normalized": "REALTEK AUDIO DRIVER",
+      "display_version": "6.0.9780.1",
+      "display_version_normalized": "6.0.9780.1",
+      "publisher": "Realtek Semiconductor Corp."
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{73681F86-CD86-4208-572F-959B45430B04}",
+      "display_name": "SDK ARM Additions",
+      "display_name_normalized": "SDK ARM ADDITIONS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{67EE3804-9642-62BA-EBF1-B1561FB4ECBE}",
+      "display_name": "SDK ARM Redistributables",
+      "display_name_normalized": "SDK ARM REDISTRIBUTABLES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1AA664F4-B63F-74FD-35B6-993DDA3DEF81}",
+      "display_name": "SDK Debuggers",
+      "display_name_normalized": "SDK DEBUGGERS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8EB803C3-714C-4411-B15F-960C0FBA5112}",
+      "display_name": "SecureConnector (64-bit)",
+      "display_name_normalized": "SECURECONNECTOR (64-BIT)",
+      "display_version": "11.3.18.0251",
+      "display_version_normalized": "11.3.18.0251",
+      "publisher": "ForeScout Technologies Inc."
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{83C9183A-A0F9-4E57-ACEC-4282F1028D25}",
+      "display_name": "SQL Server Management Studio",
+      "display_name_normalized": "SQL SERVER MANAGEMENT STUDIO",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{ECC23FD6-535B-43CB-894B-F47FA605EBB3}",
+      "display_name": "SQL Server Management Studio",
+      "display_name_normalized": "SQL SERVER MANAGEMENT STUDIO",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{2635EEB8-0BDC-43F4-8477-3F3A17485D9A}",
+      "display_name": "SQL Server Management Studio for Analysis Services",
+      "display_name_normalized": "SQL SERVER MANAGEMENT STUDIO FOR ANALYSIS SERVICES",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{EC766230-FA07-4462-95EC-589FE19A6B19}",
+      "display_name": "SQL Server Management Studio for Reporting Services",
+      "display_name_normalized": "SQL SERVER MANAGEMENT STUDIO FOR REPORTING SERVICES",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCE4DAEE-4995-4E80-9222-86C950DDD940}",
+      "display_name": "SSMS Post Install Tasks",
+      "display_name_normalized": "SSMS POST INSTALL TASKS",
+      "display_version": "15.0.18424.0",
+      "display_version_normalized": "15.0.18424.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{00B25B2F-52FB-47E1-B1FA-197CD86D37CC}",
+      "display_name": "System Information Reporter",
+      "display_name_normalized": "SYSTEM INFORMATION REPORTER",
+      "display_version": "1.0.6.37",
+      "display_version_normalized": "1.0.6.37",
+      "publisher": "Musarubra US LLC"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B748A926-D9D1-4744-83B1-5149596ED16F}",
+      "display_name": "Trellix Agent",
+      "display_name_normalized": "TRELLIX AGENT",
+      "display_version": "5.8.6.185",
+      "display_version_normalized": "5.8.6.185",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\McAfeeAgent",
+      "display_name": "Trellix Agent",
+      "display_name_normalized": "TRELLIX AGENT",
+      "display_version": "5.8.6.185",
+      "display_version_normalized": "5.8.6.185",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{72ba2a40-e628-4858-b754-cb12d012b581}",
+      "display_name": "Trellix Data Exchange Layer for TA",
+      "display_name_normalized": "TRELLIX DATA EXCHANGE LAYER FOR TA",
+      "display_version": "6.0.3.1683",
+      "display_version_normalized": "6.0.3.1683",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{443C0642-9E10-4543-99F9-582087011E03}",
+      "display_name": "Trellix Data Exchange Layer for TA",
+      "display_name_normalized": "TRELLIX DATA EXCHANGE LAYER FOR TA",
+      "display_version": "6.0.31683.0",
+      "display_version_normalized": "6.0.31683.0",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0EC35F79-9DC3-4187-BD08-8CA926769D85}",
+      "display_name": "Trellix Data Loss Prevention - Endpoint",
+      "display_name_normalized": "TRELLIX DATA LOSS PREVENTION - ENDPOINT",
+      "display_version": "11.14.0.4142",
+      "display_version_normalized": "11.14.0.4142",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{48804885-8367-42B0-A425-DA558F5CCD04}",
+      "display_name": "Trellix Policy Auditor Agent",
+      "display_name_normalized": "TRELLIX POLICY AUDITOR AGENT",
+      "display_version": "6.5.10.202",
+      "display_version_normalized": "6.5.10.202",
+      "publisher": "Trellix"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{13952D7A-B7B3-F4F8-5F29-5CD18E8168B7}",
+      "display_name": "Universal CRT Extension SDK",
+      "display_name_normalized": "UNIVERSAL CRT EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{74CBC330-ED16-31B9-E8BE-0C6A8E67DE32}",
+      "display_name": "Universal CRT Headers Libraries and Sources",
+      "display_name_normalized": "UNIVERSAL CRT HEADERS LIBRARIES AND SOURCES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{847D4DAF-0182-265B-324F-406462E8A90D}",
+      "display_name": "Universal CRT Redistributable",
+      "display_name_normalized": "UNIVERSAL CRT REDISTRIBUTABLE",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{54FE4D23-11A2-F1C4-76E9-79C8FB40A4A1}",
+      "display_name": "Universal CRT Tools x64",
+      "display_name_normalized": "UNIVERSAL CRT TOOLS X64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9F7B0D96-881D-8850-C303-43F3A08E6902}",
+      "display_name": "Universal CRT Tools x86",
+      "display_name_normalized": "UNIVERSAL CRT TOOLS X86",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6F54BF87-2EE6-FA6D-431D-33A665992D49}",
+      "display_name": "Universal General MIDI DLS Extension SDK",
+      "display_name_normalized": "UNIVERSAL GENERAL MIDI DLS EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AAA9F15B-AF45-4562-9991-93A848D3A902}",
+      "display_name": "Visual Studio 2017 Isolated Shell for SSMS",
+      "display_name_normalized": "VISUAL STUDIO 2017 ISOLATED SHELL FOR SSMS",
+      "display_version": "15.0.28307.421",
+      "display_version_normalized": "15.0.28307.421",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{063EACD8-64EF-4A7F-9397-36CAF48B22D9}",
+      "display_name": "VMware Remote Console",
+      "display_name_normalized": "VMWARE REMOTE CONSOLE",
+      "display_version": "11.0.0",
+      "display_version_normalized": "11.0.0",
+      "publisher": "VMware, Inc."
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8E3AE0EF-D067-700C-BDB4-10D5552155DC}",
+      "display_name": "WinAppDeploy",
+      "display_name_normalized": "WINAPPDEPLOY",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{21F4DE3E-CE64-584E-BD74-2D1765EB39DE}",
+      "display_name": "Windows App Certification Kit Native Components",
+      "display_name_normalized": "WINDOWS APP CERTIFICATION KIT NATIVE COMPONENTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5C3F08FC-E0D4-6C94-90EF-72DE63DDA885}",
+      "display_name": "Windows App Certification Kit SupportedApiList x86",
+      "display_name_normalized": "WINDOWS APP CERTIFICATION KIT SUPPORTEDAPILIST X86",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{15E06EC7-2755-BD07-45AD-98DF1679A6BE}",
+      "display_name": "Windows App Certification Kit x64",
+      "display_name_normalized": "WINDOWS APP CERTIFICATION KIT X64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B4A7994D-DBA1-8B4D-621A-03EE52CF838A}",
+      "display_name": "Windows Desktop Extension SDK",
+      "display_name_normalized": "WINDOWS DESKTOP EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{39EDCC7D-7B63-5D99-C053-C8CDF02DC5ED}",
+      "display_name": "Windows Desktop Extension SDK Contracts",
+      "display_name_normalized": "WINDOWS DESKTOP EXTENSION SDK CONTRACTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9DA29C3D-9E36-AC22-59C8-FFCF413DC068}",
+      "display_name": "Windows IoT Extension SDK",
+      "display_name_normalized": "WINDOWS IOT EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{3CEE8EB6-538E-DDA2-51A5-842ECE6CE1E8}",
+      "display_name": "Windows IoT Extension SDK Contracts",
+      "display_name_normalized": "WINDOWS IOT EXTENSION SDK CONTRACTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{EF93D72C-A2BB-DBA3-E3E1-AD0412DFD7F6}",
+      "display_name": "Windows IP Over USB",
+      "display_name_normalized": "WINDOWS IP OVER USB",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{30AD20A4-1FFF-2632-4555-EFAF9D8A32CD}",
+      "display_name": "Windows Mobile Extension SDK",
+      "display_name_normalized": "WINDOWS MOBILE EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{154EEEB2-18D9-4FD5-EDE1-6D0B318FAC53}",
+      "display_name": "Windows Mobile Extension SDK Contracts",
+      "display_name_normalized": "WINDOWS MOBILE EXTENSION SDK CONTRACTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{3A98BFB1-16A6-576B-FFC8-7FEF26B40DBA}",
+      "display_name": "Windows SDK",
+      "display_name_normalized": "WINDOWS SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E6F877A1-2F65-4BF0-87B6-A4071B7663D3}",
+      "display_name": "Windows SDK AddOn",
+      "display_name_normalized": "WINDOWS SDK ADDON",
+      "display_version": "10.1.0.0",
+      "display_version_normalized": "10.1.0.0",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{20C00582-BD18-B599-CF98-61011567D747}",
+      "display_name": "Windows SDK ARM Desktop Tools",
+      "display_name_normalized": "WINDOWS SDK ARM DESKTOP TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{3DC4086C-B365-3DE4-878B-659DEB72904E}",
+      "display_name": "Windows SDK Desktop Headers arm",
+      "display_name_normalized": "WINDOWS SDK DESKTOP HEADERS ARM",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{452ABC9E-731E-71B2-8824-C5B2595370AF}",
+      "display_name": "Windows SDK Desktop Headers arm64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP HEADERS ARM64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6A96DEED-D0D8-6DD0-21BD-7D8F60714854}",
+      "display_name": "Windows SDK Desktop Headers x64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP HEADERS X64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{86ADBBAE-77AE-FA26-7C17-802AE28AC316}",
+      "display_name": "Windows SDK Desktop Headers x86",
+      "display_name_normalized": "WINDOWS SDK DESKTOP HEADERS X86",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{995DDD4F-928C-4EBA-9702-E7CD3F6A7A9D}",
+      "display_name": "Windows SDK Desktop Libs arm",
+      "display_name_normalized": "WINDOWS SDK DESKTOP LIBS ARM",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{166BCCDD-48C1-8103-A7E7-0F3DE471223D}",
+      "display_name": "Windows SDK Desktop Libs arm64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP LIBS ARM64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{54140689-B7DB-B9CF-537D-8FEB279410F9}",
+      "display_name": "Windows SDK Desktop Libs x64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP LIBS X64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{238F56B7-7D14-F8EB-3F4D-8CFF18C19E2B}",
+      "display_name": "Windows SDK Desktop Libs x86",
+      "display_name_normalized": "WINDOWS SDK DESKTOP LIBS X86",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{2E6C6299-BF5F-379D-55F2-8FD3367F5918}",
+      "display_name": "Windows SDK Desktop Tools arm64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP TOOLS ARM64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{795E8F11-37DE-611E-921E-7D70BE09BF7B}",
+      "display_name": "Windows SDK Desktop Tools x64",
+      "display_name_normalized": "WINDOWS SDK DESKTOP TOOLS X64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{540ADDB0-7A37-9B99-3568-FD1EA33D3B38}",
+      "display_name": "Windows SDK Desktop Tools x86",
+      "display_name_normalized": "WINDOWS SDK DESKTOP TOOLS X86",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6E3528B9-92A6-A48A-AE84-890E0E5DE9BB}",
+      "display_name": "Windows SDK DirectX x64 Remote",
+      "display_name_normalized": "WINDOWS SDK DIRECTX X64 REMOTE",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{52CE7A43-B499-5F4B-A525-AA8794D3580F}",
+      "display_name": "Windows SDK DirectX x86 Remote",
+      "display_name_normalized": "WINDOWS SDK DIRECTX X86 REMOTE",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5F56BF12-0818-B58A-5862-939784E12F8B}",
+      "display_name": "Windows SDK EULA",
+      "display_name_normalized": "WINDOWS SDK EULA",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporations"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A5EF45C5-FA27-7E8F-1AE8-E3D39BAC779E}",
+      "display_name": "Windows SDK Facade Windows WinMD Versioned",
+      "display_name_normalized": "WINDOWS SDK FACADE WINDOWS WINMD VERSIONED",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{39692B57-0BA8-2197-8BC5-4108DFB8475A}",
+      "display_name": "Windows SDK for Windows Store Apps",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C13D21F1-E9A3-FB93-18C4-B905FB47F122}",
+      "display_name": "Windows SDK for Windows Store Apps Contracts",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS CONTRACTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8F21D4CD-9CB4-2648-EECC-60147DE7B32D}",
+      "display_name": "Windows SDK for Windows Store Apps DirectX x86 Remote",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS DIRECTX X86 REMOTE",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{65E9398F-77A0-8681-026C-8CF092A71F11}",
+      "display_name": "Windows SDK for Windows Store Apps Headers",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS HEADERS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{217E19C8-ACC0-C7ED-AB69-A30F3F96C625}",
+      "display_name": "Windows SDK for Windows Store Apps Libs",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS LIBS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5FAF2ED2-CA24-0313-8CAF-C28DEE421200}",
+      "display_name": "Windows SDK for Windows Store Apps Metadata",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS METADATA",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A5174AE6-3704-EE0A-BEFF-21BC5275BA02}",
+      "display_name": "Windows SDK for Windows Store Apps Tools",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE APPS TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{CEDD7BE6-97B5-9AE8-57C0-B390E0C4328F}",
+      "display_name": "Windows SDK for Windows Store Managed Apps Libs",
+      "display_name_normalized": "WINDOWS SDK FOR WINDOWS STORE MANAGED APPS LIBS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{DDAF4CFD-D635-8305-5157-9ECEA9F89678}",
+      "display_name": "Windows SDK Modern Non-Versioned Developer Tools",
+      "display_name_normalized": "WINDOWS SDK MODERN NON-VERSIONED DEVELOPER TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{21514D7D-4124-E52E-8483-727380B855D7}",
+      "display_name": "Windows SDK Modern Versioned Developer Tools",
+      "display_name_normalized": "WINDOWS SDK MODERN VERSIONED DEVELOPER TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{34B51780-922E-5CBF-C16F-13F0A9502267}",
+      "display_name": "Windows SDK Redistributables",
+      "display_name_normalized": "WINDOWS SDK REDISTRIBUTABLES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{4CA7ABF1-DB68-0F9E-5AD9-58550198D0AC}",
+      "display_name": "Windows SDK Signing Tools",
+      "display_name_normalized": "WINDOWS SDK SIGNING TOOLS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{126dedf0-cc0e-4b48-9ece-806b0e437195}",
+      "display_name": "Windows Software Development Kit - Windows 10.0.18362.1",
+      "display_name_normalized": "WINDOWS SOFTWARE DEVELOPMENT KIT - WINDOWS 10.0.18362.1",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6EEDDD9D-BF7B-8229-92B4-89DFCF7481ED}",
+      "display_name": "Windows Team Extension SDK",
+      "display_name_normalized": "WINDOWS TEAM EXTENSION SDK",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5D60A4EF-6EDF-AAF4-F0F0-49FDD40176B8}",
+      "display_name": "Windows Team Extension SDK Contracts",
+      "display_name_normalized": "WINDOWS TEAM EXTENSION SDK CONTRACTS",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{E67F1F03-FB4A-3D61-8999-E6A4C4B26F34}",
+      "display_name": "WinRT Intellisense Desktop - en-us",
+      "display_name_normalized": "WINRT INTELLISENSE DESKTOP - EN-US",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7EF010FF-7800-28BA-FF49-2D219EC7BA82}",
+      "display_name": "WinRT Intellisense Desktop - Other Languages",
+      "display_name_normalized": "WINRT INTELLISENSE DESKTOP - OTHER LANGUAGES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{36AE12FB-4349-6EAA-B6E4-5F4E06FA8AE8}",
+      "display_name": "WinRT Intellisense IoT - en-us",
+      "display_name_normalized": "WINRT INTELLISENSE IOT - EN-US",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6B03A6A4-643C-57CE-CA6F-4E19BF47497A}",
+      "display_name": "WinRT Intellisense IoT - Other Languages",
+      "display_name_normalized": "WINRT INTELLISENSE IOT - OTHER LANGUAGES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{918A448F-59E8-FBF5-B087-D3F07160C7E0}",
+      "display_name": "WinRT Intellisense Mobile - en-us",
+      "display_name_normalized": "WINRT INTELLISENSE MOBILE - EN-US",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{66483041-F590-EC46-4AF0-EE39C62FB680}",
+      "display_name": "WinRT Intellisense PPI - en-us",
+      "display_name_normalized": "WINRT INTELLISENSE PPI - EN-US",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9C61E6D2-C43E-6746-B519-6185558C4A24}",
+      "display_name": "WinRT Intellisense PPI - Other Languages",
+      "display_name_normalized": "WINRT INTELLISENSE PPI - OTHER LANGUAGES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6B37CC5B-78DF-5050-2215-68479716A587}",
+      "display_name": "WinRT Intellisense UAP - en-us",
+      "display_name_normalized": "WINRT INTELLISENSE UAP - EN-US",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{250D5341-0879-4016-399C-BBCD87B80E95}",
+      "display_name": "WinRT Intellisense UAP - Other Languages",
+      "display_name_normalized": "WINRT INTELLISENSE UAP - OTHER LANGUAGES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft Corporation"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{70D0B057-048B-F699-A2B0-AD325018802F}",
+      "display_name": "WPT Redistributables",
+      "display_name_normalized": "WPT REDISTRIBUTABLES",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft"
+    },
+    {
+      "registry_key": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{EC12C121-3208-5E92-FCB0-0591769632F9}",
+      "display_name": "WPTx64",
+      "display_name_normalized": "WPTX64",
+      "display_version": "10.1.18362.1",
+      "display_version_normalized": "10.1.18362.1",
+      "publisher": "Microsoft"
+    }
+  ],
+  "entry_count": 194
+}

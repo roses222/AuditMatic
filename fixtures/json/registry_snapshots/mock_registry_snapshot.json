@@ -1,0 +1,37 @@
+{
+  "_file_purpose": "Registry snapshot template. Captures raw installed software inventory from the machine being scanned.",
+  "_how_to_use": "Keep this structure when generating or validating registry snapshot data. Each item in software_inventory represents one uninstall registry record.",
+  "status": "success",
+  "timestamp": "2026-04-17T14:32:00",
+  "entry_count": 3,
+  "captured_from": "LOCAL_MACHINE",
+  "software_inventory": [
+    {
+      "display_name": "ArcGIS Enterprise Portal 11.3",
+      "display_version": "11.3.0",
+      "publisher": "Esri",
+      "install_date": "20240315",
+      "install_location": "C:\\Program Files\\ArcGIS\\Portal",
+      "registry_hive": "HKEY_LOCAL_MACHINE",
+      "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ArcGIS_Enterprise_Portal_113"
+    },
+    {
+      "display_name": "Python 3.9.8",
+      "display_version": "3.9.8",
+      "publisher": "Python Software Foundation",
+      "install_date": "20260401",
+      "install_location": "C:\\Python39",
+      "registry_hive": "HKEY_LOCAL_MACHINE",
+      "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Python39"
+    },
+    {
+      "display_name": "PostgreSQL 12.5",
+      "display_version": "12.5",
+      "publisher": "PostgreSQL Global Development Group",
+      "install_date": "20240101",
+      "install_location": "C:\\Program Files\\PostgreSQL\\12",
+      "registry_hive": "HKEY_LOCAL_MACHINE",
+      "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PostgreSQL_12"
+    }
+  ]
+}

@@ -1,0 +1,2322 @@
+{
+  "status": "completed",
+  "started_at": "2026-04-17T14:18:29",
+  "completed_at": "2026-04-17T14:21:31",
+  "error": "",
+  "sbl_file": {
+    "name": "N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1.xlsx",
+    "path": "C:/Users/cornetct/Downloads/N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1.xlsx",
+    "normalized_path": "C:\\Users\\cornetct\\AppData\\Local\\Temp\\tmpgbb0qmsg.xlsx",
+    "baseline_name": "",
+    "timestamp": "2026-04-17T14:21:31",
+    "sbl_model": "UNKNOWN"
+  },
+  "output": {
+    "workbook_path": "C:\\Users\\cornetct\\OneDrive - US Navy-flankspeed\\Desktop\\Repos\\AuditMatic\\Audit Results\\N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1_RESULTS.xlsx",
+    "result_base_name": "N65236-GEOINT-AUD-0377-1.00 GEOINT CGW-L-N 2.0.2.2 AUD BUILD 1_RESULTS"
+  },
+  "settings": {
+    "profile_name": "mock_local_profile",
+    "audit_mode": "standard",
+    "build_type": "unknown",
+    "connection_mode": "Local Scan Only",
+    "local_only": true,
+    "fallback_enabled": false,
+    "vcenter_server": "",
+    "ssh_gateway_host": "",
+    "ssh_gateway_port": 22,
+    "ssh_target_port": 22
+  },
+  "sbl_parse": {
+    "target_columns": [
+      "ArcGIS_WebAdaptor",
+      "ArcGIS_Portal",
+      "ArcGIS_HostingServer",
+      "ArcGIS_DS1",
+      "ArcGIS_DS2",
+      "GCS_Management"
+    ],
+    "row_count": 76,
+    "rows": [
+      {
+        "worksheet_row": 2,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 3,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 4,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 5,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 7,
+        "software_component": "",
+        "current_ci_version": "GEOINT FD 1.0.2.0",
+        "sbl_build_version": "GEOINT FD 1.0.2.1",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "current_ci_version": "CGW-L-N 2.0.2.1",
+        "sbl_build_version": "",
+        "version_locations": "System: 2.0.2.2 Software: 2.0.2.2",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 10,
+        "software_component": "7-Zip",
+        "current_ci_version": "25.01.00.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*7-Zip*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "ActivID ActivClient x64",
+        "current_ci_version": "9.5.0.9097",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 12,
+        "software_component": "ActivePerl",
+        "current_ci_version": "5.28.0000",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ActivePerl*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 13,
+        "software_component": "Admiralty TotalTide Fleet",
+        "current_ci_version": "25.1.1.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Admiralty TotalTide Fleet*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 14,
+        "software_component": "Adobe Acrobat Pro DC",
+        "current_ci_version": "25.001.20997",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Adobe Acrobat Pro DC*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 15,
+        "software_component": "ArcGIS Earth",
+        "current_ci_version": "2.3.0.4289",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Earth*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Pro",
+        "current_ci_version": "3.5.2.57366",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 17,
+        "software_component": "ArcGIS Aviation Airports",
+        "current_ci_version": "3.5.205",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Aviation Airports*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 18,
+        "software_component": "ArcGIS Aviation Charting",
+        "current_ci_version": "3.5.222",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Aviation Charting*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 19,
+        "software_component": "ArcGIS Data Interoperability",
+        "current_ci_version": "3.5.57344",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Data Interoperability*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 20,
+        "software_component": "ArcGIS Defense Mapping",
+        "current_ci_version": "3.5.470",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Defense Mapping*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 21,
+        "software_component": "ArcGIS for Office",
+        "current_ci_version": "2022.1.0.278",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS for Office*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS Pro Help",
+        "current_ci_version": "13.5.0.57366",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "MTI Plugin",
+        "current_ci_version": "3",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 24,
+        "software_component": "ArcGIS Production Mapping",
+        "current_ci_version": "3.5.480",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Production Mapping*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 25,
+        "software_component": "Axway Desktop Validator",
+        "current_ci_version": "5.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Axway Desktop Validator*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 26,
+        "software_component": "ENVI",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 27,
+        "software_component": "ENVI Deep Learning",
+        "current_ci_version": "3.0.1.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI Deep Learning*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 28,
+        "software_component": "ENVI Photogrammetry",
+        "current_ci_version": "6.1.0.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI Photogrammetry*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 29,
+        "software_component": "ENVI PY For ArcGIS Pro",
+        "current_ci_version": "1.7",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI PY For ArcGIS Pro*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "Interactive Data Language (IDL)",
+        "current_ci_version": "9.1.0",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 31,
+        "software_component": "FileZilla Client",
+        "current_ci_version": "3.67.1",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FileZilla Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 32,
+        "software_component": "FileZilla Server",
+        "current_ci_version": "1.9.1",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FileZilla Server*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 33,
+        "software_component": "FSR in a Box",
+        "current_ci_version": "1.1.2.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FSR in a Box*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 34,
+        "software_component": "GeoPDF Tools (64-bit)",
+        "current_ci_version": "8.1.2.11",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GeoPDF Tools (64-bit)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 35,
+        "software_component": "GEOTRANS",
+        "current_ci_version": "3.9.0.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GEOTRANS*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 36,
+        "software_component": "Google Chrome",
+        "current_ci_version": "144.0.7559.60",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Google Chrome*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 37,
+        "software_component": "Google Earth Enterprise Client",
+        "current_ci_version": "7.3.6.9796",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Google Earth Enterprise Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 38,
+        "software_component": "ImgBurn",
+        "current_ci_version": "2.5.8.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ImgBurn*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 39,
+        "software_component": "Java",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Java*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 40,
+        "software_component": "Java (64-bit)",
+        "current_ci_version": "8.0.4710.9",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Java (64-bit)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 41,
+        "software_component": "Mako Client",
+        "current_ci_version": "2.0.23.1787644eb",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Mako Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 42,
+        "software_component": "Microsoft ASP .NET Core - Shared Framework (x64)",
+        "current_ci_version": "8.0.22.25528",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft ASP .NET Core - Shared Framework (x64)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 43,
+        "software_component": "Microsoft Edge",
+        "current_ci_version": "143.0.3650.139",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft Edge*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 44,
+        "software_component": "Microsoft ODBC Driver 17 for SQL Server",
+        "current_ci_version": "17.10.6.1",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft ODBC Driver 17 for SQL Server*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Excel",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft OneNote",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > OneNote > File > Account > About OneNote",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > OneNote > File > Account > About OneNote",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft Outlook",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Powerpoint",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Word",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 51,
+        "software_component": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "current_ci_version": "11.1.3366.16",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft System CLR Types for SQL Server 2012 (x64)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "current_ci_version": "26100.7623",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Type Winver > Look for OS Build",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Type Winver > Look for OS Build",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "current_ci_version": "4.18.25110.6",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "current_ci_version": "1.443.689.0",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 55,
+        "software_component": "Mozilla Firefox Extended Support Release (ESR)",
+        "current_ci_version": "140.7.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Mozilla Firefox Extended Support Release (ESR)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 56,
+        "software_component": "Notepad++",
+        "current_ci_version": "8.8.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Notepad++*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "current_ci_version": "2.2.0",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "OpenSSL",
+        "current_ci_version": "1.1.1v",
+        "sbl_build_version": "",
+        "version_locations": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 59,
+        "software_component": "Pulse Secure Setup Client Activex Control",
+        "current_ci_version": "9.1.4983",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Pulse Secure Setup Client Activex Control*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Rainmeter",
+        "current_ci_version": "4.5.18.3727",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Users\\Public\\Geoint_Rainmeter",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 61,
+        "software_component": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "current_ci_version": "1.17.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SALSA (Surveyor''s Applications for Least Squares Adjustment)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 62,
+        "software_component": "Secure Email Marking Plug-in (SEMP)",
+        "current_ci_version": "6.1",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Secure Email Marking Plug-in (SEMP)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 63,
+        "software_component": "Sentinel Protection Installer",
+        "current_ci_version": "7.6.9",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Sentinel Protection Installer*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 64,
+        "software_component": "Solar/Lunar Almanac Prediction (SLAP)",
+        "current_ci_version": "1.5",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Solar/Lunar Almanac Prediction (SLAP)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 65,
+        "software_component": "SOCET GXP",
+        "current_ci_version": "4.6.0.3.267",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET GXP*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 66,
+        "software_component": "SOCET Developers Toolkit",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET Developers Toolkit*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 67,
+        "software_component": "SOCET GXP PostgreSQL",
+        "current_ci_version": "4.6.0.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET GXP PostgreSQL*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 68,
+        "software_component": "GXP Common Video Filters",
+        "current_ci_version": "21.0.2.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP Common Video Filters*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 69,
+        "software_component": "GXP Ffmpeg",
+        "current_ci_version": "7.0.2.6.57",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP Ffmpeg*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 70,
+        "software_component": "GXP License Manager",
+        "current_ci_version": "19.1.6.3",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP License Manager*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "Swift XMPP Client",
+        "current_ci_version": "4.0.2",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Swift > Click \"About Swift\"",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Swift > Click \"About Swift\"",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 72,
+        "software_component": "TAKX",
+        "current_ci_version": "5.4.2",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*TAKX*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 73,
+        "software_component": "Thunderbolt Software",
+        "current_ci_version": "1.52.0.0",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Thunderbolt Software*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 74,
+        "software_component": "Trimble Business Center - USMC Topographic Survey Edition",
+        "current_ci_version": "3.61",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Trimble Business Center - USMC Topographic Survey Edition*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "WinFlash",
+        "current_ci_version": "1.2.1.7",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 76,
+        "software_component": "VideoLAN Connector (VLC) Media Player",
+        "current_ci_version": "3.0.21",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*VideoLAN Connector (VLC) Media Player*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 77,
+        "software_component": "Videx Pro",
+        "current_ci_version": "4.6.0.7660",
+        "sbl_build_version": "",
+        "version_locations": "Programs and Features",
+        "rule": "programs_and_features",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Videx Pro*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Software Baseline Freeze Date",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      }
+    ],
+    "special_path_scan_list": [
+      {
+        "worksheet_row": 2,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 3,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 4,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 5,
+        "software_component": "",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "VERSION LOCATIONS",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 7,
+        "software_component": "",
+        "current_ci_version": "GEOINT FD 1.0.2.0",
+        "sbl_build_version": "GEOINT FD 1.0.2.1",
+        "version_locations": "",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "current_ci_version": "CGW-L-N 2.0.2.1",
+        "sbl_build_version": "",
+        "version_locations": "System: 2.0.2.2 Software: 2.0.2.2",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "ActivID ActivClient x64",
+        "current_ci_version": "9.5.0.9097",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Pro",
+        "current_ci_version": "3.5.2.57366",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS Pro Help",
+        "current_ci_version": "13.5.0.57366",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "MTI Plugin",
+        "current_ci_version": "3",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "Interactive Data Language (IDL)",
+        "current_ci_version": "9.1.0",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Excel",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft OneNote",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > OneNote > File > Account > About OneNote",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > OneNote > File > Account > About OneNote",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft Outlook",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Powerpoint",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Word",
+        "current_ci_version": "16.0.17932.20638",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "current_ci_version": "26100.7623",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Type Winver > Look for OS Build",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Type Winver > Look for OS Build",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "current_ci_version": "4.18.25110.6",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "current_ci_version": "1.443.689.0",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "current_ci_version": "2.2.0",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "OpenSSL",
+        "current_ci_version": "1.1.1v",
+        "sbl_build_version": "",
+        "version_locations": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Rainmeter",
+        "current_ci_version": "4.5.18.3727",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Users\\Public\\Geoint_Rainmeter",
+        "rule": "unknown",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "Swift XMPP Client",
+        "current_ci_version": "4.0.2",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Swift > Click \"About Swift\"",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Swift > Click \"About Swift\"",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "WinFlash",
+        "current_ci_version": "1.2.1.7",
+        "sbl_build_version": "",
+        "version_locations": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+        "rule": "file_version",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "$p='C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Software Baseline Freeze Date",
+        "current_ci_version": "",
+        "sbl_build_version": "",
+        "version_locations": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+        "rule": "manual_steps",
+        "marked_targets": [],
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      }
+    ]
+  },
+  "local_machine_scan": {
+    "results": [
+      {
+        "worksheet_row": 6,
+        "software_component": "Geospatial Intelligence Foundation",
+        "expected_version": "",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=UNKNOWN | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=unknown:no_rule | fallback_exhausted | uninstall[Geospatial Intelligence Foundation]=FAIL:NOT_FOUND; uninstall[Geospatial]=FAIL:NOT_FOUND; uninstall[Intelligence]=FAIL:NOT_FOUND; uninstall[Foundation]=FAIL:NOT_FOUND | instructions=Geospatial Intelligence Foundation",
+        "version_locations": "Geospatial Intelligence Foundation",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 9,
+        "software_component": "Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)",
+        "expected_version": "CGW-L-N 2.0.2.1",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=2.0.2.1 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=unknown:no_rule | fallback_exhausted | uninstall[Common Geospatial Intelligence Workstation \u2013 Lite - Non-classified Internet Protocol Router Network (CGW-L-N)]=FAIL:NOT_FOUND; uninstall[Common Geospatial Intelligence Workstation classified Internet Protocol Router Network]=FAIL:NOT_FOUND; uninstall[Common]=FAIL:NOT_FOUND; uninstall[Geospatial]=FAIL:NOT_FOUND; uninstall[Intelligence]=FAIL:NOT_FOUND; uninstall[Workstation]=FAIL:NOT_FOUND; uninstall[classified]=FAIL:NOT_FOUND; uninstall[Internet]=FAIL:NOT_FOUND; uninstall[Protocol]=FAIL:NOT_FOUND; uninstall[Router]=FAIL:NOT_FOUND; uninstall[Network]=FAIL:NOT_FOUND | instructions=System: 2.0.2.2 Software: 2.0.2.2",
+        "version_locations": "System: 2.0.2.2 Software: 2.0.2.2",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 10,
+        "software_component": "7-Zip",
+        "expected_version": "25.01.00.0",
+        "found_version": "26.00.00.0",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=25.01.00.0 | found=26.00.00.0",
+        "details": "local-machine | Matched installed app '7-Zip 26.00 (x64 edition)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*7-Zip*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 11,
+        "software_component": "ActivID ActivClient x64",
+        "expected_version": "9.5.0.9097",
+        "found_version": "8.4.0",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=9.5.0.9097 | found=8.4.0",
+        "details": "local-machine | Read file version from C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+        "version_locations": "C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe",
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\HID Global\\ActivClient\\ac.activclient.gui.scagent.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 12,
+        "software_component": "ActivePerl",
+        "expected_version": "5.28.0000",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=5.28.0000 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ActivePerl]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ActivePerl*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 13,
+        "software_component": "Admiralty TotalTide Fleet",
+        "expected_version": "25.1.1.2",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=25.1.1.2 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Admiralty TotalTide Fleet]=FAIL:NOT_FOUND; uninstall[Admiralty]=FAIL:NOT_FOUND; uninstall[TotalTide]=FAIL:NOT_FOUND; uninstall[Fleet]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Admiralty TotalTide Fleet*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 14,
+        "software_component": "Adobe Acrobat Pro DC",
+        "expected_version": "25.001.20997",
+        "found_version": "25.001.21288",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=25.001.20997 | found=25.001.21288",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Adobe Acrobat Reader'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Adobe Acrobat Pro DC*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 15,
+        "software_component": "ArcGIS Earth",
+        "expected_version": "2.3.0.4289",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=2.3.0.4289 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ArcGIS Earth]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND; uninstall[Earth]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Earth*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 16,
+        "software_component": "ArcGIS Pro",
+        "expected_version": "3.5.2.57366",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.5.2.57366 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=file_version:NOT_FOUND | fallback_exhausted | uninstall[ArcGIS Pro]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND; explicit_paths=WARN:NOT_FOUND | instructions=C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 17,
+        "software_component": "ArcGIS Aviation Airports",
+        "expected_version": "3.5.205",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.5.205 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ArcGIS Aviation Airports]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND; uninstall[Aviation]=FAIL:NOT_FOUND; uninstall[Airports]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Aviation Airports*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 18,
+        "software_component": "ArcGIS Aviation Charting",
+        "expected_version": "3.5.222",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.5.222 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ArcGIS Aviation Charting]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND; uninstall[Aviation]=FAIL:NOT_FOUND; uninstall[Charting]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Aviation Charting*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 19,
+        "software_component": "ArcGIS Data Interoperability",
+        "expected_version": "3.5.57344",
+        "found_version": "11.14.0.4142",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=3.5.57344 | found=11.14.0.4142",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Trellix Data Loss Prevention - Endpoint'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Data Interoperability*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 20,
+        "software_component": "ArcGIS Defense Mapping",
+        "expected_version": "3.5.470",
+        "found_version": "2023-05-12 12:00:00.000",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=3.5.470 | found=00.000",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'cndsp.dod.mil:Global:Gov:USCYBERCOM:NAVY CYBER DEFENSE OPERATIONS COMMAND:;0000065927'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Defense Mapping*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 21,
+        "software_component": "ArcGIS for Office",
+        "expected_version": "2022.1.0.278",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=2022.1.0.278 | found=16.0.19029.20244",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS for Office*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 22,
+        "software_component": "ArcGIS Pro Help",
+        "expected_version": "13.5.0.57366",
+        "found_version": "2.3.28307",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=13.5.0.57366 | found=2.3.28307",
+        "details": "local-machine | primary_rule=file_version:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Microsoft Help Viewer 2.3'",
+        "version_locations": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe",
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISHelp.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 23,
+        "software_component": "MTI Plugin",
+        "expected_version": "3",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3 | found=MANUAL_CHECK",
+        "details": "local-machine | fallback_exhausted | uninstall[MTI Plugin]=FAIL:NOT_FOUND | instructions=Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+        "version_locations": "Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > ArcGISPro > Settings > Add-In Manager > Shared Add-Ins > MTI Tools > Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 24,
+        "software_component": "ArcGIS Production Mapping",
+        "expected_version": "3.5.480",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.5.480 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ArcGIS Production Mapping]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND; uninstall[Production]=FAIL:NOT_FOUND; uninstall[Mapping]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ArcGIS Production Mapping*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 25,
+        "software_component": "Axway Desktop Validator",
+        "expected_version": "5.2",
+        "found_version": "64.92.45458",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=5.2 | found=64.92.45458",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Microsoft Windows Desktop Runtime - 8.0.23 (x64)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Axway Desktop Validator*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 26,
+        "software_component": "ENVI",
+        "expected_version": "6.1.0.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=6.1.0.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ENVI]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 27,
+        "software_component": "ENVI Deep Learning",
+        "expected_version": "3.0.1.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.0.1.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ENVI Deep Learning]=FAIL:NOT_FOUND; uninstall[ENVI]=FAIL:NOT_FOUND; uninstall[Deep]=FAIL:NOT_FOUND; uninstall[Learning]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI Deep Learning*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 28,
+        "software_component": "ENVI Photogrammetry",
+        "expected_version": "6.1.0.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=6.1.0.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ENVI Photogrammetry]=FAIL:NOT_FOUND; uninstall[ENVI]=FAIL:NOT_FOUND; uninstall[Photogrammetry]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI Photogrammetry*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 29,
+        "software_component": "ENVI PY For ArcGIS Pro",
+        "expected_version": "1.7",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=1.7 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ENVI PY For ArcGIS Pro]=FAIL:NOT_FOUND; uninstall[ENVI ArcGIS]=FAIL:NOT_FOUND; uninstall[ENVI]=FAIL:NOT_FOUND; uninstall[ArcGIS]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ENVI PY For ArcGIS Pro*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 30,
+        "software_component": "Interactive Data Language (IDL)",
+        "expected_version": "9.1.0",
+        "found_version": "11.14.0.4142",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=9.1.0 | found=11.14.0.4142",
+        "details": "local-machine | primary_rule=file_version:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Trellix Data Loss Prevention - Endpoint'",
+        "version_locations": "C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe",
+        "local_detection_commands": [
+          "$p='C:\\Program Files\\NV5\\ENVI62\\IDL92\\bin\\bin.x86_64\\idl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 31,
+        "software_component": "FileZilla Client",
+        "expected_version": "3.67.1",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.67.1 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[FileZilla Client]=FAIL:NOT_FOUND; uninstall[FileZilla]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FileZilla Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 32,
+        "software_component": "FileZilla Server",
+        "expected_version": "1.9.1",
+        "found_version": "17.10.6.1",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=1.9.1 | found=17.10.6.1",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Microsoft ODBC Driver 17 for SQL Server'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FileZilla Server*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 33,
+        "software_component": "FSR in a Box",
+        "expected_version": "1.1.2.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=1.1.2.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[FSR in a Box]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*FSR in a Box*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 34,
+        "software_component": "GeoPDF Tools (64-bit)",
+        "expected_version": "8.1.2.11",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=8.1.2.11 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[GeoPDF Tools (64-bit)]=FAIL:NOT_FOUND; uninstall[GeoPDF]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GeoPDF Tools (64-bit)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 35,
+        "software_component": "GEOTRANS",
+        "expected_version": "3.9.0.2",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.9.0.2 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[GEOTRANS]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GEOTRANS*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 36,
+        "software_component": "Google Chrome",
+        "expected_version": "144.0.7559.60",
+        "found_version": "147.0.7727.102",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=144.0.7559.60 | found=147.0.7727.102",
+        "details": "local-machine | Matched installed app 'Google Chrome'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Google Chrome*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 37,
+        "software_component": "Google Earth Enterprise Client",
+        "expected_version": "7.3.6.9796",
+        "found_version": "147.0.7727.102",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=7.3.6.9796 | found=147.0.7727.102",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Google Chrome'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Google Earth Enterprise Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 38,
+        "software_component": "ImgBurn",
+        "expected_version": "2.5.8.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=2.5.8.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[ImgBurn]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*ImgBurn*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 39,
+        "software_component": "Java",
+        "expected_version": "8.0.4710.9",
+        "found_version": "2.8.481.10",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=8.0.4710.9 | found=2.8.481.10",
+        "details": "local-machine | Matched installed app 'Java Auto Updater'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Java*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 40,
+        "software_component": "Java (64-bit)",
+        "expected_version": "8.0.4710.9",
+        "found_version": "2.8.481.10",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=8.0.4710.9 | found=2.8.481.10",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Java Auto Updater'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Java (64-bit)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 41,
+        "software_component": "Mako Client",
+        "expected_version": "2.0.23.1787644eb",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=2.0.23.1787644 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Mako Client]=FAIL:NOT_FOUND; uninstall[Mako]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Mako Client*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 42,
+        "software_component": "Microsoft ASP .NET Core - Shared Framework (x64)",
+        "expected_version": "8.0.22.25528",
+        "found_version": "3.13.12150.0",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=8.0.22.25528 | found=3.13.12150.0",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Python 3.13.12 Core Interpreter (64-bit)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft ASP .NET Core - Shared Framework (x64)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 43,
+        "software_component": "Microsoft Edge",
+        "expected_version": "143.0.3650.139",
+        "found_version": "147.0.3912.60",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=143.0.3650.139 | found=147.0.3912.60",
+        "details": "local-machine | Matched installed app 'Microsoft Edge WebView2 Runtime'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft Edge*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 44,
+        "software_component": "Microsoft ODBC Driver 17 for SQL Server",
+        "expected_version": "17.10.6.1",
+        "found_version": "17.10.6.1",
+        "status": "PASS",
+        "audit_text": "PASS | result=MATCH | expected=17.10.6.1 | found=17.10.6.1",
+        "details": "local-machine | Matched installed app 'Microsoft ODBC Driver 17 for SQL Server'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft ODBC Driver 17 for SQL Server*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 45,
+        "software_component": "Microsoft Office LTSC Professional Plus 2024",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About MSO",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 46,
+        "software_component": "Microsoft Excel",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Excel > Open Blank workbook > File > Account > About Excel",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 47,
+        "software_component": "Microsoft OneNote",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Start Menu > OneNote > File > Account > About OneNote",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > OneNote > File > Account > About OneNote",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 48,
+        "software_component": "Microsoft Outlook",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | primary_rule=unknown:no_rule | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "From the searchbar type Run. In the Run bar type Outlook.exe /PIM \"Local\" > File > Office Account > About Outlook",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 49,
+        "software_component": "Microsoft Powerpoint",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Powerpoint > Open Blank presentation > File > Account > About Powerpoint",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 50,
+        "software_component": "Microsoft Word",
+        "expected_version": "16.0.17932.20638",
+        "found_version": "16.0.19029.20244",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=16.0.17932.20638 | found=16.0.19029.20244",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Office 16 Click-to-Run Licensing Component'",
+        "version_locations": "Start Menu > Word > Open Blank Document > File > Account > About Word",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Word > Open Blank Document > File > Account > About Word",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 51,
+        "software_component": "Microsoft System CLR Types for SQL Server 2012 (x64)",
+        "expected_version": "11.1.3366.16",
+        "found_version": "1.0.6.37",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=11.1.3366.16 | found=1.0.6.37",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'System Information Reporter'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Microsoft System CLR Types for SQL Server 2012 (x64)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 52,
+        "software_component": "Microsoft Windows 11 LTSC 2024",
+        "expected_version": "26100.7623",
+        "found_version": "10.0.26100.1",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=26100.7623 | found=10.0.26100.1",
+        "details": "local-machine | fallback=exe-dll-resolution | Read file version from C:\\Windows\\System32\\winver.exe",
+        "version_locations": "Start Menu > Type Winver > Look for OS Build",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Type Winver > Look for OS Build",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 53,
+        "software_component": "Microsoft Windows Defender Antimalware Client Version",
+        "expected_version": "4.18.25110.6",
+        "found_version": "4.18.26030.3011",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=4.18.25110.6 | found=4.18.26030.3011",
+        "details": "local-machine | special=defender-client | Get-MpComputerStatus.AMProductVersion",
+        "version_locations": "Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu->Windows Security > Settings (lower left) > About (middle pane) > Antimalware Client Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 54,
+        "software_component": "Microsoft Windows Defender Antivirus Definitions",
+        "expected_version": "1.443.689.0",
+        "found_version": "1.449.154.0",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=1.443.689.0 | found=1.449.154.0",
+        "details": "local-machine | special=defender-signature | Get-MpComputerStatus.AntivirusSignatureVersion",
+        "version_locations": "Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Windows Security > Settings (lower left) > About (middle pane) > Antivirus Version",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 55,
+        "software_component": "Mozilla Firefox Extended Support Release (ESR)",
+        "expected_version": "140.7.0",
+        "found_version": "149.0.2",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=140.7.0 | found=149.0.2",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Mozilla Firefox (x64 en-US)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Mozilla Firefox Extended Support Release (ESR)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 56,
+        "software_component": "Notepad++",
+        "expected_version": "8.8.2",
+        "found_version": "8.9.3",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=8.8.2 | found=8.9.3",
+        "details": "local-machine | Matched installed app 'Notepad++ (64-bit x64)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Notepad++*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 57,
+        "software_component": "Notepad++ (64-bit) ComparePlus Plugin",
+        "expected_version": "2.2.0",
+        "found_version": "8.9.3",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=2.2.0 | found=8.9.3",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Notepad++ (64-bit x64)'",
+        "version_locations": "Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Notepad ++ > Navigate to top menu > Plugins > ComparePlus > About",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 58,
+        "software_component": "OpenSSL",
+        "expected_version": "1.1.1v",
+        "found_version": "3.5.5",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=1.1.1 | found=3.5.5",
+        "details": "local-machine | primary_rule=file_version:NOT_FOUND | fallback=exe-dll-resolution | Read file version from C:\\Program Files\\Git\\mingw64\\bin\\openssl.exe",
+        "version_locations": "C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe",
+        "local_detection_commands": [
+          "$p='C:\\GEOINT\\Tools\\OpenSSL\\openssl.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 59,
+        "software_component": "Pulse Secure Setup Client Activex Control",
+        "expected_version": "9.1.4983",
+        "found_version": "11.3.18.0251",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=9.1.4983 | found=11.3.18.0251",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'SecureConnector (64-bit)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Pulse Secure Setup Client Activex Control*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 60,
+        "software_component": "Rainmeter",
+        "expected_version": "4.5.18.3727",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.5.18.3727 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=unknown:no_rule | fallback_exhausted | uninstall[Rainmeter]=FAIL:NOT_FOUND | instructions=C:\\Users\\Public\\Geoint_Rainmeter",
+        "version_locations": "C:\\Users\\Public\\Geoint_Rainmeter",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Select-Object DisplayName,DisplayVersion"
+        ]
+      },
+      {
+        "worksheet_row": 61,
+        "software_component": "SALSA (Surveyor's Applications for Least Squares Adjustment)",
+        "expected_version": "1.17.0",
+        "found_version": "15.0.27520",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=1.17.0 | found=15.0.27520",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Microsoft Visual Studio Tools for Applications 2017 x64 Hosting Support'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SALSA (Surveyor''s Applications for Least Squares Adjustment)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 62,
+        "software_component": "Secure Email Marking Plug-in (SEMP)",
+        "expected_version": "6.1",
+        "found_version": "11.3.18.0251",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=6.1 | found=11.3.18.0251",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'SecureConnector (64-bit)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Secure Email Marking Plug-in (SEMP)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 63,
+        "software_component": "Sentinel Protection Installer",
+        "expected_version": "7.6.9",
+        "found_version": "5.15.14.19",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=7.6.9 | found=5.15.14.19",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Dell ControlVault Host Components Installer 64 bit'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Sentinel Protection Installer*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 64,
+        "software_component": "Solar/Lunar Almanac Prediction (SLAP)",
+        "expected_version": "1.5",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=1.5 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Solar/Lunar Almanac Prediction (SLAP)]=FAIL:NOT_FOUND; uninstall[Solar Lunar Almanac Prediction SLAP]=FAIL:NOT_FOUND; uninstall[Solar]=FAIL:NOT_FOUND; uninstall[Lunar]=FAIL:NOT_FOUND; uninstall[Almanac]=FAIL:NOT_FOUND; uninstall[Prediction]=FAIL:NOT_FOUND; uninstall[SLAP]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Solar/Lunar Almanac Prediction (SLAP)*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 65,
+        "software_component": "SOCET GXP",
+        "expected_version": "4.6.0.3.267",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.6.0.3.267 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[SOCET GXP]=FAIL:NOT_FOUND; uninstall[SOCET]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET GXP*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 66,
+        "software_component": "SOCET Developers Toolkit",
+        "expected_version": "4.6.0.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.6.0.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[SOCET Developers Toolkit]=FAIL:NOT_FOUND; uninstall[SOCET]=FAIL:NOT_FOUND; uninstall[Developers]=FAIL:NOT_FOUND; uninstall[Toolkit]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET Developers Toolkit*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 67,
+        "software_component": "SOCET GXP PostgreSQL",
+        "expected_version": "4.6.0.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.6.0.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[SOCET GXP PostgreSQL]=FAIL:NOT_FOUND; uninstall[SOCET PostgreSQL]=FAIL:NOT_FOUND; uninstall[SOCET]=FAIL:NOT_FOUND; uninstall[PostgreSQL]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*SOCET GXP PostgreSQL*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 68,
+        "software_component": "GXP Common Video Filters",
+        "expected_version": "21.0.2.2",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=21.0.2.2 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[GXP Common Video Filters]=FAIL:NOT_FOUND; uninstall[Common Video Filters]=FAIL:NOT_FOUND; uninstall[Common]=FAIL:NOT_FOUND; uninstall[Video]=FAIL:NOT_FOUND; uninstall[Filters]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP Common Video Filters*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 69,
+        "software_component": "GXP Ffmpeg",
+        "expected_version": "7.0.2.6.57",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=7.0.2.6.57 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[GXP Ffmpeg]=FAIL:NOT_FOUND; uninstall[Ffmpeg]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP Ffmpeg*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 70,
+        "software_component": "GXP License Manager",
+        "expected_version": "19.1.6.3",
+        "found_version": "5.00.9135.1000",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=LOWER_THAN_EXPECTED | expected=19.1.6.3 | found=5.00.9135.1000",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'Configuration Manager Client'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*GXP License Manager*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 71,
+        "software_component": "Swift XMPP Client",
+        "expected_version": "4.0.2",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.0.2 | found=MANUAL_CHECK",
+        "details": "local-machine | fallback_exhausted | uninstall[Swift XMPP Client]=FAIL:NOT_FOUND; uninstall[Swift XMPP]=FAIL:NOT_FOUND; uninstall[Swift]=FAIL:NOT_FOUND; uninstall[XMPP]=FAIL:NOT_FOUND | instructions=Start Menu > Swift > Click \"About Swift\"",
+        "version_locations": "Start Menu > Swift > Click \"About Swift\"",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Swift > Click \"About Swift\"",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      },
+      {
+        "worksheet_row": 72,
+        "software_component": "TAKX",
+        "expected_version": "5.4.2",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=5.4.2 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[TAKX]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*TAKX*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 73,
+        "software_component": "Thunderbolt Software",
+        "expected_version": "1.52.0.0",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=1.52.0.0 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Thunderbolt Software]=FAIL:NOT_FOUND; uninstall[Thunderbolt]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Thunderbolt Software*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 74,
+        "software_component": "Trimble Business Center - USMC Topographic Survey Edition",
+        "expected_version": "3.61",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=3.61 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Trimble Business Center - USMC Topographic Survey Edition]=FAIL:NOT_FOUND; uninstall[Trimble Business Center USMC Topographic Survey]=FAIL:NOT_FOUND; uninstall[Trimble]=FAIL:NOT_FOUND; uninstall[Business]=FAIL:NOT_FOUND; uninstall[Center]=FAIL:NOT_FOUND; uninstall[USMC]=FAIL:NOT_FOUND; uninstall[Topographic]=FAIL:NOT_FOUND; uninstall[Survey]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Trimble Business Center - USMC Topographic Survey Edition*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 75,
+        "software_component": "WinFlash",
+        "expected_version": "1.2.1.7",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=1.2.1.7 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=file_version:NOT_FOUND | fallback_exhausted | uninstall[WinFlash]=FAIL:NOT_FOUND; explicit_paths=WARN:NOT_FOUND | instructions=C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+        "version_locations": "C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe",
+        "local_detection_commands": [
+          "$p='C:\\Program Files (x86)\\Trimble\\Winflash\\Winflash.exe'; if (Test-Path $p) { (Get-Item $p).VersionInfo.ProductVersion }"
+        ]
+      },
+      {
+        "worksheet_row": 76,
+        "software_component": "VideoLAN Connector (VLC) Media Player",
+        "expected_version": "3.0.21",
+        "found_version": "11.3.18.0251",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=HIGHER_THAN_EXPECTED | expected=3.0.21 | found=11.3.18.0251",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback=uninstall-registry | Matched installed app 'SecureConnector (64-bit)'",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*VideoLAN Connector (VLC) Media Player*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 77,
+        "software_component": "Videx Pro",
+        "expected_version": "4.6.0.7660",
+        "found_version": "MANUAL_CHECK",
+        "status": "WARN",
+        "audit_text": "WARN | result=NOT_SCANNED | expected=4.6.0.7660 | found=MANUAL_CHECK",
+        "details": "local-machine | primary_rule=programs_and_features:NOT_FOUND | fallback_exhausted | uninstall[Videx Pro]=FAIL:NOT_FOUND; uninstall[Videx]=FAIL:NOT_FOUND | instructions=Programs and Features",
+        "version_locations": "Programs and Features",
+        "local_detection_commands": [
+          "$paths=@('HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*');Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like '*Videx Pro*'} | Select-Object -First 1"
+        ]
+      },
+      {
+        "worksheet_row": 78,
+        "software_component": "Software Baseline Freeze Date",
+        "expected_version": "",
+        "found_version": "5.72.0.0",
+        "status": "FAIL",
+        "audit_text": "FAIL | result=DIFFERENT | expected= | found=5.72.0.0",
+        "details": "local-machine | fallback=uninstall-registry | Matched installed app 'Microsoft Update Health Tools'",
+        "version_locations": "Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+        "local_detection_commands": [
+          "MANUAL_STEPS: Start Menu > Registry > Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\USMC\\SystemData",
+          "Fallback-1: uninstall registry DisplayName/DisplayVersion lookup",
+          "Fallback-2: explicit file path ProductVersion/FileVersion lookup",
+          "Fallback-3: resolve EXE/DLL via App Paths/where/search then file version lookup"
+        ]
+      }
+    ],
+    "comparison_summary": {
+      "total": 71,
+      "pass": 1,
+      "fail": 37,
+      "warn": 33
+    }
+  }
+}

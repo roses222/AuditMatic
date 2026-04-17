@@ -7,13 +7,13 @@
   "captured_from": "LOCAL_MACHINE",
   "software_inventory": [
     {
-      "display_name": "ArcGIS Desktop 10.8.1",
-      "display_version": "10.8.1",
+      "display_name": "ArcGIS Enterprise Portal 11.3",
+      "display_version": "11.3.0",
       "publisher": "Esri",
       "install_date": "20240315",
-      "install_location": "C:\\Program Files\\ArcGIS\\Desktop10.8",
+      "install_location": "C:\\Program Files\\ArcGIS\\Portal",
       "registry_hive": "HKEY_LOCAL_MACHINE",
-      "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ArcGIS_Desktop_108_spc1"
+      "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ArcGIS_Enterprise_Portal_113"
     },
     {
       "display_name": "Python 3.9.8",

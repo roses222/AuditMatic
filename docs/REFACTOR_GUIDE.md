@@ -100,8 +100,8 @@
 - Support functions:
   - `read_software_list_universal_rows(...)` (lines 313-490)
   - `_repair_invalid_style_indexes(file_path: str) -> Optional[str]` (lines 1288-1378)
-  - `_create_example_audit_checklist_workbook(file_path: Path) -> None` (lines 1013-1044)
-  - `_create_example_audit_results_workbook(file_path: Path) -> None` (lines 1045-1179)
+    - `_create_mock_audit_checklist_workbook(file_path: Path) -> None` (lines 1013-1044)
+    - `_create_mock_audit_results_workbook(file_path: Path) -> None` (lines 1045-1179)
 
 **Key classes:**
 1. **VersionRuleResolver** - Detect version lookup rules
@@ -205,11 +205,11 @@ AuditMatic Entry Point
 def main():
     """Initialize project structure and launch application."""
     from ui.app import App
-    from utils import ensure_project_structure
-    from utils import _create_example_files
+    from services.utils import ensure_project_structure
+    from services.utils import _create_mock_files
     
     ensure_project_structure()
-    _create_example_files()
+    _create_mock_files()
     
     app = App()
     app.mainloop()
@@ -273,13 +273,13 @@ These need to be added to utils.py or specific service files:
 
 1. `_get_sbl_model_from_workbook(sbl_path: str) -> str` → template_service.py
 2. `_model_to_filename_slug(model_name: str) -> str` → template_service.py
-3. `_create_example_registry_snapshot() -> Dict[str, Any]` → utils.py or template_service.py
-4. `_create_example_checklist_json() -> Dict[str, Any]` → template_service.py
-5. `_create_example_result_json() -> Dict[str, Any]` → template_service.py
-6. `_create_example_scan_job_payload() -> Dict[str, Any]` → utils.py
-7. `_create_example_audit_checklist_workbook(file_path: Path) -> None` → template_service.py
-8. `_create_example_audit_results_workbook(file_path: Path) -> None` → template_service.py
-9. `_create_example_files() -> None` → utils.py (main initializer)
+3. `_create_mock_registry_snapshot() -> Dict[str, Any]` → utils.py or template_service.py
+4. `_create_mock_checklist_json() -> Dict[str, Any]` → template_service.py
+5. `_create_mock_result_json() -> Dict[str, Any]` → template_service.py
+6. `_create_mock_scan_job_payload() -> Dict[str, Any]` → utils.py
+7. `_create_mock_audit_checklist_workbook(file_path: Path) -> None` → template_service.py
+8. `_create_mock_audit_results_workbook(file_path: Path) -> None` → template_service.py
+9. `_create_mock_files() -> None` → utils.py (main initializer)
 10. `_max_workbook_style_index(file_path: str) -> Optional[int]` → utils.py
 11. `_repair_invalid_style_indexes(file_path: str) -> Optional[str]` → utils.py
 

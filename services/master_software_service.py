@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from config import MASTER_SOFTWARE_LIST_PATH, SYSTEM_COLUMNS
-from utils import (
+from services.utils import (
     _empty_master_software_list_payload,
     _new_model_bucket,
     default_target_columns,

@@ -10,6 +10,7 @@ from services.json_export_service import JsonExportService
 from services.master_software_service import MasterSoftwarePathService
 from services.profile_service import SSHTunnelService, VMProfileService, VSphereService
 from services.template_service import TemplateAssetService
+from services import utils as utils
 from services.workbook_service import (
     AuditWorkbookService,
     AuditWorkbookServiceProxy,
@@ -28,6 +29,7 @@ __all__ = [
     "MasterSoftwarePathService",
     "SSHTunnelService",
     "TemplateAssetService",
+    "utils",
     "VMProfileService",
     "VSphereService",
     "VersionRuleResolver",

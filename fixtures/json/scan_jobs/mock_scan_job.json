@@ -1,0 +1,30 @@
+{
+  "_file_purpose": "Scan job template. Full execution record for one audit run, including settings, parsed rows, and scan outcomes.",
+  "_how_to_use": "Use this as the authoritative run envelope when troubleshooting or replaying audits.",
+  "status": "completed",
+  "started_at": "2026-04-17T14:32:00",
+  "completed_at": "2026-04-17T14:35:30",
+  "error": "",
+  "sbl_file": {
+    "name": "mock_audit_workbook.xlsx",
+    "path": "C:\\path\\to\\mock_audit_workbook.xlsx",
+    "baseline_name": "BASELINE_MOCK_v3.2",
+    "timestamp": "2026-04-17T14:32:00",
+    "sbl_model": "GEOINT_FD"
+  },
+  "output": {
+    "workbook_path": "C:\\path\\to\\audit_results\\audit_results.xlsx",
+    "result_base_name": "audit_results"
+  },
+  "settings": {
+    "profile_name": "mock_profile",
+    "build_type": "PRODUCTION",
+    "connection_mode": "LOCAL",
+    "local_only": true,
+    "fallback_enabled": false,
+    "vcenter_server": "",
+    "ssh_gateway_host": "",
+    "ssh_gateway_port": 22,
+    "ssh_target_port": 22
+  }
+}
