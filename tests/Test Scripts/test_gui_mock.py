@@ -87,4 +87,7 @@ ensure_mock_profile()
 print("[INFO] Monkey-patching complete. Launching GUI...")
 
 if __name__ == "__main__":
-    sbl_audit_gui_v_2000.main()
+    try:
+        sbl_audit_gui_v_2000.main()
+    except KeyboardInterrupt:
+        print("[INFO] GUI run interrupted by user; exiting test launcher cleanly.")
