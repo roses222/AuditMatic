@@ -67,6 +67,14 @@ except Exception:
     paramiko = None
     PARAMIKO_AVAILABLE = False
 
+try:
+    from cryptography.fernet import Fernet, InvalidToken
+    CRYPTO_AVAILABLE = True
+except Exception:
+    Fernet = None
+    InvalidToken = Exception
+    CRYPTO_AVAILABLE = False
+
 APP_TITLE = "Audit Tool v2"
 APP_GEOMETRY = "1020x760"
 LOCAL_SENTINEL = "__LOCAL__"
@@ -896,10 +904,104 @@ class VMProfileService:
         self.profiles_dir = profiles_dir
         ensure_project_structure()
 
+    @staticmethod
+    def _key_path() -> Path:
+        return Path.home() / ".auditmatic" / "profile_credentials.key"
+
+    def _get_fernet(self):
+        if not CRYPTO_AVAILABLE or Fernet is None:
+            return None
+        key_path = self._key_path()
+        key_path.parent.mkdir(parents=True, exist_ok=True)
+        if key_path.exists():
+            key = key_path.read_bytes()
+        else:
+            key = Fernet.generate_key()
+            key_path.write_bytes(key)
+        return Fernet(key)
+
+    @staticmethod
+    def _encrypt_value(fernet, value: str) -> str:
+        if not fernet or not value:
+            return value
+        return fernet.encrypt(value.encode("utf-8")).decode("ascii")
+
+    @staticmethod
+    def _decrypt_value(fernet, value: str) -> str:
+        if not fernet or not value:
+            return value
+        try:
+            return fernet.decrypt(value.encode("ascii")).decode("utf-8")
+        except Exception:
+            return ""
+
+    def _encrypt_profile_credentials(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        fernet = self._get_fernet()
+        encrypted_payload = copy.deepcopy(payload)
+
+        vcenter_user = normalize_text(encrypted_payload.get("vcenter_username", ""))
+        vcenter_password = encrypted_payload.get("vcenter_password", "")
+        if vcenter_user:
+            encrypted_payload["vcenter_username_enc"] = self._encrypt_value(fernet, vcenter_user)
+        if vcenter_password:
+            encrypted_payload["vcenter_password_enc"] = self._encrypt_value(fernet, vcenter_password)
+        encrypted_payload.pop("vcenter_username", None)
+        encrypted_payload.pop("vcenter_password", None)
+
+        targets = encrypted_payload.get("targets", {})
+        if isinstance(targets, dict):
+            for target_name, target_info in targets.items():
+                if not isinstance(target_info, dict):
+                    continue
+                target_user = normalize_text(target_info.get("username", ""))
+                target_password = target_info.get("password", "")
+                if target_user:
+                    target_info["username_enc"] = self._encrypt_value(fernet, target_user)
+                if target_password:
+                    target_info["password_enc"] = self._encrypt_value(fernet, target_password)
+                target_info.pop("username", None)
+                target_info.pop("password", None)
+
+        encrypted_payload["credentials_encrypted"] = bool(fernet)
+        encrypted_payload["credentials_scheme"] = "fernet-v1" if fernet else "none"
+        return encrypted_payload
+
+    def _decrypt_profile_credentials(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        fernet = self._get_fernet()
+        decrypted_payload = copy.deepcopy(payload)
+
+        if decrypted_payload.get("vcenter_username_enc"):
+            decrypted_payload["vcenter_username"] = self._decrypt_value(fernet, decrypted_payload.get("vcenter_username_enc", ""))
+        else:
+            decrypted_payload["vcenter_username"] = normalize_text(decrypted_payload.get("vcenter_username", ""))
+
+        if decrypted_payload.get("vcenter_password_enc"):
+            decrypted_payload["vcenter_password"] = self._decrypt_value(fernet, decrypted_payload.get("vcenter_password_enc", ""))
+        else:
+            decrypted_payload["vcenter_password"] = decrypted_payload.get("vcenter_password", "")
+
+        targets = decrypted_payload.get("targets", {})
+        if isinstance(targets, dict):
+            for target_name, target_info in targets.items():
+                if not isinstance(target_info, dict):
+                    continue
+                if target_info.get("username_enc"):
+                    target_info["username"] = self._decrypt_value(fernet, target_info.get("username_enc", ""))
+                else:
+                    target_info["username"] = normalize_text(target_info.get("username", ""))
+
+                if target_info.get("password_enc"):
+                    target_info["password"] = self._decrypt_value(fernet, target_info.get("password_enc", ""))
+                else:
+                    target_info["password"] = target_info.get("password", "")
+
+        return decrypted_payload
+
     def profile_path(self, profile_name: str) -> Path:
         return self.profiles_dir / f"{profile_name}.json"
 
     def save_profile(self, profile_name: str, payload: Dict[str, Any]) -> str:
+        payload = self._encrypt_profile_credentials(payload)
         payload["profile_name"] = profile_name
         payload["updated_at"] = datetime.now().isoformat(timespec="seconds")
         path = self.profile_path(profile_name)
@@ -907,7 +1009,8 @@ class VMProfileService:
         return str(path)
 
     def load_profile(self, profile_name: str) -> Dict[str, Any]:
-        return json.loads(self.profile_path(profile_name).read_text(encoding="utf-8"))
+        payload = json.loads(self.profile_path(profile_name).read_text(encoding="utf-8"))
+        return self._decrypt_profile_credentials(payload)
 
 
 class VSphereService:
@@ -1046,7 +1149,7 @@ class SSHTunnelService:
     def _encode_powershell(script: str) -> str:
         return base64.b64encode(script.encode("utf-16le")).decode("ascii")
 
-    def _connect_target(self, target_host: str):
+    def _connect_target(self, target_host: str, target_username: str, target_password: str):
         if not PARAMIKO_AVAILABLE:
             raise RuntimeError("paramiko is not installed. Install it with: pip install paramiko")
 
@@ -1078,8 +1181,8 @@ class SSHTunnelService:
             target_client.connect(
                 hostname=target_host,
                 port=self.target_port,
-                username=self.target_username,
-                password=self.target_password,
+                username=target_username,
+                password=target_password,
                 timeout=self.timeout_seconds,
                 look_for_keys=False,
                 allow_agent=False,
@@ -1090,16 +1193,25 @@ class SSHTunnelService:
         target_client.connect(
             hostname=target_host,
             port=self.target_port,
-            username=self.target_username,
-            password=self.target_password,
+            username=target_username,
+            password=target_password,
             timeout=self.timeout_seconds,
             look_for_keys=False,
             allow_agent=False,
         )
         return target_client, None
 
-    def run_powershell(self, target_host: str, script: str, timeout_seconds: int = 90) -> Tuple[str, str, str]:
-        if not self.target_username or not self.target_password:
+    def run_powershell(
+        self,
+        target_host: str,
+        script: str,
+        timeout_seconds: int = 90,
+        target_username: str = "",
+        target_password: str = "",
+    ) -> Tuple[str, str, str]:
+        resolved_username = normalize_text(target_username) or self.target_username
+        resolved_password = target_password or self.target_password
+        if not resolved_username or not resolved_password:
             return "WARN", "NO_SSH_CREDS", f"Missing SSH credentials for target {target_host}"
         if not target_host:
             return "WARN", "NO_TARGET", "SSH target host is blank"
@@ -1107,7 +1219,7 @@ class SSHTunnelService:
         target_client = None
         gateway_client = None
         try:
-            target_client, gateway_client = self._connect_target(target_host)
+            target_client, gateway_client = self._connect_target(target_host, resolved_username, resolved_password)
             encoded = self._encode_powershell(script)
             command = f"powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand {encoded}"
             _, stdout, stderr = target_client.exec_command(command, timeout=timeout_seconds)
@@ -1785,14 +1897,14 @@ class AuditEngine:
         scan_status, found_version, details = self.local_scanner.scan_software_version(row.software_component, row.version_locations)
         return self._build_result(row, target_name, found_version, scan_status, f"local-machine | {details}")
 
-    def _scan_guest_vm(self, row: AuditRow, target_name: str, vm_name: str) -> ScanResult:
+    def _scan_guest_vm(self, row: AuditRow, target_name: str, vm_name: str, guest_username: str, guest_password: str) -> ScanResult:
         if self.vsphere_service is None:
             return self._build_result(row, target_name, "NO_VSPHERE", "WARN", f"vSphere service is not connected for '{vm_name}'")
-        if not self.guest_creds.get("username") or not self.guest_creds.get("password"):
+        if not guest_username or not guest_password:
             return self._build_result(row, target_name, "NO_GUEST_CREDS", "WARN", f"Missing guest credentials for '{vm_name}'")
         rule, payload = VersionRuleResolver.detect_rule(row.version_locations)
         if rule == "powershell":
-            scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, self.guest_creds["username"], self.guest_creds["password"], payload["command"])
+            scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, guest_username, guest_password, payload["command"])
             return self._build_result(row, target_name, found_version, scan_status, f"vm={vm_name} | {details}")
         if rule == "programs_and_features":
             safe_name = row.software_component.replace("'", "''")
@@ -1802,7 +1914,7 @@ class AuditEngine:
                 "if (-not $hit) { Write-Output 'NOT_FOUND'; exit 4 };"
                 "$v = $hit.DisplayVersion; if (-not $v) { $v = 'FOUND_NO_VERSION' }; Write-Output $v"
             )
-            scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, self.guest_creds["username"], self.guest_creds["password"], script)
+            scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, guest_username, guest_password, script)
             if scan_status == "PASS" and found_version == "NOT_FOUND":
                 scan_status = "FAIL"
             return self._build_result(row, target_name, found_version, scan_status, f"vm={vm_name} | {details}")
@@ -1819,20 +1931,25 @@ class AuditEngine:
                     "if (-not $ver) { $ver = 'FOUND_NO_VERSION' };"
                     "Write-Output $ver"
                 )
-                scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, self.guest_creds["username"], self.guest_creds["password"], script)
+                scan_status, found_version, details = self.vsphere_service.run_powershell_in_guest(vm_name, guest_username, guest_password, script)
                 if scan_status == "PASS" and found_version != "MISSING_FILE":
                     return self._build_result(row, target_name, found_version, scan_status, f"vm={vm_name} | {details} | source={path_value}")
                 failures.append(f"{path_value} -> {found_version}")
             return self._build_result(row, target_name, "NOT_FOUND", "WARN", f"vm={vm_name} | no candidate file path succeeded | {'; '.join(failures)}")
         return self._build_result(row, target_name, "UNKNOWN", "WARN", f"vm={vm_name} | No implemented scan rule matched VERSION LOCATIONS")
 
-    def _scan_ssh_target(self, row: AuditRow, target_name: str, target_host: str) -> ScanResult:
+    def _scan_ssh_target(self, row: AuditRow, target_name: str, target_host: str, target_username: str, target_password: str) -> ScanResult:
         if self.ssh_service is None:
             return self._build_result(row, target_name, "NO_SSH_SERVICE", "WARN", f"SSH service is not initialized for '{target_host}'")
 
         rule, payload = VersionRuleResolver.detect_rule(row.version_locations)
         if rule == "powershell":
-            scan_status, found_version, details = self.ssh_service.run_powershell(target_host, payload["command"])
+            scan_status, found_version, details = self.ssh_service.run_powershell(
+                target_host,
+                payload["command"],
+                target_username=target_username,
+                target_password=target_password,
+            )
             return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details}")
 
         if rule == "programs_and_features":
@@ -1843,7 +1960,12 @@ class AuditEngine:
                 "if (-not $hit) { Write-Output 'NOT_FOUND'; exit 4 };"
                 "$v = $hit.DisplayVersion; if (-not $v) { $v = 'FOUND_NO_VERSION' }; Write-Output $v"
             )
-            scan_status, found_version, details = self.ssh_service.run_powershell(target_host, script)
+            scan_status, found_version, details = self.ssh_service.run_powershell(
+                target_host,
+                script,
+                target_username=target_username,
+                target_password=target_password,
+            )
             if scan_status == "PASS" and found_version == "NOT_FOUND":
                 scan_status = "FAIL"
             return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details}")
@@ -1861,7 +1983,12 @@ class AuditEngine:
                     "if (-not $ver) { $ver = 'FOUND_NO_VERSION' };"
                     "Write-Output $ver"
                 )
-                scan_status, found_version, details = self.ssh_service.run_powershell(target_host, script)
+                scan_status, found_version, details = self.ssh_service.run_powershell(
+                    target_host,
+                    script,
+                    target_username=target_username,
+                    target_password=target_password,
+                )
                 if scan_status == "PASS" and found_version != "MISSING_FILE":
                     return self._build_result(row, target_name, found_version, scan_status, f"ssh-host={target_host} | {details} | source={path_value}")
                 failures.append(f"{path_value} -> {found_version}")
@@ -1872,19 +1999,21 @@ class AuditEngine:
     def scan_target_row(self, row: AuditRow, target_name: str) -> ScanResult:
         target_profile = self.vm_profile.get("targets", {}).get(target_name, {})
         vm_name = normalize_text(target_profile.get("vm_name", ""))
+        target_username = normalize_text(target_profile.get("username", "")) or normalize_text(self.guest_creds.get("username", ""))
+        target_password = target_profile.get("password", "") or self.guest_creds.get("password", "")
         if not vm_name:
             return self._build_result(row, target_name, "PROFILE_NOT_MAPPED", "WARN", f"No VM mapping saved for {target_name}")
         if vm_name.upper() == LOCAL_SENTINEL:
             return self._scan_local(row, target_name)
         if self.connection_mode == "ssh tunnel":
-            result = self._scan_ssh_target(row, target_name, vm_name)
+            result = self._scan_ssh_target(row, target_name, vm_name, target_username, target_password)
             if (
                 self.ssh_fallback_enabled
                 and result.status in ("WARN", "FAIL")
                 and self.vsphere_service is not None
             ):
                 self.logger(f"SSH scan failed for {target_name}, trying vSphere fallback...")
-                vm_result = self._scan_guest_vm(row, target_name, vm_name)
+                vm_result = self._scan_guest_vm(row, target_name, vm_name, target_username, target_password)
                 if vm_result.status == "PASS":
                     self.logger(f"vSphere fallback succeeded for {target_name}")
                     return vm_result
@@ -1892,14 +2021,14 @@ class AuditEngine:
             return result
 
         # vSphere mode - try vSphere first
-        result = self._scan_guest_vm(row, target_name, vm_name)
+        result = self._scan_guest_vm(row, target_name, vm_name, target_username, target_password)
 
         # If fallback is enabled and vSphere failed, try SSH
         if (self.ssh_fallback_enabled and
             result.status in ("WARN", "FAIL") and
             self.ssh_service is not None):
             self.logger(f"vSphere scan failed for {target_name}, trying SSH fallback...")
-            ssh_result = self._scan_ssh_target(row, target_name, vm_name)
+            ssh_result = self._scan_ssh_target(row, target_name, vm_name, target_username, target_password)
             if ssh_result.status == "PASS":
                 self.logger(f"SSH fallback succeeded for {target_name}")
                 return ssh_result
@@ -2343,12 +2472,19 @@ class ProfileFrame(BaseFrame):
         profile_name = self._get_profile_name_or_warn()
         if profile_name is None:
             return
+        default_user = normalize_text(self.vcenter_username.get())
+        default_password = self.vcenter_password.get()
         # Merge dropdowns and target_info for saving
         for name, combo in self.vm_dropdowns.items():
             if name not in self.target_info:
                 self.target_info[name] = {"vm_name": combo.get().strip(), "username": "", "password": "", "os_type": "windows"}
             else:
                 self.target_info[name]["vm_name"] = combo.get().strip()
+
+            if not normalize_text(self.target_info[name].get("username", "")) and default_user:
+                self.target_info[name]["username"] = default_user
+            if not self.target_info[name].get("password", "") and default_password:
+                self.target_info[name]["password"] = default_password
 
         profile_path = self.profile_service.profile_path(profile_name)
         if profile_path.exists():
@@ -2361,6 +2497,8 @@ class ProfileFrame(BaseFrame):
                 return
         payload = {
             "vcenter_server": self.vcenter_server.get().strip(),
+            "vcenter_username": default_user,
+            "vcenter_password": default_password,
             "ignore_ssl": self.ignore_ssl.get(),
             "targets": self.target_info,
             "last_verified": ""
@@ -2374,6 +2512,8 @@ class ProfileFrame(BaseFrame):
             return
         payload = self.profile_service.load_profile(profile_name)
         self.vcenter_server.set(payload.get("vcenter_server", ""))
+        self.vcenter_username.set(payload.get("vcenter_username", ""))
+        self.vcenter_password.set(payload.get("vcenter_password", ""))
         self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
         self.target_info = payload.get("targets", {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS})
         for name, combo in self.vm_dropdowns.items():
@@ -2766,11 +2906,15 @@ class AuditFrame(BaseFrame):
         # Save edited info back to profile
         profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
         targets = profile.get("targets", {})
+        default_user = normalize_text(profile.get("vcenter_username", ""))
+        default_password = profile.get("vcenter_password", "")
         for target, (vm_var, user_var, pass_var, os_var) in self.target_info_vars.items():
+            target_user = user_var.get().strip() or default_user
+            target_password = pass_var.get().strip() or default_password
             targets[target] = {
                 "vm_name": vm_var.get().strip(),
-                "username": user_var.get().strip(),
-                "password": pass_var.get().strip(),
+                "username": target_user,
+                "password": target_password,
                 "os_type": os_var.get().strip() or "windows"
             }
         profile["targets"] = targets
@@ -2981,7 +3125,31 @@ class AuditFrame(BaseFrame):
     def load_profile_defaults(self):
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
         self.vcenter_server.set(payload.get("vcenter_server", ""))
-        self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
+        self.vcenter_username.set(payload.get("vcenter_username", ""))
+        self.vcenter_password.set(payload.get("vcenter_password", ""))
+
+        targets = payload.get("targets", {})
+        target_creds = []
+        if isinstance(targets, dict):
+            for target_name in SYSTEM_COLUMNS:
+                entry = targets.get(target_name, {})
+                if not isinstance(entry, dict):
+                    continue
+                user = normalize_text(entry.get("username", ""))
+                password = entry.get("password", "")
+                if user and password:
+                    target_creds.append((user, password))
+
+        if target_creds:
+            first_user, first_password = target_creds[0]
+            self.guest_username.set(first_user)
+            self.guest_password.set(first_password)
+            if all(user == first_user and pwd == first_password for user, pwd in target_creds):
+                self.append_log("Loaded profile defaults: vCenter credentials and shared VM login.")
+            else:
+                self.append_log("Loaded profile defaults: vCenter credentials; VM credentials vary by target (using first for shared field).")
+        else:
+            self.append_log(f"Loaded profile defaults from {self.profile_name.get().strip()}")
         # Optionally update other fields if needed
 
     @staticmethod
