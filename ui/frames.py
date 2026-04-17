@@ -1170,27 +1170,27 @@ class AuditFrame(BaseFrame):
 		ttk.Label(cfg, textvariable=self.audit_schema_var, foreground="#35556b").pack(anchor="w", pady=(4, 0))
 		creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
 		creds.pack(fill="x", pady=(0, 8))
-		profile_row = ttk.Frame(creds)
-		profile_row.pack(fill="x", pady=2)
-		ttk.Label(profile_row, text="VM profile", width=self._compact_label_width).pack(side="left")
-		self.profile_dropdown = ttk.Combobox(profile_row, textvariable=self.profile_name, state="readonly", values=self.profile_options)
+		self.profile_row = ttk.Frame(creds)
+		self.profile_row.pack(fill="x", pady=2)
+		ttk.Label(self.profile_row, text="VM profile", width=self._compact_label_width).pack(side="left")
+		self.profile_dropdown = ttk.Combobox(self.profile_row, textvariable=self.profile_name, state="readonly", values=self.profile_options)
 		self.profile_dropdown.pack(side="left", fill="x", expand=True, padx=(0, 8))
-		ttk.Button(profile_row, text="Load Profile", command=self.load_profile_defaults).pack(side="left")
-		self._init_target_info_table(profile_row)
+		ttk.Button(self.profile_row, text="Load Profile", command=self.load_profile_defaults).pack(side="left")
+		self._init_target_info_table(self.profile_row)
 
 		self.fallback_texts = {
-			"vSphere": "Use SSH tunnel as fallback if vSphere fails",
+			"vsphere": "Use SSH tunnel as fallback if vSphere fails",
 			"ssh tunnel": "Use vSphere as fallback if SSH fails",
 		}
 		mode_row = ttk.Frame(creds)
 		mode_row.pack(fill="x", pady=2)
 		ttk.Label(mode_row, text="Connection mode", width=self._compact_label_width).pack(side="left")
-		ttk.Combobox(mode_row, textvariable=self.connection_mode, state="readonly", values=["vSphere", "SSH Tunnel"]).pack(side="left", fill="x", expand=True, padx=(0, 8))
-		toggle_row = ttk.Frame(creds)
-		toggle_row.pack(fill="x", pady=2)
+		ttk.Combobox(mode_row, textvariable=self.connection_mode, state="readonly", values=["vSphere", "SSH Tunnel", "Local Scan Only"]).pack(side="left", fill="x", expand=True, padx=(0, 8))
+		self.toggle_row = ttk.Frame(creds)
+		self.toggle_row.pack(fill="x", pady=2)
 		self.fallback_checkbox = ttk.Checkbutton(
-			toggle_row,
-			text=self.fallback_texts[normalize_text(self.connection_mode.get())],
+			self.toggle_row,
+			text=self.fallback_texts.get(normalize_text(self.connection_mode.get()).lower(), self.fallback_texts["vsphere"]),
 			variable=self.show_ssh_settings,
 			command=self._toggle_ssh_section,
 		)
@@ -1208,8 +1208,6 @@ class AuditFrame(BaseFrame):
 		self._entry_half_row(self.ssh_section, "Target SSH password", self.guest_password, show="*", label_width=20)
 		controls = ttk.Frame(self)
 		controls.pack(fill="x", pady=(0, 8))
-		self.local_only = tk.BooleanVar(value=False)
-		ttk.Checkbutton(toggle_row, text="Scan only local machine (ignore VMs)", variable=self.local_only).pack(side="left", padx=(16, 0))
 		self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
 		self.run_button.pack(side="left")
 		self.quick_run_button = ttk.Button(controls, text="Quick Audit Scan", command=self.start_quick_audit)
@@ -1314,7 +1312,27 @@ class AuditFrame(BaseFrame):
 	def _on_connection_mode_changed(self, *_):
 		"""Update UI state after the selected connection mode changes."""
 		mode = normalize_text(self.connection_mode.get()).lower()
-		self.fallback_checkbox.configure(text=self.fallback_texts.get(mode, self.fallback_texts["vSphere"]))
+		is_local_only = mode == "local scan only"
+		self.fallback_checkbox.configure(text=self.fallback_texts.get(mode, self.fallback_texts["vsphere"]))
+
+		if is_local_only:
+			if self.profile_row.winfo_ismapped():
+				self.profile_row.pack_forget()
+			if self.toggle_row.winfo_ismapped():
+				self.toggle_row.pack_forget()
+			if hasattr(self, "vcenter_section") and self.vcenter_section.winfo_ismapped():
+				self.vcenter_section.pack_forget()
+			self._set_ssh_section_visible(False)
+			if hasattr(self, "probe_button"):
+				self.probe_button.configure(text="Remote Probe Disabled", state="disabled")
+			return
+
+		if not self.profile_row.winfo_ismapped():
+			self.profile_row.pack(fill="x", pady=2)
+		if not self.toggle_row.winfo_ismapped():
+			self.toggle_row.pack(fill="x", pady=2)
+		if hasattr(self, "probe_button"):
+			self.probe_button.configure(state="normal")
 
 		if mode == "ssh tunnel":
 			self._set_ssh_section_visible(True)
@@ -1497,7 +1515,6 @@ class AuditFrame(BaseFrame):
 		self.audit_path.set(selected_path)
 		self.output_path.set(str(quick_output))
 		self.connection_mode.set("vSphere")
-		self.local_only.set(False)
 		self.show_ssh_settings.set(False)
 
 		vcenter = quick_details["vcenter"]
@@ -1548,6 +1565,10 @@ class AuditFrame(BaseFrame):
 		service = None
 		try:
 			mode = normalize_text(self.connection_mode.get()).lower()
+			if mode == "local scan only":
+				self.after(0, lambda: self.append_log("Local Scan Only mode selected; remote probe skipped."))
+				self.after(0, lambda: self.set_status("Status: Probe complete"))
+				return
 			if mode == "ssh tunnel":
 				if not PARAMIKO_AVAILABLE:
 					raise RuntimeError("paramiko is not installed. Install with: pip install paramiko")
@@ -1722,8 +1743,8 @@ class AuditFrame(BaseFrame):
 					"audit_mode": self._audit_mode_label,
 					"build_type": self.build_type_value.get(),
 					"connection_mode": normalize_text(self.connection_mode.get()),
-					"local_only": bool(self.local_only.get()),
-					"fallback_enabled": bool(self.show_ssh_settings.get()),
+					"local_only": normalize_text(self.connection_mode.get()).lower() == "local scan only",
+					"fallback_enabled": bool(self.show_ssh_settings.get()) and normalize_text(self.connection_mode.get()).lower() != "local scan only",
 					"vcenter_server": self.vcenter_server.get().strip(),
 					"ssh_gateway_host": self.ssh_gateway_host.get().strip(),
 					"ssh_gateway_port": self._parse_int(self.ssh_gateway_port.get(), 22),
@@ -1799,10 +1820,13 @@ class AuditFrame(BaseFrame):
 				vm_profile = copy.deepcopy(self._audit_profile_override)
 				self.after(0, lambda: self.append_log("Using quick-audit target mapping from dialog input."))
 			else:
-				vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
+				if normalize_text(self.connection_mode.get()).lower() == "local scan only":
+					vm_profile = {"targets": {}}
+				else:
+					vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
 			vcenter_server = self.vcenter_server.get().strip()
 			mode = normalize_text(self.connection_mode.get()).lower()
-			if self.local_only.get():
+			if mode == "local scan only":
 				vm_profile = self._coerce_local_only_profile(vm_profile, workbook_service.target_columns)
 				self.after(0, lambda: self.append_log("Local-only scan enabled; all targets set to __LOCAL__."))
 			elif mode != "ssh tunnel" and not vcenter_server:
@@ -1822,7 +1846,7 @@ class AuditFrame(BaseFrame):
 					"gateway_password": self.ssh_gateway_password.get(),
 					"target_port": self._parse_int(self.ssh_target_port.get(), 22),
 				},
-				ssh_fallback_enabled=bool(self.show_ssh_settings.get()),
+				ssh_fallback_enabled=bool(self.show_ssh_settings.get()) and mode != "local scan only",
 			)
 
 			base_name = Path(self.output_path.get().strip()).stem or "audit_results"
