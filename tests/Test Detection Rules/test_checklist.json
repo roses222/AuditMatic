@@ -1,13 +1,51 @@
 {
-  "required_software": [
-    "python3",
-    "pip",
-    "open-vm-tools",
-    "paramiko"
-  ],
-  "required_services": [
-    "ssh",
-    "vmtoolsd"
-  ],
-  "notes": "This is a sample checklist for VM compliance testing."
+  "source_workbook": "tests/Test SBLs/test_sbl.xlsx",
+  "generated_at": "2026-04-17T00:00:00",
+  "rows": [
+    {
+      "software_component": "7-Zip",
+      "current_ci_version": "23.01",
+      "sbl_build_version": "23.01",
+      "audit_value": "",
+      "target_vms": {
+        "ArcGIS_WebAdaptor": "X",
+        "ArcGIS_Portal": "X",
+        "ArcGIS_HostingServer": "",
+        "ArcGIS_DS1": "",
+        "ArcGIS_DS2": "",
+        "GCS_Management": "X"
+      },
+      "version_locations": "Programs and Features"
+    },
+    {
+      "software_component": "ArcGIS PowerShell DSC Module",
+      "current_ci_version": "11.3.0",
+      "sbl_build_version": "11.3.0",
+      "audit_value": "",
+      "target_vms": {
+        "ArcGIS_WebAdaptor": "X",
+        "ArcGIS_Portal": "X",
+        "ArcGIS_HostingServer": "X",
+        "ArcGIS_DS1": "X",
+        "ArcGIS_DS2": "X",
+        "GCS_Management": "X"
+      },
+      "version_locations": "powershell:Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version"
+    },
+    {
+      "software_component": "Notepad++",
+      "current_ci_version": "8.6.0",
+      "sbl_build_version": "8.6.0",
+      "audit_value": "",
+      "target_vms": {
+        "ArcGIS_WebAdaptor": "",
+        "ArcGIS_Portal": "",
+        "ArcGIS_HostingServer": "X",
+        "ArcGIS_DS1": "",
+        "ArcGIS_DS2": "",
+        "GCS_Management": ""
+      },
+      "version_locations": "C:\\Program Files\\Notepad++\\notepad++.exe"
+    }
+  ]
 }

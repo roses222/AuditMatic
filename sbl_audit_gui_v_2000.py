@@ -2415,6 +2415,20 @@ class ProfileFrame(BaseFrame):
             ttk.Entry(row, textvariable=pass_var, width=12, show="*").pack(side="left", padx=2)
             ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=8, state="readonly").pack(side="left", padx=2)
             rows[target_name] = (vm_var, user_var, pass_var, os_var)
+
+        def apply_shared_credentials():
+            shared_user = normalize_text(self.vcenter_username.get())
+            shared_password = self.vcenter_password.get()
+            if not shared_user or not shared_password:
+                messagebox.showwarning(
+                    "Shared credentials missing",
+                    "Set vCenter username and password first, then apply shared credentials.",
+                )
+                return
+            for _target_name, (_vm_var, user_var, pass_var, _os_var) in rows.items():
+                user_var.set(shared_user)
+                pass_var.set(shared_password)
+
         def save_and_close():
             for t, (vm_var, user_var, pass_var, os_var) in rows.items():
                 self.target_info[t] = {
@@ -2426,7 +2440,8 @@ class ProfileFrame(BaseFrame):
                 # Update dropdowns to reflect new VM names
                 self.vm_dropdowns[t].set(vm_var.get().strip() or LOCAL_SENTINEL)
             dialog.destroy()
-        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(SYSTEM_COLUMNS), column=0, pady=8)
+        ttk.Button(dialog, text="Apply Shared Login To All", command=apply_shared_credentials).grid(row=len(SYSTEM_COLUMNS), column=0, pady=(8, 2))
+        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(SYSTEM_COLUMNS) + 1, column=0, pady=(2, 8))
 
     def _entry_row(self, parent, label, var, show=None, command=None):
         row = ttk.Frame(parent)
@@ -2895,8 +2910,21 @@ class AuditFrame(BaseFrame):
             ttk.Entry(row, textvariable=pass_var, width=14, show="*").grid(row=0, column=3)
             ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4)
             self.target_info_vars[target] = (vm_var, user_var, pass_var, os_var)
+        def _apply_shared_credentials_to_targets():
+            shared_user = normalize_text(self.guest_username.get()) or normalize_text(self.vcenter_username.get())
+            shared_password = self.guest_password.get() or self.vcenter_password.get()
+            if not shared_user or not shared_password:
+                messagebox.showwarning(
+                    "Shared credentials missing",
+                    "Set shared VM credentials (or vCenter credentials) first, then apply shared credentials.",
+                )
+                return
+            for _target, (_vm_var, user_var, pass_var, _os_var) in self.target_info_vars.items():
+                user_var.set(shared_user)
+                pass_var.set(shared_password)
+        ttk.Button(frame, text="Apply Shared Login To All", command=_apply_shared_credentials_to_targets).pack(pady=(6, 2))
         self.save_targets_btn = ttk.Button(frame, text="Save Target Info to Profile", command=self._save_target_info)
-        self.save_targets_btn.pack(pady=8)
+        self.save_targets_btn.pack(pady=(2, 8))
         self.target_info_dialog.transient(self)
         self.target_info_dialog.grab_set()
         self.target_info_dialog.wait_window()
