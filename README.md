@@ -16,12 +16,27 @@ pip install -r requirements.txt
 python main.py
 ```
 
+For the long-form reference copy, see [docs/README_FULL.md](docs/README_FULL.md).
+
 ## Main Entry Points
 
 - Main GUI: `python main.py`
 - Quick audit flow: `python quick_audit_scan.py`
+- Windows double-click launcher: `Launch_Quick_Audit_Scan.bat`
 
 `main.py` is the primary launch path for the refactored application.
+
+`quick_audit_scan.py` is intentionally a lightweight standalone flow (file picker + compact dialog), not the full multi-page app UI.
+
+## Double-Click Quick Scan (Windows)
+
+Use `Launch_Quick_Audit_Scan.bat` to run Quick Audit Scan directly from Explorer or from a desktop shortcut.
+
+Suggested desktop shortcut setup:
+
+1. Right-click `Launch_Quick_Audit_Scan.bat`.
+2. Select **Send to > Desktop (create shortcut)**.
+3. Rename the shortcut to something like **Quick Audit Scan**.
 
 ## Typical Workflow
 
