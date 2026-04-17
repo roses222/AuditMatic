@@ -70,6 +70,42 @@ def confirm_target_column_mapping(
 	return None
 
 
+def normalize_ssh_tunnel_profile_fields(ssh_tunnel: Any) -> Dict[str, str]:
+	"""Normalize legacy/new SSH tunnel profile keys into one UI-friendly shape."""
+	if not isinstance(ssh_tunnel, dict):
+		return {
+			"gateway_host": "",
+			"gateway_port": "22",
+			"gateway_username": "",
+			"gateway_password": "",
+			"target_port": "22",
+		}
+
+	gateway_host = normalize_text(
+		ssh_tunnel.get("gateway_host", "")
+		or ssh_tunnel.get("jump_host", "")
+	)
+	gateway_port = normalize_text(
+		ssh_tunnel.get("gateway_port", "")
+		or ssh_tunnel.get("jump_port", "")
+		or "22"
+	)
+	gateway_username = normalize_text(
+		ssh_tunnel.get("gateway_username", "")
+		or ssh_tunnel.get("jump_username", "")
+	)
+	gateway_password = ssh_tunnel.get("gateway_password", "") or ssh_tunnel.get("jump_password", "") or ""
+	target_port = normalize_text(ssh_tunnel.get("target_port", "") or "22")
+
+	return {
+		"gateway_host": gateway_host,
+		"gateway_port": gateway_port,
+		"gateway_username": gateway_username,
+		"gateway_password": gateway_password,
+		"target_port": target_port,
+	}
+
+
 class BaseFrame(ttk.Frame):
 	"""Base class for all UI frames."""
 
@@ -525,13 +561,12 @@ class ProfileFrame(BaseFrame):
 		self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
 		self.source_sbl_path.set(payload.get("source_sbl_path", payload.get("target_schema", {}).get("source_path", "")))
 		self.build_type.set(infer_build_type(payload.get("build_type", payload.get("target_schema", {}).get("build_type", self.source_sbl_path.get()))))
-		ssh_tunnel = payload.get("ssh_tunnel", {})
-		if isinstance(ssh_tunnel, dict):
-			self.ssh_gateway_host.set(ssh_tunnel.get("gateway_host", ""))
-			self.ssh_gateway_port.set(str(ssh_tunnel.get("gateway_port", "22")))
-			self.ssh_gateway_username.set(ssh_tunnel.get("gateway_username", ""))
-			self.ssh_gateway_password.set(ssh_tunnel.get("gateway_password", ""))
-			self.ssh_target_port.set(str(ssh_tunnel.get("target_port", "22")))
+		ssh_tunnel = normalize_ssh_tunnel_profile_fields(payload.get("ssh_tunnel", {}))
+		self.ssh_gateway_host.set(ssh_tunnel["gateway_host"])
+		self.ssh_gateway_port.set(ssh_tunnel["gateway_port"])
+		self.ssh_gateway_username.set(ssh_tunnel["gateway_username"])
+		self.ssh_gateway_password.set(ssh_tunnel["gateway_password"])
+		self.ssh_target_port.set(ssh_tunnel["target_port"])
 		self._set_target_columns(resolve_profile_target_columns(payload))
 		self.target_info = payload.get("targets", {name: self._default_target_info() for name in self.target_columns})
 		for name, combo in self.vm_dropdowns.items():
@@ -1373,13 +1408,12 @@ class AuditFrame(BaseFrame):
 		self.vcenter_server.set(payload.get("vcenter_server", payload.get("vsphere", {}).get("server", "")))
 		self.vcenter_username.set(payload.get("vcenter_username", payload.get("vsphere", {}).get("username", "")))
 		self.vcenter_password.set(payload.get("vcenter_password", payload.get("vsphere", {}).get("password", "")))
-		ssh_tunnel = payload.get("ssh_tunnel", {})
-		if isinstance(ssh_tunnel, dict):
-			self.ssh_gateway_host.set(ssh_tunnel.get("gateway_host", ""))
-			self.ssh_gateway_port.set(str(ssh_tunnel.get("gateway_port", "22")))
-			self.ssh_gateway_username.set(ssh_tunnel.get("gateway_username", ""))
-			self.ssh_gateway_password.set(ssh_tunnel.get("gateway_password", ""))
-			self.ssh_target_port.set(str(ssh_tunnel.get("target_port", "22")))
+		ssh_tunnel = normalize_ssh_tunnel_profile_fields(payload.get("ssh_tunnel", {}))
+		self.ssh_gateway_host.set(ssh_tunnel["gateway_host"])
+		self.ssh_gateway_port.set(ssh_tunnel["gateway_port"])
+		self.ssh_gateway_username.set(ssh_tunnel["gateway_username"])
+		self.ssh_gateway_password.set(ssh_tunnel["gateway_password"])
+		self.ssh_target_port.set(ssh_tunnel["target_port"])
 		self._apply_detected_schema(self._resolve_target_names(payload), payload.get("build_type", payload.get("target_schema", {}).get("build_type", self.audit_path.get())))
 
 		target_creds = []
