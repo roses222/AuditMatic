@@ -9,27 +9,17 @@ from typing import Any, Dict, List, Optional
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from sbl_audit_gui_v_2000 import (
-    AUDIT_RESULTS_DIR,
-    LOCAL_SENTINEL,
-    AuditEngine,
-    AuditWorkbookService,
-    FileLogger,
-    JsonExportService,
-    LocalWindowsScanner,
-    TemplateAssetService,
-    VersionRuleResolver,
-    default_target_columns,
-    normalize_text,
-    read_software_list_universal_rows,
-    _get_sbl_model_from_workbook,
-)
+from config import AUDIT_RESULTS_DIR, LOCAL_SENTINEL
+from services import AuditEngine, AuditWorkbookService, FileLogger, JsonExportService, LocalWindowsScanner, TemplateAssetService, VersionRuleResolver
+from services.template_service import _get_sbl_model_from_workbook
+from services.workbook_service import read_software_list_universal_rows
+from utils import default_target_columns, normalize_text
 
 
 class QuickAuditDialog(tk.Toplevel):
     """Collect quick-audit VM details in a compact, fixed-size dialog."""
 
-    def __init__(self, parent: tk.Misc, target_columns: List[str]):
+    def __init__(self, parent: tk.Tk, target_columns: List[str]):
         super().__init__(parent)
         self.title("Quick Audit Scan")
         self.transient(parent)
@@ -92,7 +82,10 @@ class QuickAuditDialog(tk.Toplevel):
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
         ttk.Label(row, text=label, width=18).pack(side="left")
-        ttk.Entry(row, textvariable=variable, show=show, width=width).pack(side="left", fill="x", expand=True)
+        if show is not None:
+            ttk.Entry(row, textvariable=variable, show=show, width=width).pack(side="left", fill="x", expand=True)
+        else:
+            ttk.Entry(row, textvariable=variable, width=width).pack(side="left", fill="x", expand=True)
 
     def _set_all_local(self) -> None:
         """Set each target mapping to the local sentinel."""
@@ -164,6 +157,8 @@ def main() -> None:
     """Run quick audit workflow without showing the main application GUI."""
     root = tk.Tk()
     root.withdraw()
+    normalized_source_path = ""
+    normalized_from_fallback = False
 
     selected_path = filedialog.askopenfilename(
         title="Quick Audit Scan - Select XLSX Checklist",
