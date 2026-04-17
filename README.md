@@ -16,8 +16,6 @@ pip install -r requirements.txt
 python main.py
 ```
 
-For the long-form reference copy, see [docs/README_FULL.md](docs/README_FULL.md).
-
 ## Main Entry Points
 
 - Main GUI: `python main.py`
