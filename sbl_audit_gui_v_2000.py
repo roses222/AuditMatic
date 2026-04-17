@@ -2351,6 +2351,8 @@ class ProfileFrame(BaseFrame):
         self.profile_service = VMProfileService()
         self.logger = FileLogger(LOGS_DIR, "vm_profile")
         self.profile_name = tk.StringVar(value="")
+        self.saved_profile_name = tk.StringVar(value="")
+        self.profile_options = self._get_profile_options()
         self.vcenter_server = tk.StringVar()
         self.vcenter_username = tk.StringVar()
         self.vcenter_password = tk.StringVar()
@@ -2364,6 +2366,18 @@ class ProfileFrame(BaseFrame):
         settings = ttk.LabelFrame(self, text="vSphere Settings", padding=12)
         settings.pack(fill="x", pady=12)
         self._entry_row(settings, "Profile name", self.profile_name)
+        profile_select_row = ttk.Frame(settings)
+        profile_select_row.pack(fill="x", pady=4)
+        ttk.Label(profile_select_row, text="Saved profiles", width=18).pack(side="left")
+        self.profile_selector = ttk.Combobox(
+            profile_select_row,
+            textvariable=self.saved_profile_name,
+            values=self.profile_options,
+            state="readonly",
+        )
+        self.profile_selector.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        ttk.Button(profile_select_row, text="Refresh", command=self._refresh_profile_options).pack(side="left")
+        ttk.Button(profile_select_row, text="Use Selected", command=self._use_selected_profile).pack(side="left", padx=(8, 0))
         self._entry_row(settings, "vCenter server", self.vcenter_server)
         self._entry_row(settings, "vCenter username", self.vcenter_username)
         self._entry_row(settings, "vCenter password", self.vcenter_password, show="*")
@@ -2393,7 +2407,35 @@ class ProfileFrame(BaseFrame):
         self.log.pack(fill="both", expand=True)
         self.profile_name.trace_add("write", self._refresh_profile_save_state)
         self._refresh_profile_save_state()
+        self._refresh_profile_options()
         self._refresh_credential_status()
+
+    def _get_profile_options(self) -> List[str]:
+        if not PROFILES_DIR.exists():
+            return []
+        return sorted([f.stem for f in PROFILES_DIR.glob("*.json") if f.is_file()])
+
+    def _refresh_profile_options(self, select_name: str = ""):
+        self.profile_options = self._get_profile_options()
+        self.profile_selector.configure(values=self.profile_options)
+
+        candidate = normalize_text(select_name) or normalize_text(self.profile_name.get())
+        if candidate and candidate in self.profile_options:
+            self.saved_profile_name.set(candidate)
+            return
+
+        if self.profile_options:
+            self.saved_profile_name.set(self.profile_options[0])
+        else:
+            self.saved_profile_name.set("")
+
+    def _use_selected_profile(self):
+        selected = normalize_text(self.saved_profile_name.get())
+        if not selected:
+            messagebox.showwarning("No profile selected", "Select a profile from the dropdown first.")
+            return
+        self.profile_name.set(selected)
+        self.load_saved_profile()
 
     def _refresh_credential_status(self, profile_name: str = ""):
         if not self.profile_service.encryption_supported():
@@ -2566,6 +2608,7 @@ class ProfileFrame(BaseFrame):
         }
         path = self.profile_service.save_profile(profile_name, payload)
         self.append_log(f"Saved profile: {path}")
+        self._refresh_profile_options(select_name=profile_name)
         self._refresh_credential_status(profile_name)
 
     def load_saved_profile(self):
@@ -2581,6 +2624,7 @@ class ProfileFrame(BaseFrame):
         for name, combo in self.vm_dropdowns.items():
             combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
         self.append_log(f"Loaded profile: {profile_name}")
+        self._refresh_profile_options(select_name=profile_name)
         self._refresh_credential_status(profile_name)
 
 
