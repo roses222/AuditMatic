@@ -71,7 +71,7 @@ def confirm_target_column_mapping(
 
 
 def normalize_ssh_tunnel_profile_fields(ssh_tunnel: Any) -> Dict[str, str]:
-	"""Normalize legacy/new SSH tunnel profile keys into one UI-friendly shape."""
+	"""Normalize SSH tunnel profile keys into one UI-friendly shape."""
 	if not isinstance(ssh_tunnel, dict):
 		return {
 			"gateway_host": "",
@@ -81,20 +81,10 @@ def normalize_ssh_tunnel_profile_fields(ssh_tunnel: Any) -> Dict[str, str]:
 			"target_port": "22",
 		}
 
-	gateway_host = normalize_text(
-		ssh_tunnel.get("gateway_host", "")
-		or ssh_tunnel.get("jump_host", "")
-	)
-	gateway_port = normalize_text(
-		ssh_tunnel.get("gateway_port", "")
-		or ssh_tunnel.get("jump_port", "")
-		or "22"
-	)
-	gateway_username = normalize_text(
-		ssh_tunnel.get("gateway_username", "")
-		or ssh_tunnel.get("jump_username", "")
-	)
-	gateway_password = ssh_tunnel.get("gateway_password", "") or ssh_tunnel.get("jump_password", "") or ""
+	gateway_host = normalize_text(ssh_tunnel.get("gateway_host", ""))
+	gateway_port = normalize_text(ssh_tunnel.get("gateway_port", "") or "22")
+	gateway_username = normalize_text(ssh_tunnel.get("gateway_username", ""))
+	gateway_password = ssh_tunnel.get("gateway_password", "") or ""
 	target_port = normalize_text(ssh_tunnel.get("target_port", "") or "22")
 
 	return {
