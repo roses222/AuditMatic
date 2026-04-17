@@ -921,6 +921,22 @@ class VMProfileService:
         return Fernet(key)
 
     @staticmethod
+    def encryption_supported() -> bool:
+        return bool(CRYPTO_AVAILABLE and Fernet is not None)
+
+    def profile_credential_storage_mode(self, profile_name: str) -> str:
+        path = self.profile_path(profile_name)
+        if not path.exists():
+            return "no-profile"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return "unknown"
+        if bool(payload.get("credentials_encrypted", False)):
+            return "encrypted"
+        return "legacy-plain"
+
+    @staticmethod
     def _encrypt_value(fernet, value: str) -> str:
         if not fernet or not value:
             return value
@@ -2352,6 +2368,8 @@ class ProfileFrame(BaseFrame):
         self._entry_row(settings, "vCenter username", self.vcenter_username)
         self._entry_row(settings, "vCenter password", self.vcenter_password, show="*")
         ttk.Checkbutton(settings, text="Ignore SSL warnings", variable=self.ignore_ssl).pack(anchor="w", pady=(6, 0))
+        self.credential_status_var = tk.StringVar(value="Credentials protection: checking...")
+        ttk.Label(settings, textvariable=self.credential_status_var, foreground="#2f6f2f").pack(anchor="w", pady=(6, 0))
         mapping = ttk.LabelFrame(self, text=f"Worksheet Target → VM Name or {LOCAL_SENTINEL}", padding=12)
         mapping.pack(fill="x")
         for target_name in SYSTEM_COLUMNS:
@@ -2375,6 +2393,33 @@ class ProfileFrame(BaseFrame):
         self.log.pack(fill="both", expand=True)
         self.profile_name.trace_add("write", self._refresh_profile_save_state)
         self._refresh_profile_save_state()
+        self._refresh_credential_status()
+
+    def _refresh_credential_status(self, profile_name: str = ""):
+        if not self.profile_service.encryption_supported():
+            self.credential_status_var.set("Credentials protection: disabled (install cryptography)")
+            return
+
+        key_path = self.profile_service._key_path()
+        if key_path.exists():
+            base = "Credentials protection: enabled"
+        else:
+            base = "Credentials protection: enabled (key will be created on first save)"
+
+        selected = normalize_text(profile_name) or normalize_text(self.profile_name.get())
+        if not selected:
+            self.credential_status_var.set(base)
+            return
+
+        mode = self.profile_service.profile_credential_storage_mode(selected)
+        if mode == "encrypted":
+            self.credential_status_var.set(f"{base} | profile storage: encrypted")
+        elif mode == "legacy-plain":
+            self.credential_status_var.set(f"{base} | profile storage: legacy/plain")
+        elif mode == "no-profile":
+            self.credential_status_var.set(f"{base} | profile storage: not saved yet")
+        else:
+            self.credential_status_var.set(f"{base} | profile storage: unknown")
 
     def _profile_name_is_valid(self, profile_name: str) -> bool:
         return bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", profile_name))
@@ -2396,6 +2441,7 @@ class ProfileFrame(BaseFrame):
         profile_name = normalize_text(self.profile_name.get())
         is_valid = self._profile_name_is_valid(profile_name)
         self.save_profile_button.configure(state="normal" if is_valid else "disabled")
+        self._refresh_credential_status(profile_name)
 
     def edit_target_info_dialog(self):
         dialog = tk.Toplevel(self)
@@ -2520,6 +2566,7 @@ class ProfileFrame(BaseFrame):
         }
         path = self.profile_service.save_profile(profile_name, payload)
         self.append_log(f"Saved profile: {path}")
+        self._refresh_credential_status(profile_name)
 
     def load_saved_profile(self):
         profile_name = self._get_profile_name_or_warn()
@@ -2534,6 +2581,7 @@ class ProfileFrame(BaseFrame):
         for name, combo in self.vm_dropdowns.items():
             combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
         self.append_log(f"Loaded profile: {profile_name}")
+        self._refresh_credential_status(profile_name)
 
 
     def verify_profile(self):
