@@ -1,0 +1,73 @@
+{
+  "profile_name": "mock_production_profile",
+  "updated_at": "2026-04-17T14:30:22",
+  "note": "Generic multi-target audit profile with vCenter and SSH tunnel support",
+  "vsphere": {
+    "server": "vcenter-prod.lab.company.local",
+    "username": "domain\\audit_service",
+    "password": "P@ssw0rd123!AuditService",
+    "ignore_ssl": true,
+    "auto_discover_vms": true
+  },
+  "ssh_tunnel": {
+    "enabled": true,
+    "gateway_host": "bastion.lab.company.local",
+    "gateway_port": 22,
+    "gateway_username": "domain\\bastion_user",
+    "gateway_key_path": "C:\\Users\\audit_user\\.ssh\\bastion_key.pem",
+    "use_key_auth": true,
+    "note": "SSH tunnel config for secure access to target VMs; used if direct vSphere SSH tunneling unavailable"
+  },
+  "targets": {
+    "Target_1": {
+      "vm_name": "vm-nacl-001.lab.company.local",
+      "os_type": "windows",
+      "username": "domain\\nacl_audit",
+      "password": "NaclAudit2026!",
+      "ssh_override": null
+    },
+    "Target_2": {
+      "vm_name": "vm-nacl-002.lab.company.local",
+      "os_type": "windows",
+      "username": "domain\\nacl_audit",
+      "password": "NaclAudit2026!",
+      "ssh_override": null
+    },
+    "Target_3": {
+      "vm_name": "__LOCAL__",
+      "os_type": "windows",
+      "username": "",
+      "password": "",
+      "ssh_override": null
+    },
+    "Target_4": {
+      "vm_name": "vm-deployment-mgr.lab.company.local",
+      "os_type": "windows",
+      "username": "domain\\deploy_audit",
+      "password": "DeployAudit2026!",
+      "ssh_override": {
+        "gateway_host": "alternate-bastion.lab.company.local",
+        "gateway_port": 2222,
+        "gateway_username": "domain\\alt_bastion_user",
+        "gateway_key_path": "C:\\Users\\audit_user\\.ssh\\alt_bastion.pem"
+      }
+    },
+    "Target_5": {
+      "vm_name": "vm-database-01.lab.company.local",
+      "os_type": "windows",
+      "username": "domain\\db_audit",
+      "password": "DbAudit2026!",
+      "ssh_override": null
+    },
+    "Target_6": {
+      "vm_name": "vm-app-server.lab.company.local",
+      "os_type": "windows",
+      "username": "domain\\app_audit",
+      "password": "AppAudit2026!",
+      "ssh_override": null
+    }
+  },
+  "last_verified": "2026-04-16T18:45:00",
+  "credentials_encrypted": false,
+  "credentials_scheme": "plain"
+}
