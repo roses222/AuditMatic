@@ -1,0 +1,24 @@
+{
+  "_file_purpose": "Template registry snapshot for creating new test fixtures or manually seeded snapshot files.",
+  "_how_to_use": "Copy this file and replace placeholder values. Keep structure intact so parsers and tests continue to work.",
+  "_field_guide": {
+    "generated_at": "ISO timestamp when snapshot is created, example: 2026-04-17T15:20:00",
+    "host": "Host name where software inventory was captured",
+    "registry_entries": "Array of installed software records",
+    "registry_entries[].path": "Registry uninstall path",
+    "registry_entries[].display_name": "Application name",
+    "registry_entries[].display_version": "Installed version string",
+    "registry_entries[].publisher": "Software publisher"
+  },
+  "generated_at": "YYYY-MM-DDTHH:MM:SS",
+  "host": "HOSTNAME",
+  "registry_entries": [
+    {
+      "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\AppName",
+      "display_name": "Application Name",
+      "display_version": "0.0.0",
+      "publisher": "Publisher Name"
+    }
+  ],
+  "notes": "Add more entries as needed. Prefer realistic data for detection-rule tests."
+}

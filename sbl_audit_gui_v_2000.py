@@ -159,6 +159,7 @@ SYSTEM_COLUMNS = [
     "ArcGIS_DS2",
     "GCS_Management",
 ]
+BUILD_TYPE_OPTIONS = ["unknown", "baseline", "latest", "custom"]
 
 PASS_FILL = PatternFill(fill_type="solid", fgColor="C6EFCE")
 FAIL_FILL = PatternFill(fill_type="solid", fgColor="FFC7CE")
@@ -188,29 +189,311 @@ class ScanResult:
     audit_text: str
 
 
+def default_target_columns() -> List[str]:
+    """Default target columns."""
+    return list(SYSTEM_COLUMNS)
+
+
+def infer_build_type(source_text: str) -> str:
+    """Infer build type."""
+    text = normalize_text(source_text).lower()
+    if not text:
+        return "unknown"
+    if "baseline" in text:
+        return "baseline"
+    if "latest" in text:
+        return "latest"
+    if "custom" in text or "test" in text:
+        return "custom"
+    return "unknown"
+
+
+def resolve_profile_target_columns(payload: Dict[str, Any]) -> List[str]:
+    """Resolve profile target columns."""
+    schema = payload.get("target_schema", {})
+    if isinstance(schema, dict):
+        columns = schema.get("target_columns", [])
+        if isinstance(columns, list):
+            normalized = [normalize_text(item) for item in columns if normalize_text(item)]
+            if normalized:
+                return normalized
+
+    targets = payload.get("targets", {})
+    if isinstance(targets, dict):
+        normalized = [normalize_text(item) for item in targets.keys() if normalize_text(item)]
+        if normalized:
+            return normalized
+
+    return default_target_columns()
+
+
+def build_target_schema_payload(source_path: str, target_columns: List[str], build_type: str) -> Dict[str, Any]:
+    """Build target schema payload."""
+    return {
+        "source_path": source_path,
+        "target_columns": [normalize_text(name) for name in target_columns if normalize_text(name)],
+        "build_type": infer_build_type(build_type) if build_type else infer_build_type(source_path),
+        "legacy_fallback": default_target_columns(),
+    }
+
+
+def confirm_target_column_mapping(
+    parent: tk.Widget,
+    source_path: str,
+    detected_columns: List[str],
+    build_type: str,
+    current_columns: Optional[List[str]] = None,
+) -> Optional[List[str]]:
+    """Confirm target column mapping."""
+    detected = [normalize_text(item) for item in detected_columns if normalize_text(item)]
+    fallback = default_target_columns()
+    if not detected:
+        return fallback
+
+    preview = "\n".join(f"- {name}" for name in detected)
+    message = (
+        f"Detected VM target columns from source:\n{source_path or 'N/A'}\n"
+        f"Build type: {infer_build_type(build_type)}\n\n"
+        f"Detected columns:\n{preview}\n\n"
+        "Choose Yes to use detected columns, No to use legacy fallback columns, or Cancel to keep current selection."
+    )
+    choice = messagebox.askyesnocancel("Confirm Target Column Mapping", message, parent=parent)
+    if choice is True:
+        return detected
+    if choice is False:
+        return fallback
+    if current_columns:
+        return list(current_columns)
+    return None
+
+
+def pick_record_value(record: Dict[str, Any], candidates: List[str]) -> str:
+    """Pick record value."""
+    normalized = {normalize_header(k): v for k, v in record.items()}
+    for candidate in candidates:
+        candidate_upper = normalize_header(candidate)
+        for key, value in normalized.items():
+            if candidate_upper in key:
+                return normalize_text(value)
+    return ""
+
+
+def derive_import_target_columns(rows: List[Dict[str, Any]]) -> List[str]:
+    """Derive import target columns."""
+    discovered: List[str] = []
+    for record in rows:
+        target_vms = record.get("target_vms", {})
+        if isinstance(target_vms, dict):
+            for key in target_vms.keys():
+                name = normalize_text(key)
+                if name and name not in discovered:
+                    discovered.append(name)
+        for key in record.keys():
+            name = normalize_text(key)
+            if not name or is_known_non_target_header(name):
+                continue
+            if name.lower() == "target_vms":
+                continue
+            if name not in discovered:
+                discovered.append(name)
+    return discovered or default_target_columns()
+
+
+def is_known_non_target_header(header: str) -> bool:
+    """Is known non target header."""
+    normalized = normalize_header(str(header).replace("_", " "))
+    if not normalized:
+        return True
+    known_tokens = (
+        "SOFTWARE COMPONENT",
+        "CURRENT CI VERSION",
+        "VERSION LOCATION",
+        "VERSION LOCATIONS",
+        "SBL BUILD",
+        "AUDIT",
+        "DISPLAYED NAME",
+        "CM TOOL ID NUMBER",
+        "VERSION STATUS",
+        "NOTES",
+    )
+    return any(token in normalized for token in known_tokens)
+
+
+@dataclass
+class WorkbookSchema:
+    """
+    Dynamically discovered workbook structure.
+    Replaces hardcoded SYSTEM_COLUMNS by detecting actual columns in the workbook.
+    """
+    source_path: str
+    source_format: str  # 'excel', 'json', 'csv'
+    header_row_index: int
+    software_column: str  # e.g., "SOFTWARE COMPONENT"
+    current_version_column: str  # e.g., "CURRENT CI VERSION"
+    sbl_version_column: str  # e.g., "VERSION LOCATIONS" or "SBL BUILD VERSION"
+    target_columns: List[str]  # e.g., ["Target_1", "Target_2", "vm-prod-01", ...] instead of hardcoded SYSTEM_COLUMNS
+    other_columns: List[str]  # non-target columns
+    
+    def get_all_columns(self) -> List[str]:
+        """Return all columns in order: required + targets + others."""
+        return [self.software_column, self.current_version_column, self.sbl_version_column] + self.target_columns + self.other_columns
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize for storage in profiles."""
+        return asdict(self)
+    
+    @staticmethod
+    def from_dict(data: Dict[str, Any]) -> "WorkbookSchema":
+        """Deserialize from profile storage."""
+        return WorkbookSchema(**data)
+
+
+def detect_workbook_format(path: str) -> str:
+    """Detect if the file is Excel, JSON, or CSV."""
+    p = Path(path)
+    suffix = p.suffix.lower()
+    if suffix in ['.xlsx', '.xls']:
+        return 'excel'
+    elif suffix == '.json':
+        return 'json'
+    elif suffix == '.csv':
+        return 'csv'
+    else:
+        # Try to infer by content
+        try:
+            with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read(100)
+                if content.strip().startswith('{') or content.strip().startswith('['):
+                    return 'json'
+                elif ',' in content or '\t' in content:
+                    return 'csv'
+        except:
+            pass
+    return 'excel'  # default assumption
+
+
+def detect_header_row_index(path: str, format_type: str) -> int:
+    """Find the header row index (0-based) by detecting the first row with recognizable column names."""
+    if format_type == 'excel':
+        try:
+            wb = load_workbook(path)
+            ws = wb.active
+            for idx, row in enumerate(ws.iter_rows(values_only=True), 0):
+                headers = [normalize_header(cell) for cell in row if cell]
+                # Check if row contains required headers
+                if any('SOFTWARE' in h for h in headers) or any('COMPONENT' in h for h in headers):
+                    return idx
+        except Exception:
+            pass
+        return 0  # default to first row
+    elif format_type == 'json':
+        try:
+            with open(path, 'r') as f:
+                data = json.load(f)
+                # JSON with list of objects; first item is the "header"
+                if isinstance(data, list) and data and isinstance(data[0], dict):
+                    return 0
+        except Exception:
+            pass
+        return 0
+    elif format_type == 'csv':
+        try:
+            df = pd.read_csv(path, nrows=5)
+            return 0  # CSV headers are always first row
+        except Exception:
+            pass
+        return 0
+    return 0
+
+
+def detect_target_columns(path: str, format_type: str, header_row_idx: int) -> Tuple[List[str], Dict[str, int]]:
+    """
+    Detect which columns are targets/VMs and return their names.
+    Strategy: Find columns that have VM-like names (dns names, IP patterns) or
+    contain consistent values in rows (not sparse).
+    Returns: (target_column_names, column_index_map)
+    """
+    columns = []
+    col_map = {}
+    
+    if format_type == 'excel':
+        try:
+            wb = load_workbook(path)
+            ws = wb.active
+            rows_list = list(ws.iter_rows(values_only=True))
+            if not rows_list or header_row_idx >= len(rows_list):
+                return [], {}
+            
+            headers = rows_list[header_row_idx]
+            for col_idx, cell in enumerate(headers):
+                if cell is None:
+                    continue
+                col_name = normalize_text(cell)
+                if not col_name:
+                    continue
+                # Heuristic: target columns are NOT the required headers
+                if col_name.upper() not in {'SOFTWARE COMPONENT', 'CURRENT CI VERSION', 'VERSION LOCATIONS', 'SBL BUILD VERSION'}:
+                    columns.append(col_name)
+                    col_map[col_name] = col_idx
+            return columns, col_map
+        except Exception:
+            pass
+    elif format_type == 'json':
+        try:
+            with open(path, 'r') as f:
+                data = json.load(f)
+                if isinstance(data, list) and data and isinstance(data[0], dict):
+                    first_obj = data[0]
+                    for key in first_obj.keys():
+                        if key.upper() not in {'SOFTWARE COMPONENT', 'CURRENT CI VERSION', 'VERSION LOCATIONS'}:
+                            columns.append(key)
+                            col_map[key] = len(col_map)
+            return columns, col_map
+        except Exception:
+            pass
+    elif format_type == 'csv':
+        try:
+            df = pd.read_csv(path)
+            for col in df.columns:
+                if col.upper() not in {'SOFTWARE COMPONENT', 'CURRENT CI VERSION', 'VERSION LOCATIONS'}:
+                    columns.append(col)
+                    col_map[col] = df.columns.get_loc(col)
+            return columns, col_map
+        except Exception:
+            pass
+    
+    return columns, col_map
+
+
 def normalize_text(value: Any) -> str:
+    """Normalize text."""
     if value is None:
         return ""
     return " ".join(str(value).strip().split())
 
 
 def normalize_header(value: Any) -> str:
+    """Normalize header."""
     return normalize_text(value).upper()
 
 
 def is_x_mark(value: Any) -> bool:
+    """Is x mark."""
     return normalize_text(value).upper() == "X"
 
 
 def today_str() -> str:
+    """Today str."""
     return datetime.now().strftime("%d%b%Y").upper()
 
 
 def timestamp_str() -> str:
+    """Timestamp str."""
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 def normalize_version(value: str) -> str:
+    """Normalize version."""
     text = normalize_text(value)
     if not text:
         return ""
@@ -221,6 +504,7 @@ def normalize_version(value: str) -> str:
 
 
 def parse_version_tuple(value: str) -> Tuple[int, ...]:
+    """Parse version tuple."""
     normalized = normalize_version(value)
     if not normalized:
         return tuple()
@@ -231,6 +515,7 @@ def parse_version_tuple(value: str) -> Tuple[int, ...]:
 
 
 def compare_versions(expected: str, found: str, scan_status: str) -> Tuple[str, str]:
+    """Compare versions."""
     expected_n = normalize_version(expected)
     found_n = normalize_version(found)
     expected_tuple = parse_version_tuple(expected)
@@ -258,7 +543,482 @@ def compare_versions(expected: str, found: str, scan_status: str) -> Tuple[str, 
     return "FAIL", f"FAIL | result=DIFFERENT | expected={expected_n or expected} | found={found_n or found}"
 
 
+def _create_example_registry_snapshot() -> Dict[str, Any]:
+    """Generate an example registry snapshot (raw installed software inventory)."""
+    return {
+        "_file_purpose": "Registry snapshot template. Captures raw installed software inventory from the machine being scanned.",
+        "_how_to_use": "Keep this structure when generating or validating registry snapshot data. Each item in software_inventory represents one uninstall registry record.",
+        "status": "success",
+        "timestamp": "2026-04-17T14:32:00",
+        "entry_count": 3,
+        "captured_from": "LOCAL_MACHINE",
+        "software_inventory": [
+            {
+                "display_name": "ArcGIS Enterprise Portal 11.3",
+                "display_version": "11.3.0",
+                "publisher": "Esri",
+                "install_date": "20240315",
+                "install_location": "C:\\Program Files\\ArcGIS\\Portal",
+                "registry_hive": "HKEY_LOCAL_MACHINE",
+                "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ArcGIS_Enterprise_Portal_113",
+            },
+            {
+                "display_name": "Python 3.9.8",
+                "display_version": "3.9.8",
+                "publisher": "Python Software Foundation",
+                "install_date": "20260401",
+                "install_location": "C:\\Python39",
+                "registry_hive": "HKEY_LOCAL_MACHINE",
+                "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Python39",
+            },
+            {
+                "display_name": "PostgreSQL 12.5",
+                "display_version": "12.5",
+                "publisher": "PostgreSQL Global Development Group",
+                "install_date": "20240101",
+                "install_location": "C:\\Program Files\\PostgreSQL\\12",
+                "registry_hive": "HKEY_LOCAL_MACHINE",
+                "registry_path": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PostgreSQL_12",
+            },
+        ],
+    }
+
+
+def _create_example_checklist_json() -> Dict[str, Any]:
+    """Generate an example checklist JSON (parsed checklist rows)."""
+    return {
+        "_file_purpose": "Checklist template. Represents parsed SBL rows and target applicability before scans run.",
+        "_how_to_use": "Use this structure for checklist exports. checklist_items should align to workbook rows used for auditing.",
+        "checklist_name": "example_checklist",
+        "generated_at": "2026-04-17T14:32:00",
+        "baseline_version": "BASELINE_EXAMPLE_v3.2",
+        "target_systems": ["ArcGIS_Portal", "GIS_Server"],
+        "total_items": 3,
+        "checklist_items": [
+            {
+                "row_number": 2,
+                "software_component": "ArcGIS Enterprise Portal",
+                "sbl_version": "11.3.0",
+                "version_locations": "Programs and Features",
+                "detection_rule": "programs_and_features",
+                "targeted_systems": ["LOCAL_MACHINE"],
+            },
+            {
+                "row_number": 3,
+                "software_component": "Python",
+                "sbl_version": "3.9.7",
+                "version_locations": "File Version",
+                "detection_rule": "file_version",
+                "targeted_systems": ["GIS_Server"],
+            },
+            {
+                "row_number": 4,
+                "software_component": "PostgreSQL",
+                "sbl_version": "12.5",
+                "version_locations": "File Version",
+                "detection_rule": "file_version",
+                "targeted_systems": ["ArcGIS_Portal"],
+            },
+        ],
+    }
+
+
+def _create_example_result_json() -> Dict[str, Any]:
+    """Generate an example audit result JSON (comparison results)."""
+    return {
+        "_file_purpose": "Audit result template. Stores pass/fail/warn outcomes after version comparisons are complete.",
+        "_how_to_use": "Use one results entry per evaluated component/target check. results_summary should match counts in results.",
+        "audit_workbook": "C:\\path\\to\\example_audit_workbook.xlsx",
+        "saved_workbook": "C:\\path\\to\\audit_results\\audit_results.xlsx",
+        "profile_name": "example_profile",
+        "generated_at": "2026-04-17T14:35:30",
+        "total_audits": 3,
+        "results_summary": {"pass": 1, "fail": 1, "warn": 1},
+        "results": [
+            {
+                "worksheet_row": 2,
+                "software_component": "ArcGIS Enterprise Portal",
+                "expected_version": "11.3.0",
+                "found_version": "11.3.0",
+                "status": "PASS",
+                "audit_text": "PASS | result=MATCH | expected=11.3.0 | found=11.3.0",
+                "target_name": "LOCAL_MACHINE",
+                "details": "Verified via Programs and Features registry",
+            },
+            {
+                "worksheet_row": 3,
+                "software_component": "Python",
+                "expected_version": "3.9.7",
+                "found_version": "3.9.8",
+                "status": "WARN",
+                "audit_text": "WARN | result=HIGHER_THAN_EXPECTED | expected=3.9.7 | found=3.9.8",
+                "target_name": "LOCAL_MACHINE",
+                "details": "Newer patch version detected than expected",
+            },
+            {
+                "worksheet_row": 4,
+                "software_component": "PostgreSQL",
+                "expected_version": "12.5",
+                "found_version": "NOT_FOUND",
+                "status": "FAIL",
+                "audit_text": "FAIL | result=NOT_FOUND | expected=12.5 | found=NOT_FOUND",
+                "target_name": "LOCAL_MACHINE",
+                "details": "Software not installed or not found at specified path",
+            },
+        ],
+    }
+
+
+def _create_example_scan_job_payload() -> Dict[str, Any]:
+    """Generate an example scan job to demonstrate the full structure."""
+    example_time = "2026-04-17T14:32:00"
+    return {
+        "_file_purpose": "Scan job template. Full execution record for one audit run, including settings, parsed rows, and scan outcomes.",
+        "_how_to_use": "Use this as the authoritative run envelope when troubleshooting or replaying audits.",
+        "status": "completed",
+        "started_at": example_time,
+        "completed_at": "2026-04-17T14:35:30",
+        "error": "",
+        "sbl_file": {
+            "name": "example_audit_workbook.xlsx",
+            "path": "C:\\path\\to\\example_audit_workbook.xlsx",
+            "baseline_name": "BASELINE_EXAMPLE_v3.2",
+            "timestamp": example_time,
+            "sbl_model": "GEOINT_FD",
+        },
+        "output": {
+            "workbook_path": "C:\\path\\to\\audit_results\\audit_results.xlsx",
+            "result_base_name": "audit_results",
+        },
+        "settings": {
+            "profile_name": "example_profile",
+            "build_type": "PRODUCTION",
+            "connection_mode": "LOCAL",
+            "local_only": True,
+            "fallback_enabled": False,
+            "vcenter_server": "",
+            "ssh_gateway_host": "",
+            "ssh_gateway_port": 22,
+            "ssh_target_port": 22,
+        },
+        "sbl_parse": {
+            "target_columns": [],
+            "row_count": 3,
+            "rows": [
+                {
+                    "worksheet_row": 2,
+                    "software_component": "ArcGIS Enterprise Portal",
+                    "current_ci_version": "11.3.0",
+                    "sbl_build_version": "11.3.0",
+                    "version_locations": "Programs and Features",
+                    "rule": "programs_and_features",
+                    "marked_targets": [],
+                    "local_detection_commands": [
+                        "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object {$_.DisplayName -like '*ArcGIS Enterprise Portal*'} | Select-Object DisplayVersion"
+                    ],
+                },
+                {
+                    "worksheet_row": 3,
+                    "software_component": "Python",
+                    "current_ci_version": "3.9.7",
+                    "sbl_build_version": "3.9.7",
+                    "version_locations": "File Version",
+                    "rule": "file_version",
+                    "marked_targets": [],
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Python39\\python.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+                {
+                    "worksheet_row": 4,
+                    "software_component": "PostgreSQL",
+                    "current_ci_version": "12.5",
+                    "sbl_build_version": "12.5",
+                    "version_locations": "File Version",
+                    "rule": "file_version",
+                    "marked_targets": [],
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+            ],
+            "special_path_scan_list": [
+                {
+                    "worksheet_row": 3,
+                    "software_component": "Python",
+                    "current_ci_version": "3.9.7",
+                    "sbl_build_version": "3.9.7",
+                    "version_locations": "File Version",
+                    "rule": "file_version",
+                    "marked_targets": [],
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Python39\\python.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+                {
+                    "worksheet_row": 4,
+                    "software_component": "PostgreSQL",
+                    "current_ci_version": "12.5",
+                    "sbl_build_version": "12.5",
+                    "version_locations": "File Version",
+                    "rule": "file_version",
+                    "marked_targets": [],
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+            ],
+        },
+        "local_machine_scan": {
+            "results": [
+                {
+                    "worksheet_row": 2,
+                    "software_component": "ArcGIS Enterprise Portal",
+                    "expected_version": "11.3.0",
+                    "found_version": "11.3.0",
+                    "status": "PASS",
+                    "audit_text": "PASS | result=MATCH | expected=11.3.0 | found=11.3.0",
+                    "details": "Verified via Programs and Features registry",
+                    "version_locations": "Programs and Features",
+                    "local_detection_commands": [
+                        "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object {$_.DisplayName -like '*ArcGIS Enterprise Portal*'} | Select-Object DisplayVersion"
+                    ],
+                },
+                {
+                    "worksheet_row": 3,
+                    "software_component": "Python",
+                    "expected_version": "3.9.7",
+                    "found_version": "3.9.8",
+                    "status": "WARN",
+                    "audit_text": "WARN | result=HIGHER_THAN_EXPECTED | expected=3.9.7 | found=3.9.8",
+                    "details": "Newer patch version detected than expected",
+                    "version_locations": "File Version",
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Python39\\python.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+                {
+                    "worksheet_row": 4,
+                    "software_component": "PostgreSQL",
+                    "expected_version": "12.5",
+                    "found_version": "NOT_FOUND",
+                    "status": "FAIL",
+                    "audit_text": "FAIL | result=NOT_FOUND | expected=12.5 | found=NOT_FOUND",
+                    "details": "Software not installed or not found at specified path",
+                    "version_locations": "File Version",
+                    "local_detection_commands": [
+                        "(Get-Item 'C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe').VersionInfo.ProductVersion"
+                    ],
+                },
+            ],
+            "comparison_summary": {
+                "total": 3,
+                "pass": 1,
+                "fail": 1,
+                "warn": 1,
+            },
+        },
+    }
+
+
+def _create_example_audit_checklist_workbook(file_path: Path) -> None:
+    """Create an example audit checklist workbook."""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Checklist"
+
+    notes_ws = wb.create_sheet(title="README")
+    notes_ws.append(["File Purpose", "Template checklist workbook used to define expected software versions and target scope."])
+    notes_ws.append(["How To Use", "Populate checklist rows, keep header names unchanged, and mark targets with X where component applies."])
+    notes_ws.append(["Key Columns", "SOFTWARE COMPONENT, CURRENT CI VERSION, VERSION LOCATIONS, then one column per target system."])
+    
+    # Headers
+    headers = ["SOFTWARE COMPONENT", "CURRENT CI VERSION", "VERSION LOCATIONS", "ArcGIS_Portal", "GIS_Server"]
+    ws.append(headers)
+    
+    # Sample data
+    rows = [
+        ["ArcGIS Enterprise Portal", "11.3.0", "Programs and Features", "X", "X"],
+        ["Python", "3.9.7", "File Version", "", "X"],
+        ["PostgreSQL", "12.5", "File Version", "X", ""],
+    ]
+    for row in rows:
+        ws.append(row)
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = max(len(str(cell.value or "")) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max_length + 2
+    
+    wb.save(file_path)
+
+
+def _create_example_audit_results_workbook(file_path: Path) -> None:
+    """Create an example audit results workbook."""
+    baseline_template = get_sbl_template_baseline_path()
+    if baseline_template.exists():
+        shutil.copy2(baseline_template, file_path)
+        wb = load_workbook(file_path)
+        ws = wb.active
+
+        proxy = AuditWorkbookServiceProxy(ws)
+        col_map, sbl_header, audit_header = proxy.build_column_map()
+        header_row = proxy.header_row_index or 1
+
+        software_col = col_map.get("SOFTWARE COMPONENT")
+        current_ci_header = next((name for name in col_map.keys() if name.startswith("CURRENT CI VERSION")), "")
+        current_ci_col = col_map.get(current_ci_header)
+        sbl_col = col_map.get(sbl_header)
+        audit_col = col_map.get(audit_header)
+        version_locations_col = col_map.get("VERSION LOCATIONS")
+        target_columns = [name for name in col_map.keys() if not is_known_non_target_header(name)]
+
+        data_start_row = header_row + 1
+        if software_col:
+            for row_idx in range(header_row + 1, ws.max_row + 1):
+                software_value = normalize_text(ws.cell(row_idx, software_col).value)
+                if not software_value:
+                    continue
+                if "geospatial intelligence foundation" in software_value.lower():
+                    data_start_row = row_idx + 3
+                    break
+                data_start_row = row_idx
+                break
+
+        for row_idx in range(data_start_row, ws.max_row + 1):
+            for col_idx in col_map.values():
+                cell = ws.cell(row_idx, col_idx)
+                if not isinstance(cell, MergedCell):
+                    cell.value = None
+
+        sample_rows = [
+            {
+                "software_component": "ArcGIS Enterprise Portal",
+                "current_ci_version": "11.3.0",
+                "sbl_build_version": "11.3.0",
+                "version_locations": "Programs and Features",
+                "targets": {"ArcGIS_Portal": "X", "ArcGIS_HostingServer": "X"},
+                "audit_text": "PASS | expected=11.3.0\nfound=11.3.0\nsource=Programs and Features registry (DisplayVersion)",
+                "status": "PASS",
+            },
+            {
+                "software_component": "Python",
+                "current_ci_version": "3.9.7",
+                "sbl_build_version": "3.9.7",
+                "version_locations": "C:\\Python39\\python.exe",
+                "targets": {"ArcGIS_DS1": "X"},
+                "audit_text": "WARN | expected=3.9.7\nfound=3.9.8\nsource=C:\\Python39\\python.exe (ProductVersion)",
+                "status": "WARN",
+            },
+            {
+                "software_component": "PostgreSQL",
+                "current_ci_version": "12.5",
+                "sbl_build_version": "12.5",
+                "version_locations": "C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe",
+                "targets": {"ArcGIS_DS2": "X"},
+                "audit_text": "FAIL | expected=12.5\nfound=NOT_FOUND\nsource=C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe",
+                "status": "FAIL",
+            },
+        ]
+
+        pass_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+        fail_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+        warn_fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+
+        for offset, row_data in enumerate(sample_rows):
+            row_idx = data_start_row + offset
+            if software_col:
+                ws.cell(row_idx, software_col).value = row_data["software_component"]
+            if current_ci_col:
+                ws.cell(row_idx, current_ci_col).value = row_data["current_ci_version"]
+            if sbl_col:
+                ws.cell(row_idx, sbl_col).value = row_data["sbl_build_version"]
+            if version_locations_col:
+                ws.cell(row_idx, version_locations_col).value = row_data["version_locations"]
+            if audit_col:
+                audit_cell = ws.cell(row_idx, audit_col)
+                audit_cell.value = row_data["audit_text"]
+                audit_cell.alignment = copy.copy(audit_cell.alignment)
+                audit_cell.alignment = audit_cell.alignment.copy(wrapText=True)
+                if row_data["status"] == "PASS":
+                    audit_cell.fill = pass_fill
+                elif row_data["status"] == "WARN":
+                    audit_cell.fill = warn_fill
+                else:
+                    audit_cell.fill = fail_fill
+
+            for target_name in target_columns:
+                target_col = col_map.get(target_name)
+                if not target_col:
+                    continue
+                ws.cell(row_idx, target_col).value = row_data["targets"].get(target_name, "")
+
+        if audit_col:
+            audit_col_letter = ws.cell(header_row, audit_col).column_letter
+            ws.column_dimensions[audit_col_letter].width = max(48, ws.column_dimensions[audit_col_letter].width or 0)
+
+        wb.save(file_path)
+        return
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Results"
+    ws.append(["SOFTWARE COMPONENT", "CURRENT CI VERSION", "VERSION LOCATIONS", "AUDIT RESULT"])
+    ws.append([
+        "ArcGIS Enterprise Portal",
+        "11.3.0",
+        "Programs and Features",
+        "PASS | expected=11.3.0\nfound=11.3.0\nsource=Programs and Features registry (DisplayVersion)",
+    ])
+    ws.append([
+        "Python",
+        "3.9.7",
+        "C:\\Python39\\python.exe",
+        "WARN | expected=3.9.7\nfound=3.9.8\nsource=C:\\Python39\\python.exe (ProductVersion)",
+    ])
+    ws.append([
+        "PostgreSQL",
+        "12.5",
+        "C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe",
+        "FAIL | expected=12.5\nfound=NOT_FOUND\nsource=C:\\Program Files\\PostgreSQL\\12\\bin\\postgres.exe",
+    ])
+    ws.column_dimensions["D"].width = 56
+    for row_idx in range(2, ws.max_row + 1):
+        ws.cell(row_idx, 4).alignment = ws.cell(row_idx, 4).alignment.copy(wrapText=True)
+    wb.save(file_path)
+
+
+def _create_example_files() -> None:
+    """Create all example files in their respective directories."""
+    ensure_project_structure()
+
+    snapshot_path = JSON_REGISTRY_SNAPSHOTS_DIR / "example_registry_snapshot.json"
+    if not snapshot_path.exists():
+        snapshot_path.write_text(json.dumps(_create_example_registry_snapshot(), indent=2), encoding="utf-8")
+
+    checklist_path = JSON_CHECKLIST_DIR / "example_checklist.json"
+    if not checklist_path.exists():
+        checklist_path.write_text(json.dumps(_create_example_checklist_json(), indent=2), encoding="utf-8")
+
+    result_path = JSON_RESULTS_DIR / "example_result.json"
+    if not result_path.exists():
+        result_path.write_text(json.dumps(_create_example_result_json(), indent=2), encoding="utf-8")
+
+    scan_job_path = JSON_SCAN_JOBS_DIR / "example_scan_job.json"
+    if not scan_job_path.exists():
+        scan_job_path.write_text(json.dumps(_create_example_scan_job_payload(), indent=2), encoding="utf-8")
+
+    checklist_workbook = AUDIT_CHECKLIST_DIR / "example_audit_checklist.xlsx"
+    if not checklist_workbook.exists():
+        _create_example_audit_checklist_workbook(checklist_workbook)
+
+    results_workbook = AUDIT_RESULTS_DIR / "example_audit_results.xlsx"
+    if not results_workbook.exists():
+        _create_example_audit_results_workbook(results_workbook)
+
+
 def ensure_project_structure() -> None:
+    """Ensure project structure."""
     for path in [
         AUDIT_RESULTS_DIR,
         AUDIT_CHECKLIST_DIR,
@@ -279,14 +1039,9 @@ def ensure_project_structure() -> None:
     if not MASTER_JSON_TEMPLATE_BASELINE_PATH.exists():
         MASTER_JSON_TEMPLATE_BASELINE_PATH.write_text(json.dumps(_empty_master_software_list_payload(), indent=2), encoding="utf-8")
 
-    if not MASTER_JSON_TEMPLATE_LATEST_PATH.exists():
-        if MASTER_JSON_TEMPLATE_BASELINE_PATH.exists():
-            shutil.copy2(MASTER_JSON_TEMPLATE_BASELINE_PATH, MASTER_JSON_TEMPLATE_LATEST_PATH)
-        else:
-            MASTER_JSON_TEMPLATE_LATEST_PATH.write_text(json.dumps(_empty_master_software_list_payload(), indent=2), encoding="utf-8")
-
 
 def normalize_model_key(model_name: str = None) -> str:
+    """Normalize model key."""
     text = normalize_text(model_name)
     if not text or text.upper() == "UNKNOWN":
         return "GENERAL"
@@ -294,6 +1049,7 @@ def normalize_model_key(model_name: str = None) -> str:
 
 
 def _new_model_bucket() -> Dict[str, Any]:
+    """Internal helper for new model bucket."""
     return {
         "software_components": {},
         "vm_components": {
@@ -302,12 +1058,13 @@ def _new_model_bucket() -> Dict[str, Any]:
                 "os_type": "windows",
                 "tracked_software": [],
             }
-            for vm_name in SYSTEM_COLUMNS
+            for vm_name in default_target_columns()
         },
     }
 
 
 def _empty_master_software_list_payload() -> Dict[str, Any]:
+    """Internal helper for empty master software list payload."""
     return {
         "SBL_models": {
             "GENERAL": _new_model_bucket(),
@@ -317,6 +1074,7 @@ def _empty_master_software_list_payload() -> Dict[str, Any]:
 
 
 def _max_workbook_style_index(file_path: str) -> Optional[int]:
+    """Internal helper for max workbook style index."""
     try:
         with zipfile.ZipFile(file_path, "r") as archive:
             styles_xml = archive.read("xl/styles.xml")
@@ -339,6 +1097,7 @@ def _max_workbook_style_index(file_path: str) -> Optional[int]:
 
 
 def _repair_invalid_style_indexes(file_path: str) -> Optional[str]:
+    """Internal helper for repair invalid style indexes."""
     max_style_index = _max_workbook_style_index(file_path)
     if max_style_index is None:
         return None
@@ -429,6 +1188,7 @@ def _repair_invalid_style_indexes(file_path: str) -> Optional[str]:
 
 
 def auto_fit_columns(ws, min_width: int = 12, max_width: int = 48) -> None:
+    """Auto fit columns."""
     from openpyxl.utils import get_column_letter
     for col_idx in range(1, ws.max_column + 1):
         max_len = 0
@@ -440,6 +1200,7 @@ def auto_fit_columns(ws, min_width: int = 12, max_width: int = 48) -> None:
 
 
 def parse_build_and_audit_headers(headers: List[str]) -> Tuple[Optional[str], Optional[str]]:
+    """Parse build and audit headers."""
     sbl_build_col = None
     audit_col = None
     for header in headers:
@@ -453,18 +1214,21 @@ def parse_build_and_audit_headers(headers: List[str]) -> Tuple[Optional[str], Op
 
 class FileLogger:
     def __init__(self, log_dir: Path, prefix: str):
+        """Initialize the FileLogger instance."""
         self.log_dir = log_dir
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.log_file = self.log_dir / f"{prefix}_{timestamp_str()}.log"
         self._lock = threading.Lock()
 
     def write(self, message: str) -> None:
+        """Write."""
         line = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}"
         with self._lock:
             with self.log_file.open("a", encoding="utf-8") as fh:
                 fh.write(line + "\n")
 
     def write_exception(self, exc: Exception) -> None:
+        """Write exception."""
         self.write(f"ERROR: {exc}")
         tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
         with self._lock:
@@ -472,15 +1236,18 @@ class FileLogger:
                 fh.write(tb + "\n")
 
     def get_path(self) -> str:
+        """Get path."""
         return str(self.log_file)
 
 
 class MasterSoftwarePathService:
     def __init__(self, path: Path = MASTER_SOFTWARE_LIST_PATH):
+        """Initialize the MasterSoftwarePathService instance."""
         self.path = path
         ensure_project_structure()
 
     def load(self) -> Dict[str, Any]:
+        """Load."""
         if not self.path.exists():
             self.path.write_text(json.dumps(_empty_master_software_list_payload(), indent=2), encoding="utf-8")
 
@@ -523,7 +1290,8 @@ class MasterSoftwarePathService:
                 vm_bucket = model_bucket["vm_components"]
                 changed = True
 
-            for vm_name in SYSTEM_COLUMNS:
+            target_columns = list(vm_bucket.keys()) or default_target_columns()
+            for vm_name in target_columns:
                 vm_entry = vm_bucket.get(vm_name)
                 if not isinstance(vm_entry, dict):
                     vm_entry = {}
@@ -616,6 +1384,7 @@ class MasterSoftwarePathService:
         return payload
 
     def save(self, payload: Dict[str, Any]) -> None:
+        """Save."""
         self.path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     def update_component(
@@ -627,59 +1396,78 @@ class MasterSoftwarePathService:
         notes: str = "",
         model_name: str = "",
     ) -> None:
+        """Update component."""
         payload = self.load()
         model_key = normalize_model_key(model_name)
         models = payload.setdefault("SBL_models", {})
         model_bucket = models.setdefault(model_key, _new_model_bucket())
         bucket = model_bucket.setdefault("software_components", {})
         vm_bucket = model_bucket.setdefault("vm_components", {})
-        entry = bucket.get(software_component, {})
-
+        existing_entry = bucket.get(software_component)
         path_meta = derive_path_metadata(path_value)
-        entry["generic_name"] = entry.get("generic_name", software_component)
-        entry["registry_name"] = entry.get("registry_name", "")
-        entry["path"] = path_meta["path"]
-        entry["coded_path"] = path_meta["coded_path"]
-        entry["verification_source"] = path_meta["verification_source"]
-        entry["path_last_verified_date"] = datetime.now().isoformat(timespec="seconds")
+        is_new_component = not isinstance(existing_entry, dict)
 
-        tracked_vms = entry.get("tracked_in_vms", [])
-        if not isinstance(tracked_vms, list):
-            tracked_vms = []
-        is_vm_target = target_name in SYSTEM_COLUMNS
-        if is_vm_target and target_name not in tracked_vms:
-            tracked_vms.append(target_name)
-        entry["tracked_in_vms"] = tracked_vms
+        if is_new_component:
+            tracked_vms: List[str] = []
+            is_vm_target = target_name in SYSTEM_COLUMNS
+            if is_vm_target:
+                tracked_vms.append(target_name)
+                vm_entry = vm_bucket.get(target_name)
+                if not isinstance(vm_entry, dict):
+                    vm_entry = {"vm_name": "", "os_type": "windows", "tracked_software": []}
+                tracked_software = vm_entry.get("tracked_software", [])
+                if not isinstance(tracked_software, list):
+                    tracked_software = []
+                if software_component and software_component not in tracked_software:
+                    tracked_software.append(software_component)
+                vm_entry["tracked_software"] = tracked_software
+                vm_entry.setdefault("vm_name", "")
+                vm_entry.setdefault("os_type", "windows")
+                vm_bucket[target_name] = vm_entry
 
-        if is_vm_target:
-            vm_entry = vm_bucket.get(target_name)
-            if not isinstance(vm_entry, dict):
-                vm_entry = {"vm_name": "", "os_type": "windows", "tracked_software": []}
-            tracked_software = vm_entry.get("tracked_software", [])
-            if not isinstance(tracked_software, list):
-                tracked_software = []
-            if software_component and software_component not in tracked_software:
-                tracked_software.append(software_component)
-            vm_entry["tracked_software"] = tracked_software
-            vm_entry.setdefault("vm_name", "")
-            vm_entry.setdefault("os_type", "windows")
-            vm_bucket[target_name] = vm_entry
+            entry = {
+                "generic_name": software_component,
+                "registry_name": "",
+                "path": path_meta["path"],
+                "coded_path": path_meta["coded_path"],
+                "verification_source": path_meta["verification_source"],
+                "path_last_verified_date": datetime.now().isoformat(timespec="seconds"),
+                "notes": notes or (f"Tracked in VMs: {', '.join(tracked_vms)}" if tracked_vms else ""),
+                "tracked_in_vms": tracked_vms,
+            }
+            bucket[software_component] = entry
+            payload["updated_at"] = datetime.now().isoformat(timespec="seconds")
+            self.save(payload)
+            return
 
-        auto_note = entry.get("notes", "")
-        if tracked_vms:
-            auto_note = f"Tracked in VMs: {', '.join(tracked_vms)}"
-        entry["notes"] = notes or auto_note
-        bucket[software_component] = entry
+        old_path = normalize_text(existing_entry.get("path", ""))
+        old_coded = normalize_text(existing_entry.get("coded_path", ""))
+        old_source = normalize_text(existing_entry.get("verification_source", ""))
+        new_path = normalize_text(path_meta["path"])
+        new_coded = normalize_text(path_meta["coded_path"])
+        new_source = normalize_text(path_meta["verification_source"])
+
+        location_changed = old_path != new_path or old_coded != new_coded or old_source != new_source
+        if not location_changed:
+            return
+
+        existing_entry["path"] = path_meta["path"]
+        existing_entry["coded_path"] = path_meta["coded_path"]
+        existing_entry["verification_source"] = path_meta["verification_source"]
+        existing_entry["path_last_verified_date"] = datetime.now().isoformat(timespec="seconds")
+        bucket[software_component] = existing_entry
         payload["updated_at"] = datetime.now().isoformat(timespec="seconds")
         self.save(payload)
 
 
 class TemplateAssetService:
     def __init__(self):
+        """Initialize the TemplateAssetService instance."""
         ensure_project_structure()
 
     @staticmethod
     def _find_first_existing(paths: List[Path]) -> Optional[Path]:
+        """Internal helper for find first existing."""
         for candidate in paths:
             if candidate.exists():
                 return candidate
@@ -687,6 +1475,7 @@ class TemplateAssetService:
 
     @staticmethod
     def _blank_master_payload(components: Dict[str, str], sbl_model: str = None) -> Dict[str, Any]:
+        """Internal helper for blank master payload."""
         model_key = normalize_model_key(sbl_model)
         software_components = {}
         for name, version_location in components.items():
@@ -722,6 +1511,7 @@ class TemplateAssetService:
         return payload
 
     def _extract_components_from_sbl(self, sbl_path: str) -> Dict[str, str]:
+        """Internal helper for extract components from sbl."""
         service = AuditWorkbookService(sbl_path)
         service.detect_header_row()
         service.build_column_map()
@@ -732,6 +1522,7 @@ class TemplateAssetService:
         return components
 
     def _write_blank_master_from_sbl(self, sbl_path: str, output_json_path: Path, sbl_model: str = None) -> str:
+        """Internal helper for write blank master from sbl."""
         components = self._extract_components_from_sbl(sbl_path)
         model_key = normalize_model_key(sbl_model)
         if output_json_path.exists():
@@ -761,22 +1552,15 @@ class TemplateAssetService:
         }
 
     def update_latest_sbl(self, sbl_path: str) -> str:
-        """Update latest SBL template, including model-specific filename."""
-        sbl_model = _get_sbl_model_from_workbook(sbl_path)
-        latest_sbl = get_sbl_template_latest_path(sbl_model)
-        shutil.copy2(sbl_path, latest_sbl)
-        return str(latest_sbl)
+        """Latest SBL snapshots are disabled; baseline template remains the source of truth."""
+        return "disabled (latest SBL template snapshots are not used)"
 
     def snapshot_current_master_to_latest(self, sbl_model: str = None) -> str:
-        """Snapshot current master software list to latest."""
-        latest_json = get_master_json_template_latest_path(sbl_model)
-        
-        if MASTER_SOFTWARE_LIST_PATH.exists():
-            shutil.copy2(MASTER_SOFTWARE_LIST_PATH, latest_json)
-        else:
+        """Keep the canonical master software list in JSON folder only."""
+        if not MASTER_SOFTWARE_LIST_PATH.exists():
             payload = _empty_master_software_list_payload()
-            latest_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        return str(latest_json)
+            MASTER_SOFTWARE_LIST_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return str(MASTER_SOFTWARE_LIST_PATH)
 
     def get_baseline_sbl_path(self, sbl_model: str = None) -> str:
         """Get baseline SBL path (model-specific if provided)."""
@@ -799,6 +1583,7 @@ class TemplateAssetService:
 
     @staticmethod
     def _format_mtime(path: Path) -> str:
+        """Internal helper for format mtime."""
         if not path.exists():
             return "Missing"
         return datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
@@ -810,9 +1595,7 @@ class TemplateAssetService:
         
         targets = {
             "baseline_sbl": get_sbl_template_baseline_path(sbl_model),
-            "latest_sbl": get_sbl_template_latest_path(sbl_model),
             "baseline_master_list": get_master_json_template_baseline_path(sbl_model),
-            "latest_master_list": get_master_json_template_latest_path(sbl_model),
         }
         status: Dict[str, Dict[str, str]] = {}
         for key, path in targets.items():
@@ -821,9 +1604,20 @@ class TemplateAssetService:
                 "exists": "Yes" if path.exists() else "No",
                 "updated": self._format_mtime(path),
             }
+        status["latest_sbl"] = {
+            "path": "(disabled)",
+            "exists": "No",
+            "updated": "Disabled",
+        }
+        status["latest_master_list"] = {
+            "path": str(MASTER_SOFTWARE_LIST_PATH),
+            "exists": "Yes" if MASTER_SOFTWARE_LIST_PATH.exists() else "No",
+            "updated": self._format_mtime(MASTER_SOFTWARE_LIST_PATH),
+        }
         return status
 
     def import_list_to_sbl_workbook(self, input_path: str, output_path: str) -> str:
+        """Import list to sbl workbook."""
         ext = Path(input_path).suffix.lower()
         if ext in (".xlsx", ".xlsm"):
             shutil.copy2(input_path, output_path)
@@ -844,44 +1638,115 @@ class TemplateAssetService:
         else:
             raise ValueError("Unsupported import format. Use .xlsx, .xlsm, .csv, or .json")
 
+        baseline_template = get_sbl_template_baseline_path()
+        if baseline_template.exists():
+            # Preserve baseline sheet structure (merged headers, styles, and banner rows)
+            # by seeding imports from the canonical template instead of a blank workbook.
+            shutil.copy2(baseline_template, output_path)
+            wb = load_workbook(output_path)
+            ws = wb.active
+
+            proxy = AuditWorkbookServiceProxy(ws)
+            col_map, sbl_header, audit_header = proxy.build_column_map()
+            header_row = proxy.header_row_index or 1
+
+            software_col = col_map.get("SOFTWARE COMPONENT")
+            current_ci_header = next((name for name in col_map.keys() if name.startswith("CURRENT CI VERSION")), "")
+            current_ci_col = col_map.get(current_ci_header)
+            version_locations_col = col_map.get("VERSION LOCATIONS")
+            sbl_col = col_map.get(sbl_header)
+            audit_col = col_map.get(audit_header)
+
+            template_target_columns = [name for name in col_map.keys() if not is_known_non_target_header(name)]
+
+            data_start_row = header_row + 1
+            if software_col:
+                for row_idx in range(header_row + 1, ws.max_row + 1):
+                    cell_value = normalize_text(ws.cell(row_idx, software_col).value)
+                    if not cell_value:
+                        continue
+                    if "geospatial intelligence foundation" in cell_value.lower():
+                        data_start_row = row_idx + 3
+                        break
+                    data_start_row = row_idx
+                    break
+
+            # Clear existing data rows while preserving template styles and merges.
+            for row_idx in range(data_start_row, ws.max_row + 1):
+                for col_idx in col_map.values():
+                    cell = ws.cell(row_idx, col_idx)
+                    if not isinstance(cell, MergedCell):
+                        cell.value = None
+
+            for offset, record in enumerate(rows):
+                row_idx = data_start_row + offset
+                software_component = pick_record_value(record, ["SOFTWARE COMPONENT", "NAME", "COMPONENT"])
+                current_ci = pick_record_value(record, ["CURRENT CI VERSION", "CURRENT VERSION", "EXPECTED VERSION", "VERSION"])
+                sbl_build = pick_record_value(record, ["SBL BUILD", "SBL BUILD VERSION", "BUILD VERSION", "BASELINE"])
+                audit_value = pick_record_value(record, ["AUDIT", "AUDIT VALUE"])
+                version_locations = pick_record_value(record, ["VERSION LOCATIONS", "VERSION LOCATION", "PATH", "LOCATION", "RULE"])
+                target_vms = record.get("target_vms", {}) if isinstance(record.get("target_vms", {}), dict) else {}
+
+                if software_col:
+                    ws.cell(row_idx, software_col).value = software_component
+                if current_ci_col:
+                    ws.cell(row_idx, current_ci_col).value = current_ci
+                if sbl_col:
+                    ws.cell(row_idx, sbl_col).value = sbl_build
+                if audit_col:
+                    ws.cell(row_idx, audit_col).value = audit_value
+                if version_locations_col:
+                    ws.cell(row_idx, version_locations_col).value = version_locations
+
+                for target_name in template_target_columns:
+                    target_col = col_map.get(target_name)
+                    if not target_col:
+                        continue
+                    if target_name in target_vms:
+                        target_value = normalize_text(target_vms.get(target_name, ""))
+                    else:
+                        target_value = pick_record_value(record, [target_name])
+                    ws.cell(row_idx, target_col).value = target_value
+
+            wb.save(output_path)
+            return output_path
+
         wb = Workbook()
         ws = wb.active
         ws.title = "Imported SBL"
+        target_columns = derive_import_target_columns(rows)
         headers = [
             "SOFTWARE COMPONENT",
             "CURRENT CI VERSION",
+            "VERSION LOCATIONS",
+            *target_columns,
             "SBL BUILD TEMPLATE",
             "AUDIT TEMPLATE",
-            *SYSTEM_COLUMNS,
-            "VERSION LOCATIONS",
         ]
         ws.append(headers)
 
-        def pick_value(record: Dict[str, Any], candidates: List[str]) -> str:
-            normalized = {normalize_header(k): v for k, v in record.items()}
-            for candidate in candidates:
-                for key, value in normalized.items():
-                    if candidate in key:
-                        return normalize_text(value)
-            return ""
-
         for record in rows:
-            software_component = pick_value(record, ["SOFTWARE COMPONENT", "NAME", "COMPONENT"])
-            current_ci = pick_value(record, ["CURRENT CI VERSION", "CURRENT VERSION", "EXPECTED VERSION", "VERSION"])
-            version_locations = pick_value(record, ["VERSION LOCATIONS", "VERSION LOCATION", "PATH", "LOCATION", "RULE"])
-            ws.append([
+            software_component = pick_record_value(record, ["SOFTWARE COMPONENT", "NAME", "COMPONENT"])
+            current_ci = pick_record_value(record, ["CURRENT CI VERSION", "CURRENT VERSION", "EXPECTED VERSION", "VERSION"])
+            sbl_build = pick_record_value(record, ["SBL BUILD", "SBL BUILD VERSION", "BUILD VERSION", "BASELINE"])
+            audit_value = pick_record_value(record, ["AUDIT", "AUDIT VALUE"])
+            version_locations = pick_record_value(record, ["VERSION LOCATIONS", "VERSION LOCATION", "PATH", "LOCATION", "RULE"])
+            target_vms = record.get("target_vms", {}) if isinstance(record.get("target_vms", {}), dict) else {}
+            row_values = [
                 software_component,
                 current_ci,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
                 version_locations,
+            ]
+            for target_name in target_columns:
+                if target_name in target_vms:
+                    row_values.append(normalize_text(target_vms.get(target_name, "")))
+                else:
+                    row_values.append(pick_record_value(record, [target_name]))
+            row_values.extend([
+                sbl_build,
+                audit_value,
             ])
+            ws.append(row_values)
 
         auto_fit_columns(ws)
         wb.save(output_path)
@@ -891,6 +1756,7 @@ class TemplateAssetService:
 class JsonExportService:
     @staticmethod
     def write_checklist_json(base_name: str, payload: Dict[str, Any]) -> str:
+        """Write checklist json."""
         ensure_project_structure()
         output = JSON_CHECKLIST_DIR / f"{base_name}_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -898,6 +1764,7 @@ class JsonExportService:
 
     @staticmethod
     def write_result_json(base_name: str, payload: Dict[str, Any]) -> str:
+        """Write result json."""
         ensure_project_structure()
         output = JSON_RESULTS_DIR / f"{base_name}_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -905,6 +1772,7 @@ class JsonExportService:
 
     @staticmethod
     def write_registry_snapshot_json(base_name: str, payload: Dict[str, Any]) -> str:
+        """Write registry snapshot json."""
         ensure_project_structure()
         output = JSON_REGISTRY_SNAPSHOTS_DIR / f"{base_name}_registry_snapshot_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -912,6 +1780,7 @@ class JsonExportService:
 
     @staticmethod
     def write_scan_job_json(base_name: str, payload: Dict[str, Any]) -> str:
+        """Write scan job json."""
         ensure_project_structure()
         output = JSON_SCAN_JOBS_DIR / f"{base_name}_scan_job_{timestamp_str()}.json"
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -920,14 +1789,17 @@ class JsonExportService:
 
 class VMProfileService:
     def __init__(self, profiles_dir: Path = PROFILES_DIR):
+        """Initialize the VMProfileService instance."""
         self.profiles_dir = profiles_dir
         ensure_project_structure()
 
     @staticmethod
     def _key_path() -> Path:
+        """Internal helper for key path."""
         return Path.home() / ".auditmatic" / "profile_credentials.key"
 
     def _get_fernet(self):
+        """Internal helper for get fernet."""
         if not CRYPTO_AVAILABLE or Fernet is None:
             return None
         key_path = self._key_path()
@@ -941,9 +1813,11 @@ class VMProfileService:
 
     @staticmethod
     def encryption_supported() -> bool:
+        """Encryption supported."""
         return bool(CRYPTO_AVAILABLE and Fernet is not None)
 
     def profile_credential_storage_mode(self, profile_name: str) -> str:
+        """Profile credential storage mode."""
         path = self.profile_path(profile_name)
         if not path.exists():
             return "no-profile"
@@ -957,12 +1831,14 @@ class VMProfileService:
 
     @staticmethod
     def _encrypt_value(fernet, value: str) -> str:
+        """Internal helper for encrypt value."""
         if not fernet or not value:
             return value
         return fernet.encrypt(value.encode("utf-8")).decode("ascii")
 
     @staticmethod
     def _decrypt_value(fernet, value: str) -> str:
+        """Internal helper for decrypt value."""
         if not fernet or not value:
             return value
         try:
@@ -971,6 +1847,7 @@ class VMProfileService:
             return ""
 
     def _encrypt_profile_credentials(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Internal helper for encrypt profile credentials."""
         fernet = self._get_fernet()
         encrypted_payload = copy.deepcopy(payload)
 
@@ -997,11 +1874,19 @@ class VMProfileService:
                 target_info.pop("username", None)
                 target_info.pop("password", None)
 
+        ssh_tunnel = encrypted_payload.get("ssh_tunnel", {})
+        if isinstance(ssh_tunnel, dict):
+            gateway_password = ssh_tunnel.get("gateway_password", "")
+            if gateway_password:
+                ssh_tunnel["gateway_password_enc"] = self._encrypt_value(fernet, gateway_password)
+            ssh_tunnel.pop("gateway_password", None)
+
         encrypted_payload["credentials_encrypted"] = bool(fernet)
         encrypted_payload["credentials_scheme"] = "fernet-v1" if fernet else "none"
         return encrypted_payload
 
     def _decrypt_profile_credentials(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Internal helper for decrypt profile credentials."""
         fernet = self._get_fernet()
         decrypted_payload = copy.deepcopy(payload)
 
@@ -1030,12 +1915,21 @@ class VMProfileService:
                 else:
                     target_info["password"] = target_info.get("password", "")
 
+        ssh_tunnel = decrypted_payload.get("ssh_tunnel", {})
+        if isinstance(ssh_tunnel, dict):
+            if ssh_tunnel.get("gateway_password_enc"):
+                ssh_tunnel["gateway_password"] = self._decrypt_value(fernet, ssh_tunnel.get("gateway_password_enc", ""))
+            else:
+                ssh_tunnel["gateway_password"] = ssh_tunnel.get("gateway_password", "")
+
         return decrypted_payload
 
     def profile_path(self, profile_name: str) -> Path:
+        """Profile path."""
         return self.profiles_dir / f"{profile_name}.json"
 
     def save_profile(self, profile_name: str, payload: Dict[str, Any]) -> str:
+        """Save profile."""
         payload = self._encrypt_profile_credentials(payload)
         payload["profile_name"] = profile_name
         payload["updated_at"] = datetime.now().isoformat(timespec="seconds")
@@ -1044,12 +1938,14 @@ class VMProfileService:
         return str(path)
 
     def load_profile(self, profile_name: str) -> Dict[str, Any]:
+        """Load profile."""
         payload = json.loads(self.profile_path(profile_name).read_text(encoding="utf-8"))
         return self._decrypt_profile_credentials(payload)
 
 
 class VSphereService:
     def __init__(self, server: str, username: str, password: str, ignore_ssl: bool = True):
+        """Initialize the VSphereService instance."""
         self.server = server.strip()
         self.username = username.strip()
         self.password = password
@@ -1057,6 +1953,7 @@ class VSphereService:
         self.si = None
 
     def connect(self):
+        """Connect."""
         if not PYVMOMI_AVAILABLE:
             raise RuntimeError("pyVmomi is not installed. Install it with: pip install pyvmomi requests")
         context = ssl._create_unverified_context() if self.ignore_ssl else None
@@ -1064,11 +1961,13 @@ class VSphereService:
         return self.si
 
     def disconnect(self):
+        """Disconnect."""
         if self.si is not None:
             Disconnect(self.si)
             self.si = None
 
     def _all_vms(self):
+        """Internal helper for all vms."""
         if self.si is None:
             self.connect()
         content = self.si.RetrieveContent()
@@ -1079,12 +1978,14 @@ class VSphereService:
             view.Destroy()
 
     def find_vm(self, vm_name: str):
+        """Find vm."""
         for vm_obj in self._all_vms():
             if vm_obj.name == vm_name:
                 return vm_obj
         return None
 
     def list_windows_vms(self) -> List[str]:
+        """List windows vms."""
         names = [LOCAL_SENTINEL]
         for vm_obj in self._all_vms():
             guest_name = normalize_text(getattr(getattr(vm_obj, "guest", None), "guestFullName", ""))
@@ -1093,6 +1994,7 @@ class VSphereService:
         return sorted(set(names), key=lambda x: (x != LOCAL_SENTINEL, x.lower()))
 
     def verify_vm_names(self, vm_names: List[str]) -> Dict[str, Dict[str, str]]:
+        """Verify vm names."""
         inventory: Dict[str, Dict[str, str]] = {}
         for vm_obj in self._all_vms():
             inventory[vm_obj.name] = {
@@ -1104,6 +2006,7 @@ class VSphereService:
         return {name: inventory.get(name, {"power_state": "NOT_FOUND", "tools_status": "NOT_FOUND", "guest_os": "NOT_FOUND"}) for name in vm_names}
 
     def run_powershell_in_guest(self, vm_name: str, guest_username: str, guest_password: str, script: str, timeout_seconds: int = 90) -> Tuple[str, str, str]:
+        """Run powershell in guest."""
         if requests is None:
             return "WARN", "ERROR", "requests is not installed. Install with: pip install requests"
         vm_obj = self.find_vm(vm_name)
@@ -1144,6 +2047,7 @@ class VSphereService:
             return "WARN", "TIMEOUT", f"Timed out waiting for guest command on '{vm_name}'"
 
         def fetch_text(remote_path: str) -> str:
+            """Fetch text."""
             try:
                 file_info = guest_ops.fileManager.InitiateFileTransferFromGuest(vm_obj, creds, remote_path)
                 response = requests.get(file_info.url, verify=not self.ignore_ssl, timeout=30)
@@ -1171,6 +2075,7 @@ class SSHTunnelService:
         gateway_port: int = 22,
         timeout_seconds: int = 30,
     ):
+        """Initialize the SSHTunnelService instance."""
         self.target_username = target_username.strip()
         self.target_password = target_password
         self.target_port = target_port
@@ -1182,9 +2087,11 @@ class SSHTunnelService:
 
     @staticmethod
     def _encode_powershell(script: str) -> str:
+        """Internal helper for encode powershell."""
         return base64.b64encode(script.encode("utf-16le")).decode("ascii")
 
     def _connect_target(self, target_host: str, target_username: str, target_password: str):
+        """Internal helper for connect target."""
         if not PARAMIKO_AVAILABLE:
             raise RuntimeError("paramiko is not installed. Install it with: pip install paramiko")
 
@@ -1244,6 +2151,7 @@ class SSHTunnelService:
         target_username: str = "",
         target_password: str = "",
     ) -> Tuple[str, str, str]:
+        """Run powershell."""
         resolved_username = normalize_text(target_username) or self.target_username
         resolved_password = target_password or self.target_password
         if not resolved_username or not resolved_password:
@@ -1280,8 +2188,11 @@ class SSHTunnelService:
 
 
 class VersionRuleResolver:
+    """Resolve VERSION LOCATIONS text into concrete scan rules and payloads."""
+
     @staticmethod
     def extract_file_paths(version_location: str) -> List[str]:
+        """Extract Windows executable/dll paths from a VERSION LOCATIONS string."""
         if not version_location:
             return []
         matches = re.findall(r"[A-Za-z]:\\[^;,\n\r\t]+?\.(?:exe|dll)", version_location, flags=re.IGNORECASE)
@@ -1294,6 +2205,7 @@ class VersionRuleResolver:
 
     @staticmethod
     def detect_rule(version_location: str) -> Tuple[str, Dict[str, Any]]:
+        """Classify VERSION LOCATIONS into programs/features, powershell, file_version, or unknown."""
         upper = normalize_text(version_location).upper()
         if "PROGRAMS AND FEATURES" in upper:
             return "programs_and_features", {}
@@ -1306,6 +2218,7 @@ class VersionRuleResolver:
 
 
 def derive_path_metadata(version_location: str) -> Dict[str, str]:
+    """Derive normalized path metadata used for master software list tracking."""
     path = normalize_text(version_location)
     rule, payload = VersionRuleResolver.detect_rule(path)
 
@@ -1337,7 +2250,10 @@ def derive_path_metadata(version_location: str) -> Dict[str, str]:
 
 
 class AuditWorkbookService:
+    """Parse, read, and write audit data from workbook-based checklist artifacts."""
+
     def __init__(self, file_path: str):
+        """Initialize the AuditWorkbookService instance."""
         self.file_path = file_path
         self.repaired_file_path: Optional[str] = None
         try:
@@ -1364,8 +2280,40 @@ class AuditWorkbookService:
         self.audit_header: Optional[str] = None
         self.current_ci_header: Optional[str] = None
         self.version_location_header: Optional[str] = None
+        self.target_columns: List[str] = default_target_columns()
+        self.schema: Optional[WorkbookSchema] = None
+        self.build_type = infer_build_type(file_path)
+
+    def _detect_target_headers(self, raw_headers: List[str], headers_by_name: Dict[str, int]) -> List[str]:
+        """Internal helper for detect target headers."""
+        header_positions = {header: idx for idx, header in enumerate(raw_headers)}
+        range_candidates: List[str] = []
+
+        if self.version_location_header:
+            start_index = header_positions.get(self.version_location_header, -1) + 1
+            end_indexes = [
+                header_positions.get(self.sbl_build_header, -1),
+                header_positions.get(self.audit_header, -1),
+            ]
+            end_indexes = [idx for idx in end_indexes if idx >= 0]
+            if start_index > 0 and end_indexes:
+                end_index = min(end_indexes)
+                if start_index < end_index:
+                    range_candidates = [
+                        header for header in raw_headers[start_index:end_index]
+                        if not is_known_non_target_header(header)
+                    ]
+
+        detected = range_candidates or [header for header in raw_headers if not is_known_non_target_header(header)]
+        detected = [header for header in detected if header in headers_by_name]
+        if detected:
+            return detected
+
+        legacy_present = [header for header in default_target_columns() if header in headers_by_name]
+        return legacy_present
 
     def detect_header_row(self, search_limit: int = 20) -> int:
+        """Find the row containing required audit headers within the search window."""
         for row_idx in range(1, min(search_limit, self.worksheet.max_row) + 1):
             normalized = {
                 normalize_header(self.worksheet.cell(row=row_idx, column=col_idx).value): col_idx
@@ -1381,6 +2329,7 @@ class AuditWorkbookService:
         raise ValueError("Could not find header row with SOFTWARE COMPONENT, CURRENT CI VERSION, and VERSION LOCATION(S).")
 
     def build_column_map(self) -> Dict[str, int]:
+        """Map normalized header text to column indexes and detect target columns."""
         if self.header_row_index is None:
             self.detect_header_row()
         headers_by_name: Dict[str, int] = {}
@@ -1402,14 +2351,32 @@ class AuditWorkbookService:
         )
         if not self.sbl_build_header or not self.audit_header or not self.current_ci_header or not self.version_location_header:
             raise ValueError("Could not find SBL Build, AUDIT, CURRENT CI VERSION, or VERSION LOCATION column.")
-        required = ["SOFTWARE COMPONENT", self.current_ci_header, self.sbl_build_header, self.audit_header, self.version_location_header] + SYSTEM_COLUMNS
+        self.target_columns = self._detect_target_headers(raw_headers, headers_by_name)
+        required = ["SOFTWARE COMPONENT", self.current_ci_header, self.sbl_build_header, self.audit_header, self.version_location_header]
         missing = [name for name in required if name not in headers_by_name]
         if missing:
             raise ValueError(f"Missing required columns: {', '.join(missing)}")
+        if not self.target_columns:
+            raise ValueError("Could not detect any VM target columns from the workbook headers.")
         self.column_map = headers_by_name
+        self.schema = WorkbookSchema(
+            source_path=self.file_path,
+            source_format=detect_workbook_format(self.file_path),
+            header_row_index=(self.header_row_index or 1) - 1,
+            software_column="SOFTWARE COMPONENT",
+            current_version_column=self.current_ci_header,
+            sbl_version_column=self.sbl_build_header,
+            target_columns=list(self.target_columns),
+            other_columns=[
+                header for header in raw_headers
+                if header not in {"SOFTWARE COMPONENT", self.current_ci_header, self.sbl_build_header, self.audit_header, self.version_location_header}
+                and header not in self.target_columns
+            ],
+        )
         return headers_by_name
 
     def iter_audit_rows(self) -> List[AuditRow]:
+        """Iter audit rows."""
         if not self.column_map:
             self.build_column_map()
         rows: List[AuditRow] = []
@@ -1428,13 +2395,18 @@ class AuditWorkbookService:
             else:
                 version_locations = normalize_text(vl_cell.value)
             audit_value = normalize_text(self.worksheet.cell(row_idx, self.column_map[self.audit_header]).value)
-            marks = {name: normalize_text(self.worksheet.cell(row_idx, self.column_map[name]).value) for name in SYSTEM_COLUMNS}
+            marks = {
+                name: normalize_text(self.worksheet.cell(row_idx, self.column_map[name]).value)
+                for name in self.target_columns
+                if name in self.column_map
+            }
             if not software_component and not current_ci_version and not sbl_build_version and not version_locations:
                 continue
             rows.append(AuditRow(row_idx, software_component, current_ci_version, sbl_build_version, audit_value, marks, version_locations))
         return rows
 
     def write_audit_result(self, row_index: int, audit_text: str, status: str) -> None:
+        """Write audit result."""
         col_index = self.column_map[self.audit_header]
         cell = self.worksheet.cell(row_index, col_index)
         if isinstance(cell, MergedCell):
@@ -1446,6 +2418,7 @@ class AuditWorkbookService:
         cell.fill = PASS_FILL if status == "PASS" else FAIL_FILL if status == "FAIL" else WARN_FILL
 
     def save_as(self, output_path: str) -> None:
+        """Save as."""
         self.workbook.save(output_path)
 
 
@@ -1482,7 +2455,10 @@ class AuditWorkbookService:
 #             raise ValueError("Could not find SBL Build or AUDIT column.")
 #         return headers_by_name, self.sbl_build_header, self.audit_header
 class AuditWorkbookServiceProxy:
+    """Worksheet proxy used by checklist generation for tolerant header and row parsing."""
+
     def __init__(self, worksheet):
+        """Initialize the AuditWorkbookServiceProxy instance."""
         self.worksheet = worksheet
         self.header_row_index: Optional[int] = None
         self.column_map: Dict[str, int] = {}
@@ -1495,6 +2471,7 @@ class AuditWorkbookServiceProxy:
         print("Initialized AuditWorkbookServiceProxy.... ready to detect headers and read software list.")
 
     def reset_header_cache(self) -> None:
+        """Reset header cache."""
         self.header_row_index = None
         self.column_map = {}
         self.sbl_build_header = None
@@ -1505,6 +2482,7 @@ class AuditWorkbookServiceProxy:
         self.id_number_header = None
 
     def extract_path(self, version_location: Any) -> str:
+        """Extract path."""
         print(f"Extracting path from version_location: {repr(version_location)}")
         if version_location is None:
             return ""
@@ -1515,6 +2493,7 @@ class AuditWorkbookServiceProxy:
         return text
 # changed range from 1 to 0 to account for 0-based indexing in openpyxl when using with active worksheet that may have empty first row
     def detect_header_row(self, search_limit: int = 20) -> int:
+        """Detect the header row in generated/imported worksheets."""
         print("Detecting header row...")
         if self.header_row_index is not None:
             return self.header_row_index
@@ -1540,6 +2519,7 @@ class AuditWorkbookServiceProxy:
     
     # The build_column_map method reads the header row and constructs a mapping of header names to their respective column indices. It also identifies the specific headers for SBL Build, AUDIT, CURRENT CI VERSION, VERSION LOCATION(S), DISPLAYED NAME, and CM TOOL ID NUMBER, which are essential for processing the software list and audit results.
     def build_column_map(self, refresh: bool = False):
+        """Build and cache worksheet header mappings required for checklist extraction."""
         print("Building column map...")
         if refresh:
             self.reset_header_cache()
@@ -1590,8 +2570,8 @@ class AuditWorkbookServiceProxy:
         self.column_map = headers_by_name
 
         return self.column_map, self.sbl_build_header, self.audit_header
-    # The read_software_list method iterates through the rows of the worksheet starting from the row immediately after the detected header row. For each row, it reads the values for SOFTWARE COMPONENT, DISPLAYED NAME, CURRENT CI VERSION, and VERSION LOCATION(S). It normalizes these values and constructs a list of dictionaries representing the software components to be audited, including their expected versions and where to find them based on the version location information.
     def read_software_list(self) -> List[Dict[str, str]]:
+        """Return normalized software rows with expected version and detection location."""
         print("Reading software list from worksheet...")
         #
         column_map, _, _ = self.build_column_map()
@@ -1637,11 +2617,11 @@ class AuditWorkbookServiceProxy:
                         break
                 version_location_value = normalize_text(vl_value)
                 if version_location_value is None or pd.isna(version_location_value):
-                    version_location_value = "GOT YOU BITCH"
+                    version_location_value = ""
             else:
                 version_location_value = normalize_text(vl_cell.value)
                 if version_location_value is None or pd.isna(version_location_value):
-                    version_location_value = "GOT YOU BITCH"
+                    version_location_value = ""
             print(f"Row {row_idx}: version_location_value = {repr(version_location_value)}")
             expected_version_value = normalize_text(
                 self.worksheet.cell(row_idx, column_map[self.current_ci_header]).value
@@ -1664,48 +2644,59 @@ class AuditWorkbookServiceProxy:
 
 # This proxy class is designed to work with the active worksheet of the loaded workbook, which may have empty rows at the top. The header detection and column mapping logic has been updated to account for this possibility, allowing for more robust handling of various worksheet formats.
 class ChecklistGeneratorService:
+    """Generate workbook audit forms from Excel/JSON/CSV checklist sources."""
+
     def __init__(self, source_path: str):
+        """Initialize the ChecklistGeneratorService instance."""
         self.source_path = source_path
-        self.source_workbook = load_workbook(source_path)
+        self.template_service = TemplateAssetService()
+        self.normalized_source_path = source_path
+        source_format = detect_workbook_format(source_path)
+        if source_format != "excel":
+            with tempfile.NamedTemporaryFile(prefix="auditmatic_import_", suffix=".xlsx", delete=False) as temp_file:
+                normalized_path = temp_file.name
+            self.template_service.import_list_to_sbl_workbook(source_path, normalized_path)
+            self.normalized_source_path = normalized_path
+        self.source_workbook = load_workbook(self.normalized_source_path)
         self.source_ws = self.source_workbook.active
-        print(f"Initialized ChecklistGeneratorService with source: {source_path}" ) # added print statement to confirm initialization and source path
+        print(f"Initialized ChecklistGeneratorService with source: {source_path} (normalized={self.normalized_source_path})" ) # added print statement to confirm initialization and source path
     
     # The generate_audit_form method creates a new workbook and copies the content and styles from the source worksheet. It then detects the header row and column mapping, clears any existing audit values, updates the audit header with the current date, auto-fits the columns, and saves the new workbook to the specified output path.
     def generate_audit_form(self, output_path: str) -> None:
+        """Create an audit workbook by preserving source structure and clearing audit result cells."""
         print(f"Generating audit form from '{self.source_path}' to '{output_path}'")
-        wb_out = Workbook()
+        src_path = Path(self.normalized_source_path)
+        dst_path = Path(output_path)
+        if src_path.resolve() != dst_path.resolve():
+            # Direct file copy keeps style indexes and merged ranges intact.
+            shutil.copy2(src_path, dst_path)
+
+        wb_out = load_workbook(output_path)
         ws_out = wb_out.active
-        ws_out.title = "Tool generated Audit Checklist"
-        # Copy cell values and styles from source to destination
-        for row in self.source_ws.iter_rows():
-            print(f"Copying row {row[0].row}...") # added print statement to track row copying
-            for src in row:
-                if isinstance(src, MergedCell):
-                    continue
-                dst = ws_out.cell(src.row, src.column, src.value)
-                if src.has_style:
-                    dst._style = copy.copy(src._style)
-                if src.hyperlink:
-                    dst._hyperlink = copy.copy(src.hyperlink)
-                if src.comment:
-                    dst.comment = copy.copy(src.comment)
-        # Recreate merged cell ranges in the new worksheet
-        for merged_range in self.source_ws.merged_cells.ranges:
-            try:
-                print(f"Copying merged range {merged_range}...")  # added print statement to track merged range copying
-                ws_out.merge_cells(str(merged_range))
-            except Exception as e:
-                print(f"Failed to merge range {merged_range}: {e}")
-                # Optionally, continue or handle the error as needed
-        
-        print("Finished copying content and styles. Now detecting headers and clearing audit values...") # added print statement to indicate completion of copying and start of header detection    
+
+        print("Copied workbook directly. Now detecting headers and clearing audit values...")
         proxy = AuditWorkbookServiceProxy(ws_out)
         col_map, _, audit_header = proxy.build_column_map()
         header_row = proxy.header_row_index
         print(f"Detected header row at index: {header_row}") # added print statement to confirm detected header row
         print(f"Column map: {col_map}, audit header: {audit_header}") # added print statement to show column mapping and audit header   
         audit_col = col_map[audit_header]
-        for row_idx in range(header_row + 1, ws_out.max_row + 1):
+
+        data_start_row = header_row + 1
+        software_col = col_map.get("SOFTWARE COMPONENT")
+        if software_col:
+            for row_idx in range(header_row + 1, ws_out.max_row + 1):
+                software_value = normalize_text(ws_out.cell(row_idx, software_col).value)
+                if not software_value:
+                    continue
+                if "geospatial intelligence foundation" in software_value.lower():
+                    # Skip template metadata rows and clear only true software data rows.
+                    data_start_row = row_idx + 3
+                    break
+                data_start_row = row_idx
+                break
+
+        for row_idx in range(data_start_row, ws_out.max_row + 1):
             cell = ws_out.cell(row_idx, audit_col)
             if not isinstance(cell, MergedCell):
                 cell.value = None
@@ -1715,46 +2706,42 @@ class ChecklistGeneratorService:
             header_cell.value = re.sub(r"\bXX[A-Z]{3}\d{4}\b", today_str(), str(header_cell.value).upper())
         else:
             print("No audit header found, skipping audit value clearing and header update.")
-        auto_fit_columns(ws_out)
         wb_out.save(output_path)
 
     
 
     def export_json_payload(self) -> Dict[str, Any]:
-        proxy = AuditWorkbookServiceProxy(self.source_ws)
-        col_map, sbl_header, audit_header = proxy.build_column_map()
-        current_ci_header = proxy.current_ci_header
-        if not current_ci_header:
-            raise ValueError("No column found with 'CURRENT CI VERSION' in the name.")
-        rows = []
-        for row_idx in range(proxy.header_row_index + 1, self.source_ws.max_row + 1):
-            software_component = normalize_text(self.source_ws.cell(row_idx, col_map["SOFTWARE COMPONENT"]).value)
-            if not software_component:
-                continue
-            vl_cell = self.source_ws.cell(row_idx, col_map[proxy.version_location_header])
-            if isinstance(vl_cell, MergedCell):
-                vl_value = None
-                for merged_range in self.source_ws.merged_cells.ranges:
-                    if vl_cell.coordinate in merged_range:
-                        vl_value = self.source_ws.cell(merged_range.min_row, merged_range.min_col).value
-                        break
-                version_locations = normalize_text(vl_value)
-            else:
-                version_locations = normalize_text(vl_cell.value)
-            rows.append({
-                "software_component": software_component,
-                "current_ci_version": normalize_text(self.source_ws.cell(row_idx, col_map[current_ci_header]).value),
-                "sbl_build_version": normalize_text(self.source_ws.cell(row_idx, col_map[sbl_header]).value),
-                "audit_value": normalize_text(self.source_ws.cell(row_idx, col_map[audit_header]).value),
-                "target_vms": {name: normalize_text(self.source_ws.cell(row_idx, col_map[name]).value) for name in SYSTEM_COLUMNS},
-                "version_locations": version_locations,
-            })
-        return {"source_workbook": self.source_path, "generated_at": datetime.now().isoformat(timespec="seconds"), "rows": rows}
+        """Export normalized checklist rows and schema metadata as a JSON payload."""
+        service = AuditWorkbookService(self.normalized_source_path)
+        service.detect_header_row()
+        service.build_column_map()
+        rows = [
+            {
+                "software_component": row.software_component,
+                "current_ci_version": row.current_ci_version,
+                "sbl_build_version": row.sbl_build_version,
+                "audit_value": row.audit_value,
+                "target_vms": row.target_vms,
+                "version_locations": row.version_locations,
+            }
+            for row in service.iter_audit_rows()
+        ]
+        return {
+            "source_workbook": self.source_path,
+            "normalized_source_workbook": self.normalized_source_path,
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+            "target_columns": list(service.target_columns),
+            "build_type": service.build_type,
+            "rows": rows,
+        }
 
 
 class LocalWindowsScanner:
+    """Run local Windows software detection commands used by the audit engine."""
+
     @staticmethod
     def describe_local_detection_commands(software_name: str, version_location: str) -> List[str]:
+        """Return diagnostic PowerShell commands that correspond to a VERSION LOCATIONS rule."""
         rule, payload = VersionRuleResolver.detect_rule(version_location)
         commands: List[str] = []
 
@@ -1792,6 +2779,7 @@ class LocalWindowsScanner:
         return commands
 
     def capture_registry_snapshot(self) -> Dict[str, Any]:
+        """Capture an inventory snapshot from uninstall registry keys on the local machine."""
         snapshot: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(timespec="seconds"),
             "host": socket.gethostname(),
@@ -1853,6 +2841,7 @@ class LocalWindowsScanner:
             return snapshot
 
     def find_programs_and_features_version(self, software_name: str) -> Tuple[str, str, str]:
+        """Find software version by matching DisplayName in Programs and Features registry keys."""
         if winreg is None or platform.system().lower() != "windows":
             return "WARN", "NOT_WINDOWS", "Registry-based scan requires Windows"
         target = software_name.lower()
@@ -1881,6 +2870,7 @@ class LocalWindowsScanner:
         return "FAIL", "NOT_FOUND", "Software not found in Programs and Features"
 
     def run_powershell(self, command: str) -> Tuple[str, str, str]:
+        """Execute a local PowerShell command and normalize status/output semantics."""
         try:
             completed = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command], capture_output=True, text=True, timeout=45, check=False)
             output = (completed.stdout or completed.stderr).strip()
@@ -1891,6 +2881,7 @@ class LocalWindowsScanner:
             return "WARN", "ERROR", f"Local PowerShell failed: {exc}"
 
     def get_file_version(self, path_value: str) -> Tuple[str, str, str]:
+        """Read ProductVersion/FileVersion from a local executable or library path."""
         safe_path = path_value.replace("'", "''")
         command = (
             f"$p='{safe_path}';"
@@ -1909,6 +2900,7 @@ class LocalWindowsScanner:
         return status, version, f"File version query failed for {path_value}: {details}"
 
     def scan_file_versions(self, paths: List[str]) -> Tuple[str, str, str]:
+        """Try candidate file paths and return the first successful version lookup."""
         failures: List[str] = []
         for path_value in paths:
             status, version, details = self.get_file_version(path_value)
@@ -1918,6 +2910,7 @@ class LocalWindowsScanner:
         return "WARN", "NOT_FOUND", "; ".join(failures) if failures else "No candidate file paths found"
 
     def scan_software_version(self, software_name: str, version_location: str) -> Tuple[str, str, str]:
+        """Resolve and execute the appropriate local scan rule for one software component."""
         rule, payload = VersionRuleResolver.detect_rule(version_location)
         if rule == "programs_and_features":
             return self.find_programs_and_features_version(software_name)
@@ -1929,6 +2922,8 @@ class LocalWindowsScanner:
 
 
 class AuditEngine:
+    """Coordinate local/remote scanning and version comparison for parsed audit rows."""
+
     def __init__(
         self,
         workbook_service: AuditWorkbookService,
@@ -1940,6 +2935,7 @@ class AuditEngine:
         ssh_config: Optional[Dict[str, Any]] = None,
         ssh_fallback_enabled: bool = False,
     ):
+        """Initialize the AuditEngine instance."""
         self.workbook_service = workbook_service
         self.logger = logger
         self.vm_profile = vm_profile
@@ -1955,6 +2951,7 @@ class AuditEngine:
         self.ssh_service: Optional[SSHTunnelService] = None
 
     def _build_result(self, row: AuditRow, target_name: str, found_version: str, scan_status: str, details: str) -> ScanResult:
+        """Build a ScanResult and update master path metadata for the scanned component."""
         if row.version_locations:
             self.master_paths.update_component(
                 row.software_component,
@@ -1967,10 +2964,12 @@ class AuditEngine:
         return ScanResult(row.software_component, target_name, row.sbl_build_version, found_version, status, details, row.row_index, audit_text)
 
     def _scan_local(self, row: AuditRow, target_name: str) -> ScanResult:
+        """Scan a row against the local machine and convert output into ScanResult."""
         scan_status, found_version, details = self.local_scanner.scan_software_version(row.software_component, row.version_locations)
         return self._build_result(row, target_name, found_version, scan_status, f"local-machine | {details}")
 
     def _scan_guest_vm(self, row: AuditRow, target_name: str, vm_name: str, guest_username: str, guest_password: str) -> ScanResult:
+        """Scan a target VM through vSphere guest execution using the resolved scan rule."""
         if self.vsphere_service is None:
             return self._build_result(row, target_name, "NO_VSPHERE", "WARN", f"vSphere service is not connected for '{vm_name}'")
         if not guest_username or not guest_password:
@@ -2012,6 +3011,7 @@ class AuditEngine:
         return self._build_result(row, target_name, "UNKNOWN", "WARN", f"vm={vm_name} | No implemented scan rule matched VERSION LOCATIONS")
 
     def _scan_ssh_target(self, row: AuditRow, target_name: str, target_host: str, target_username: str, target_password: str) -> ScanResult:
+        """Scan a target host over SSH tunnel mode using the resolved scan rule."""
         if self.ssh_service is None:
             return self._build_result(row, target_name, "NO_SSH_SERVICE", "WARN", f"SSH service is not initialized for '{target_host}'")
 
@@ -2070,6 +3070,7 @@ class AuditEngine:
         return self._build_result(row, target_name, "UNKNOWN", "WARN", f"ssh-host={target_host} | No implemented scan rule matched VERSION LOCATIONS")
 
     def scan_target_row(self, row: AuditRow, target_name: str) -> ScanResult:
+        """Route a row scan to local, SSH, or vSphere paths based on profile mapping."""
         target_profile = self.vm_profile.get("targets", {}).get(target_name, {})
         vm_name = normalize_text(target_profile.get("vm_name", ""))
         target_username = normalize_text(target_profile.get("username", "")) or normalize_text(self.guest_creds.get("username", ""))
@@ -2112,6 +3113,7 @@ class AuditEngine:
 
     @staticmethod
     def choose_best_row_result(row_results: List[ScanResult]) -> ScanResult:
+        """Choose best row result."""
         if not row_results:
             return ScanResult("", "", "", "", "WARN", "No targets", 0, "WARN | no targets")
         for result in row_results:
@@ -2123,6 +3125,7 @@ class AuditEngine:
         return row_results[0]
 
     def run(self) -> List[ScanResult]:
+        """Run."""
         rows = self.workbook_service.iter_audit_rows()
         results: List[ScanResult] = []
         self.logger(f"Loaded {len(rows)} audit rows.")
@@ -2342,10 +3345,12 @@ class AuditEngine:
 
 class BaseFrame(ttk.Frame):
     def __init__(self, parent, controller):
+        """Initialize the BaseFrame instance."""
         super().__init__(parent, padding=16)
         self.controller = controller
 
     def open_folder(self, folder: Path):
+        """Open folder."""
         try:
             if os.name == "nt":
                 os.startfile(folder)
@@ -2357,8 +3362,9 @@ class BaseFrame(ttk.Frame):
 
 class App(tk.Tk):
     def __init__(self):
+        """Initialize the App instance."""
         super().__init__()
-        ensure_project_structure()
+        _create_example_files()
         self.title(APP_TITLE)
         self.geometry(APP_GEOMETRY)
         self.resizable(True, True)
@@ -2380,11 +3386,13 @@ class App(tk.Tk):
         self.show_frame("HomeFrame")
 
     def show_frame(self, name: str):
+        """Show frame."""
         self.frames[name].tkraise()
 
 
 class HomeFrame(BaseFrame):
     def __init__(self, parent, controller):
+        """Initialize the HomeFrame instance."""
         super().__init__(parent, controller)
         outer = ttk.Frame(self)
         outer.pack(fill="both", expand=True)
@@ -2393,6 +3401,7 @@ class HomeFrame(BaseFrame):
         cards = ttk.Frame(outer)
         cards.pack(fill="x")
         def card(title: str, body: str, button: str, frame_name: str):
+            """Card."""
             box = ttk.LabelFrame(cards, text=title, padding=18)
             box.pack(fill="x", pady=(0, 12))
             ttk.Label(box, text=body, wraplength=980).pack(anchor="w", pady=(0, 10))
@@ -2404,6 +3413,7 @@ class HomeFrame(BaseFrame):
 
 class ProfileFrame(BaseFrame):
     def __init__(self, parent, controller):
+        """Initialize the ProfileFrame instance."""
         super().__init__(parent, controller)
         self.profile_service = VMProfileService()
         self.logger = FileLogger(LOGS_DIR, "vm_profile")
@@ -2414,8 +3424,17 @@ class ProfileFrame(BaseFrame):
         self.vcenter_username = tk.StringVar()
         self.vcenter_password = tk.StringVar()
         self.ignore_ssl = tk.BooleanVar(value=True)
+        self.source_sbl_path = tk.StringVar()
+        self.build_type = tk.StringVar(value="unknown")
+        self.ssh_gateway_host = tk.StringVar()
+        self.ssh_gateway_port = tk.StringVar(value="22")
+        self.ssh_gateway_username = tk.StringVar()
+        self.ssh_gateway_password = tk.StringVar()
+        self.ssh_target_port = tk.StringVar(value="22")
+        self.target_columns = default_target_columns()
+        self.inventory_values = [LOCAL_SENTINEL]
         self.vm_dropdowns: Dict[str, ttk.Combobox] = {}
-        self.target_info: Dict[str, Dict[str, str]] = {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS}
+        self.target_info: Dict[str, Dict[str, str]] = {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in self.target_columns}
         top = ttk.Frame(self)
         top.pack(fill="x")
         ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -2435,21 +3454,30 @@ class ProfileFrame(BaseFrame):
         self.profile_selector.pack(side="left", fill="x", expand=True, padx=(0, 8))
         ttk.Button(profile_select_row, text="Refresh", command=self._refresh_profile_options).pack(side="left")
         ttk.Button(profile_select_row, text="Use Selected", command=self._use_selected_profile).pack(side="left", padx=(8, 0))
+        self._entry_row(settings, "Source SBL / checklist", self.source_sbl_path, command=self.pick_profile_source)
+        build_row = ttk.Frame(settings)
+        build_row.pack(fill="x", pady=4)
+        ttk.Label(build_row, text="Build type", width=18).pack(side="left")
+        ttk.Combobox(build_row, textvariable=self.build_type, values=BUILD_TYPE_OPTIONS, state="readonly").pack(side="left", fill="x", expand=True, padx=(0, 8))
+        ttk.Button(build_row, text="Detect VM Targets", command=self.detect_profile_targets).pack(side="left")
         self._entry_row(settings, "vCenter server", self.vcenter_server)
         self._entry_row(settings, "vCenter username", self.vcenter_username)
         self._entry_row(settings, "vCenter password", self.vcenter_password, show="*")
         ttk.Checkbutton(settings, text="Ignore SSL warnings", variable=self.ignore_ssl).pack(anchor="w", pady=(6, 0))
         self.credential_status_var = tk.StringVar(value="Credentials protection: checking...")
         ttk.Label(settings, textvariable=self.credential_status_var, foreground="#2f6f2f").pack(anchor="w", pady=(6, 0))
-        mapping = ttk.LabelFrame(self, text=f"Worksheet Target → VM Name or {LOCAL_SENTINEL}", padding=12)
+        ssh_settings = ttk.LabelFrame(self, text="SSH Tunnel Settings", padding=12)
+        ssh_settings.pack(fill="x", pady=(0, 12))
+        self._entry_row(ssh_settings, "SSH jump host", self.ssh_gateway_host)
+        self._entry_row(ssh_settings, "Jump port", self.ssh_gateway_port)
+        self._entry_row(ssh_settings, "Jump username", self.ssh_gateway_username)
+        self._entry_row(ssh_settings, "Jump password", self.ssh_gateway_password, show="*")
+        self._entry_row(ssh_settings, "Target SSH port", self.ssh_target_port)
+        mapping = ttk.LabelFrame(self, text=f"SBL VM Targets → Selected VM Name or {LOCAL_SENTINEL}", padding=12)
         mapping.pack(fill="x")
-        for target_name in SYSTEM_COLUMNS:
-            row = ttk.Frame(mapping)
-            row.pack(fill="x", pady=4)
-            ttk.Label(row, text=target_name, width=22).pack(side="left")
-            combo = ttk.Combobox(row, state="readonly")
-            combo.pack(side="left", fill="x", expand=True)
-            self.vm_dropdowns[target_name] = combo
+        self.mapping_rows = ttk.Frame(mapping)
+        self.mapping_rows.pack(fill="x")
+        self._render_target_rows()
         # Add button to edit target info
         ttk.Button(mapping, text="Edit Target Info", command=self.edit_target_info_dialog).pack(side="right", padx=8)
         controls = ttk.Frame(self)
@@ -2466,12 +3494,93 @@ class ProfileFrame(BaseFrame):
         self._refresh_profile_options()
         self._refresh_credential_status()
 
+    def pick_profile_source(self):
+        """Pick profile source."""
+        path = filedialog.askopenfilename(
+            title="Select SBL or audit workbook",
+            filetypes=[("Supported files", "*.xlsx *.xlsm *.json *.csv"), ("All files", "*.*")],
+        )
+        if path:
+            self.source_sbl_path.set(path)
+            if self.build_type.get() == "unknown":
+                self.build_type.set(infer_build_type(path))
+
+    def _default_target_info(self) -> Dict[str, str]:
+        """Internal helper for default target info."""
+        return {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"}
+
+    def _render_target_rows(self):
+        """Internal helper for render target rows."""
+        for child in self.mapping_rows.winfo_children():
+            child.destroy()
+        self.vm_dropdowns = {}
+        for target_name in self.target_columns:
+            info = self.target_info.get(target_name, self._default_target_info())
+            row = ttk.Frame(self.mapping_rows)
+            row.pack(fill="x", pady=4)
+            ttk.Label(row, text=f"VM target: {target_name}", width=28).pack(side="left")
+            combo = ttk.Combobox(row, state="normal", values=self.inventory_values)
+            combo.pack(side="left", fill="x", expand=True)
+            combo.set(info.get("vm_name", LOCAL_SENTINEL) or LOCAL_SENTINEL)
+            self.vm_dropdowns[target_name] = combo
+
+    def _set_target_columns(self, target_names: List[str]):
+        """Internal helper for set target columns."""
+        normalized = []
+        for item in target_names:
+            name = normalize_text(item)
+            if name and name not in normalized:
+                normalized.append(name)
+        self.target_columns = normalized or default_target_columns()
+        for target_name in self.target_columns:
+            self.target_info.setdefault(target_name, self._default_target_info())
+        self._render_target_rows()
+
+    def detect_profile_targets(self):
+        """Detect profile targets."""
+        source_path = self.source_sbl_path.get().strip()
+        if not source_path:
+            messagebox.showwarning("Source SBL required", "Select an SBL or audit workbook first.")
+            return
+        try:
+            selected_columns: List[str] = []
+            if detect_workbook_format(source_path) == "excel":
+                workbook_service = AuditWorkbookService(source_path)
+                workbook_service.detect_header_row()
+                workbook_service.build_column_map()
+                selected_columns = confirm_target_column_mapping(
+                    self,
+                    source_path,
+                    workbook_service.target_columns,
+                    workbook_service.build_type,
+                    current_columns=self.target_columns,
+                ) or self.target_columns
+                self.build_type.set(workbook_service.build_type)
+            else:
+                target_columns, _ = detect_target_columns(source_path, detect_workbook_format(source_path), detect_header_row_index(source_path, detect_workbook_format(source_path)))
+                selected_columns = confirm_target_column_mapping(
+                    self,
+                    source_path,
+                    target_columns,
+                    infer_build_type(source_path),
+                    current_columns=self.target_columns,
+                ) or self.target_columns
+                self.build_type.set(infer_build_type(source_path))
+            self._set_target_columns(selected_columns)
+            self.append_log(f"Detected {len(self.target_columns)} VM target columns from source workbook.")
+        except Exception as exc:
+            self.logger.write_exception(exc)
+            self.append_log(f"Target detection fallback in use: {exc}")
+            self._set_target_columns(default_target_columns())
+
     def _get_profile_options(self) -> List[str]:
+        """Internal helper for get profile options."""
         if not PROFILES_DIR.exists():
             return []
         return sorted([f.stem for f in PROFILES_DIR.glob("*.json") if f.is_file()])
 
     def _refresh_profile_options(self, select_name: str = ""):
+        """Internal helper for refresh profile options."""
         self.profile_options = self._get_profile_options()
         self.profile_selector.configure(values=self.profile_options)
 
@@ -2486,6 +3595,7 @@ class ProfileFrame(BaseFrame):
             self.saved_profile_name.set("")
 
     def _use_selected_profile(self):
+        """Internal helper for use selected profile."""
         selected = normalize_text(self.saved_profile_name.get())
         if not selected:
             messagebox.showwarning("No profile selected", "Select a profile from the dropdown first.")
@@ -2494,6 +3604,7 @@ class ProfileFrame(BaseFrame):
         self.load_saved_profile()
 
     def _refresh_credential_status(self, profile_name: str = ""):
+        """Internal helper for refresh credential status."""
         if not self.profile_service.encryption_supported():
             self.credential_status_var.set("Credentials protection: disabled (install cryptography)")
             return
@@ -2520,9 +3631,11 @@ class ProfileFrame(BaseFrame):
             self.credential_status_var.set(f"{base} | profile storage: unknown")
 
     def _profile_name_is_valid(self, profile_name: str) -> bool:
+        """Internal helper for profile name is valid."""
         return bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", profile_name))
 
     def _get_profile_name_or_warn(self) -> Optional[str]:
+        """Internal helper for get profile name or warn."""
         profile_name = normalize_text(self.profile_name.get())
         if not profile_name:
             messagebox.showwarning("Profile name required", "Enter or select a profile name first.")
@@ -2536,20 +3649,22 @@ class ProfileFrame(BaseFrame):
         return profile_name
 
     def _refresh_profile_save_state(self, *_):
+        """Internal helper for refresh profile save state."""
         profile_name = normalize_text(self.profile_name.get())
         is_valid = self._profile_name_is_valid(profile_name)
         self.save_profile_button.configure(state="normal" if is_valid else "disabled")
         self._refresh_credential_status(profile_name)
 
     def edit_target_info_dialog(self):
+        """Edit target info dialog."""
         dialog = tk.Toplevel(self)
         dialog.title("Edit Target VM Info")
         rows = {}
-        for idx, target_name in enumerate(SYSTEM_COLUMNS):
-            info = self.target_info.get(target_name, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
+        for idx, target_name in enumerate(self.target_columns):
+            info = self.target_info.get(target_name, self._default_target_info())
             row = ttk.Frame(dialog)
             row.grid(row=idx, column=0, sticky="ew", pady=2)
-            ttk.Label(row, text=target_name, width=18).pack(side="left")
+            ttk.Label(row, text=f"VM target: {target_name}", width=26).pack(side="left")
             vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
             user_var = tk.StringVar(value=info.get("username", ""))
             pass_var = tk.StringVar(value=info.get("password", ""))
@@ -2561,6 +3676,7 @@ class ProfileFrame(BaseFrame):
             rows[target_name] = (vm_var, user_var, pass_var, os_var)
 
         def apply_shared_credentials():
+            """Apply shared credentials."""
             shared_user = normalize_text(self.vcenter_username.get())
             shared_password = self.vcenter_password.get()
             if not shared_user or not shared_password:
@@ -2574,6 +3690,7 @@ class ProfileFrame(BaseFrame):
                 pass_var.set(shared_password)
 
         def save_and_close():
+            """Save and close."""
             for t, (vm_var, user_var, pass_var, os_var) in rows.items():
                 self.target_info[t] = {
                     "vm_name": vm_var.get().strip(),
@@ -2584,10 +3701,11 @@ class ProfileFrame(BaseFrame):
                 # Update dropdowns to reflect new VM names
                 self.vm_dropdowns[t].set(vm_var.get().strip() or LOCAL_SENTINEL)
             dialog.destroy()
-        ttk.Button(dialog, text="Apply Shared Login To All", command=apply_shared_credentials).grid(row=len(SYSTEM_COLUMNS), column=0, pady=(8, 2))
-        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(SYSTEM_COLUMNS) + 1, column=0, pady=(2, 8))
+        ttk.Button(dialog, text="Apply Shared Login To All", command=apply_shared_credentials).grid(row=len(self.target_columns), column=0, pady=(8, 2))
+        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(self.target_columns) + 1, column=0, pady=(2, 8))
 
     def _entry_row(self, parent, label, var, show=None, command=None):
+        """Internal helper for entry row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=4)
         ttk.Label(row, text=label, width=18).pack(side="left")
@@ -2609,17 +3727,20 @@ class ProfileFrame(BaseFrame):
         self.logger.write(message)
 
     def _service(self) -> VSphereService:
+        """Internal helper for service."""
         return VSphereService(self.vcenter_server.get(), self.vcenter_username.get(), self.vcenter_password.get(), self.ignore_ssl.get())
 
     def load_inventory(self):
+        """Load inventory."""
         try:
             self.append_log(f"Connecting to {self.vcenter_server.get().strip()} for VM inventory...")
             service = self._service()
             service.connect()
             names = service.list_windows_vms()
             service.disconnect()
+            self.inventory_values = sorted({LOCAL_SENTINEL, *names})
             for combo in self.vm_dropdowns.values():
-                combo["values"] = names
+                combo["values"] = self.inventory_values
                 if not combo.get():
                     combo.set(LOCAL_SENTINEL)
             self.append_log(f"Loaded {len(names)} selectable targets, including {LOCAL_SENTINEL}.")
@@ -2628,6 +3749,7 @@ class ProfileFrame(BaseFrame):
             self.append_log(f"ERROR: {exc}")
 
     def save_profile(self):
+        """Save profile."""
         profile_name = self._get_profile_name_or_warn()
         if profile_name is None:
             return
@@ -2659,6 +3781,16 @@ class ProfileFrame(BaseFrame):
             "vcenter_username": default_user,
             "vcenter_password": default_password,
             "ignore_ssl": self.ignore_ssl.get(),
+            "source_sbl_path": self.source_sbl_path.get().strip(),
+            "build_type": infer_build_type(self.build_type.get() or self.source_sbl_path.get()),
+            "target_schema": build_target_schema_payload(self.source_sbl_path.get().strip(), self.target_columns, self.build_type.get()),
+            "ssh_tunnel": {
+                "gateway_host": self.ssh_gateway_host.get().strip(),
+                "gateway_port": normalize_text(self.ssh_gateway_port.get()) or "22",
+                "gateway_username": self.ssh_gateway_username.get().strip(),
+                "gateway_password": self.ssh_gateway_password.get(),
+                "target_port": normalize_text(self.ssh_target_port.get()) or "22",
+            },
             "targets": self.target_info,
             "last_verified": ""
         }
@@ -2668,15 +3800,26 @@ class ProfileFrame(BaseFrame):
         self._refresh_credential_status(profile_name)
 
     def load_saved_profile(self):
+        """Load saved profile."""
         profile_name = self._get_profile_name_or_warn()
         if profile_name is None:
             return
         payload = self.profile_service.load_profile(profile_name)
-        self.vcenter_server.set(payload.get("vcenter_server", ""))
-        self.vcenter_username.set(payload.get("vcenter_username", ""))
-        self.vcenter_password.set(payload.get("vcenter_password", ""))
+        self.vcenter_server.set(payload.get("vcenter_server", payload.get("vsphere", {}).get("server", "")))
+        self.vcenter_username.set(payload.get("vcenter_username", payload.get("vsphere", {}).get("username", "")))
+        self.vcenter_password.set(payload.get("vcenter_password", payload.get("vsphere", {}).get("password", "")))
         self.ignore_ssl.set(bool(payload.get("ignore_ssl", True)))
-        self.target_info = payload.get("targets", {name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"} for name in SYSTEM_COLUMNS})
+        self.source_sbl_path.set(payload.get("source_sbl_path", payload.get("target_schema", {}).get("source_path", "")))
+        self.build_type.set(infer_build_type(payload.get("build_type", payload.get("target_schema", {}).get("build_type", self.source_sbl_path.get()))))
+        ssh_tunnel = payload.get("ssh_tunnel", {})
+        if isinstance(ssh_tunnel, dict):
+            self.ssh_gateway_host.set(ssh_tunnel.get("gateway_host", ""))
+            self.ssh_gateway_port.set(str(ssh_tunnel.get("gateway_port", "22")))
+            self.ssh_gateway_username.set(ssh_tunnel.get("gateway_username", ""))
+            self.ssh_gateway_password.set(ssh_tunnel.get("gateway_password", ""))
+            self.ssh_target_port.set(str(ssh_tunnel.get("target_port", "22")))
+        self._set_target_columns(resolve_profile_target_columns(payload))
+        self.target_info = payload.get("targets", {name: self._default_target_info() for name in self.target_columns})
         for name, combo in self.vm_dropdowns.items():
             combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
         self.append_log(f"Loaded profile: {profile_name}")
@@ -2685,13 +3828,15 @@ class ProfileFrame(BaseFrame):
 
 
     def verify_profile(self):
+        """Verify profile."""
         profile_name = self._get_profile_name_or_warn()
         if profile_name is None:
             return
         payload = self.profile_service.load_profile(profile_name)
         service = self._service()
         service.connect()
-        vm_names = [payload.get("targets", {}).get(name, {}).get("vm_name", "") for name in SYSTEM_COLUMNS if payload.get("targets", {}).get(name, {}).get("vm_name", "")]
+        target_names = resolve_profile_target_columns(payload)
+        vm_names = [payload.get("targets", {}).get(name, {}).get("vm_name", "") for name in target_names if payload.get("targets", {}).get(name, {}).get("vm_name", "")]
         report = service.verify_vm_names(vm_names)
         service.disconnect()
         payload["last_verified"] = datetime.now().isoformat(timespec="seconds")
@@ -2702,6 +3847,7 @@ class ProfileFrame(BaseFrame):
 
 class ChecklistFrame(BaseFrame):
     def __init__(self, parent, controller):
+        """Initialize the ChecklistFrame instance."""
         super().__init__(parent, controller)
         
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -2756,6 +3902,7 @@ class ChecklistFrame(BaseFrame):
         self.refresh_template_status_panel()
 
     def _path_row(self, parent, label, variable, command):
+        """Internal helper for path row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=5)
         ttk.Label(row, text=label, width=16).pack(side="left")
@@ -2763,6 +3910,7 @@ class ChecklistFrame(BaseFrame):
         ttk.Button(row, text="Browse", command=command).pack(side="left")
 
     def _template_status_row(self, parent, label, variable):
+        """Internal helper for template status row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
         ttk.Label(row, text=label, width=22).pack(side="left")
@@ -2770,6 +3918,7 @@ class ChecklistFrame(BaseFrame):
 
     def refresh_template_status_panel(self):
         # Try to infer model from current audit path
+        """Refresh template status panel."""
         sbl_model = None
         audit_path = self.audit_path.get().strip() if hasattr(self, 'audit_path') else ""
         if audit_path and Path(audit_path).exists():
@@ -2793,24 +3942,29 @@ class ChecklistFrame(BaseFrame):
         )
 
     def append_log(self, message: str):
+        """Append log."""
         self.log_widget.insert("end", message + "\n")
         self.log_widget.see("end")
         self.logger.write(message)
 
     def set_status(self, message: str):
+        """Set status."""
         self.status_var.set(message)
 
     def pick_source(self):
-        path = filedialog.askopenfilename(title="Select main SBL workbook", filetypes=[("Excel files", "*.xlsx *.xlsm"), ("All files", "*.*")])
+        """Pick source."""
+        path = filedialog.askopenfilename(title="Select main SBL source", filetypes=[("Supported files", "*.xlsx *.xlsm *.csv *.json"), ("All files", "*.*")])
         if path:
             self.source_path.set(path)
 
     def pick_output(self):
+        """Pick output."""
         path = filedialog.asksaveasfilename(title="Save generated audit form as", defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
         if path:
             self.output_path.set(path)
 
     def load_baseline_template(self):
+        """Load baseline template."""
         source = self.source_path.get().strip()
         sbl_model = None
         if source and Path(source).exists():
@@ -2838,6 +3992,7 @@ class ChecklistFrame(BaseFrame):
         self.append_log(f"Loaded baseline template as source: {baseline_path}")
 
     def update_baseline_template(self):
+        """Update baseline template."""
         source = self.source_path.get().strip()
         if not source:
             messagebox.showerror("No source selected", "Select a source workbook before updating baseline template.")
@@ -2855,6 +4010,7 @@ class ChecklistFrame(BaseFrame):
             messagebox.showerror("Template update failed", str(exc))
 
     def import_list_source(self):
+        """Import list source."""
         in_path = filedialog.askopenfilename(
             title="Import list file",
             filetypes=[("Supported files", "*.xlsx *.xlsm *.csv *.json"), ("All files", "*.*")],
@@ -2880,6 +4036,7 @@ class ChecklistFrame(BaseFrame):
 
     def extract_path(self, version_locations):
         # Normalize and handle missing values
+        """Extract path."""
         if version_locations is None:
             return ""
         # deference pandas NA values utils
@@ -2910,6 +4067,7 @@ class ChecklistFrame(BaseFrame):
         return raw
 
     def user_read_software_list(self):
+        """User read software list."""
         file_path = self.source_path.get().strip()
         # Columns of interest from SBL
         software_component = 'SOFTWARE COMPONENT'
@@ -2961,6 +4119,7 @@ class ChecklistFrame(BaseFrame):
 
 
     def start_generate(self):
+        """Start generate."""
         print("Starting checklist generation...")
         self.generate_button.configure(state="disabled")
         if hasattr(self, "progress"):
@@ -2969,12 +4128,13 @@ class ChecklistFrame(BaseFrame):
         self.set_status("Status: Generating...")
         self.logger = FileLogger(LOGS_DIR, "checklist_generation")
         self.append_log(f"Starting checklist generation")
-        self.append_log(f"Source workbook: {self.source_path.get()}")
+        self.append_log(f"Source input: {self.source_path.get()}")
         self.append_log(f"Output workbook: {self.output_path.get()}")
         self.append_log(f"Session log file: {self.logger.get_path()}")
         threading.Thread(target=self._generate_worker, daemon=True).start()
 
     def _generate_worker(self):
+        """Internal helper for generate worker."""
         print("In checklist generation worker thread...")
         try:
             source = self.source_path.get().strip()
@@ -2985,8 +4145,10 @@ class ChecklistFrame(BaseFrame):
                 raise ValueError("Choose an output workbook path first.")
 
             self.after(0, lambda: self.progress_var.set(10))
-            self.after(0, lambda: self.append_log("Loading source workbook..."))
+            self.after(0, lambda: self.append_log("Loading source input..."))
             generator = ChecklistGeneratorService(source)
+            if generator.normalized_source_path != source:
+                self.after(0, lambda p=generator.normalized_source_path: self.append_log(f"Normalized non-Excel input to workbook staging file: {p}"))
             #
             # generator.generate_audit_form(output)
             self.after(0, lambda: self.progress_var.set(45))
@@ -3022,6 +4184,7 @@ class ChecklistFrame(BaseFrame):
 
 class AuditFrame(BaseFrame):
     def _init_target_info_table(self, parent):
+        """Internal helper for init target info table."""
         self.target_info_vars = {}
         self.target_info_dialog = None
         self.save_targets_btn = None
@@ -3030,6 +4193,7 @@ class AuditFrame(BaseFrame):
         btn.pack(side="left", padx=(8, 0))
 
     def _show_target_info_dialog(self):
+        """Internal helper for show target info dialog."""
         if self.target_info_dialog and self.target_info_dialog.winfo_exists():
             self.target_info_dialog.lift()
             return
@@ -3044,7 +4208,8 @@ class AuditFrame(BaseFrame):
             ttk.Label(header, text=text, width=14 if col else 18, font=("Segoe UI", 9, "bold")).grid(row=0, column=col)
         profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
         targets = profile.get("targets", {})
-        for idx, target in enumerate(SYSTEM_COLUMNS):
+        target_names = self._resolve_target_names(profile)
+        for idx, target in enumerate(target_names):
             info = targets.get(target, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
             row = ttk.Frame(frame)
             row.pack(fill="x")
@@ -3059,6 +4224,7 @@ class AuditFrame(BaseFrame):
             ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4)
             self.target_info_vars[target] = (vm_var, user_var, pass_var, os_var)
         def _apply_shared_credentials_to_targets():
+            """Internal helper for apply shared credentials to targets."""
             shared_user = normalize_text(self.guest_username.get()) or normalize_text(self.vcenter_username.get())
             shared_password = self.guest_password.get() or self.vcenter_password.get()
             if not shared_user or not shared_password:
@@ -3080,6 +4246,7 @@ class AuditFrame(BaseFrame):
 
     def _save_target_info(self):
         # Save edited info back to profile
+        """Internal helper for save target info."""
         profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
         targets = profile.get("targets", {})
         default_user = normalize_text(profile.get("vcenter_username", ""))
@@ -3100,6 +4267,7 @@ class AuditFrame(BaseFrame):
             self.target_info_dialog.destroy()
 
     def __init__(self, parent, controller):
+        """Initialize the AuditFrame instance."""
         super().__init__(parent, controller)
         self._compact_label_width = 16
         self.profile_service = VMProfileService()
@@ -3111,6 +4279,10 @@ class AuditFrame(BaseFrame):
         self.output_path = tk.StringVar(value=str(default_results))
         self.profile_name = tk.StringVar()
         self.profile_options = self._get_profile_options()
+        self.detected_target_columns = default_target_columns()
+        self.build_type_value = tk.StringVar(value="unknown")
+        self.audit_schema_var = tk.StringVar(value="Build type: unknown | VM targets: legacy fallback")
+        self.last_schema_source = ""
         if self.profile_options:
             self.profile_name.set(self.profile_options[0])
         else:
@@ -3139,6 +4311,7 @@ class AuditFrame(BaseFrame):
         cfg.pack(fill="x", pady=8)
         self._path_row(cfg, "Audit workbook", self.audit_path, self.pick_audit)
         self._path_row(cfg, "Save audited results", self.output_path, self.pick_output)
+        ttk.Label(cfg, textvariable=self.audit_schema_var, foreground="#35556b").pack(anchor="w", pady=(4, 0))
         creds = ttk.LabelFrame(self, text="Profile and Credentials", padding=8)
         creds.pack(fill="x", pady=(0, 8))
         # Dropdown for VM profiles
@@ -3201,12 +4374,15 @@ class AuditFrame(BaseFrame):
 
         self.connection_mode.trace_add("write", self._on_connection_mode_changed)
         self._set_ssh_section_visible(False)
+        self._refresh_audit_source_metadata(prompt_user=False)
     def _get_profile_options(self):
+        """Internal helper for get profile options."""
         profiles_dir = PROFILES_DIR
         if not profiles_dir.exists():
             return []
         return [f.stem for f in profiles_dir.glob("*.json") if f.is_file()]
     def _path_row(self, parent, label, variable, command):
+        """Internal helper for path row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
         ttk.Label(row, text=label, width=self._compact_label_width).pack(side="left")
@@ -3214,6 +4390,7 @@ class AuditFrame(BaseFrame):
         ttk.Button(row, text="Browse", command=command).pack(side="left")
 
     def _entry_row(self, parent, label, variable, show=None, button=None, label_width=None):
+        """Internal helper for entry row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
         width = self._compact_label_width if label_width is None else label_width
@@ -3223,6 +4400,7 @@ class AuditFrame(BaseFrame):
             ttk.Button(row, text=button[0], command=button[1]).pack(side="left")
 
     def _entry_pair_row(self, parent, label1, var1, label2, var2, show1=None, show2=None):
+        """Internal helper for entry pair row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
 
@@ -3237,6 +4415,7 @@ class AuditFrame(BaseFrame):
         ttk.Entry(right, textvariable=var2, show=show2).pack(side="left", fill="x", expand=True)
 
     def _entry_half_row(self, parent, label, variable, show=None, label_width=None):
+        """Internal helper for entry half row."""
         row = ttk.Frame(parent)
         row.pack(fill="x", pady=2)
 
@@ -3251,6 +4430,7 @@ class AuditFrame(BaseFrame):
         ttk.Label(right, text="", width=16).pack(side="left")
 
     def _set_ssh_section_visible(self, visible: bool) -> None:
+        """Internal helper for set ssh section visible."""
         if visible:
             if not self.ssh_section.winfo_ismapped():
                 self.ssh_section.pack(fill="x", pady=(4, 0))
@@ -3259,9 +4439,11 @@ class AuditFrame(BaseFrame):
                 self.ssh_section.pack_forget()
 
     def _toggle_ssh_section(self):
+        """Internal helper for toggle ssh section."""
         self._on_connection_mode_changed()
 
     def _on_connection_mode_changed(self, *_):
+        """Internal helper for on connection mode changed."""
         mode = normalize_text(self.connection_mode.get()).lower()
         self.fallback_checkbox.configure(text=self.fallback_texts.get(mode, self.fallback_texts["vSphere"]))
 
@@ -3283,31 +4465,83 @@ class AuditFrame(BaseFrame):
                 self.probe_button.configure(text="Test vCenter Probe")
 
     def append_log(self, message: str):
+        """Append log."""
         self.log.insert("end", message + "\n")
         self.log.see("end")
         self.logger.write(message)
         print(message, flush=True)
 
     def set_status(self, message: str):
+        """Set status."""
         self.status_var.set(message)
 
     @staticmethod
     def _parse_int(value: str, default: int) -> int:
+        """Internal helper for parse int."""
         try:
             return int(normalize_text(value))
         except Exception:
             return default
 
+    def _apply_detected_schema(self, target_columns: List[str], build_type: str):
+        """Internal helper for apply detected schema."""
+        self.detected_target_columns = target_columns or default_target_columns()
+        resolved_build_type = infer_build_type(build_type)
+        self.build_type_value.set(resolved_build_type)
+        summary = ", ".join(self.detected_target_columns[:4])
+        if len(self.detected_target_columns) > 4:
+            summary += ", ..."
+        self.audit_schema_var.set(f"Build type: {resolved_build_type} | VM targets: {summary or 'legacy fallback'}")
+
+    def _refresh_audit_source_metadata(self, prompt_user: bool = True):
+        """Internal helper for refresh audit source metadata."""
+        source_path = self.audit_path.get().strip()
+        if not source_path:
+            self._apply_detected_schema(default_target_columns(), "unknown")
+            return
+        try:
+            workbook_service = AuditWorkbookService(source_path)
+            workbook_service.detect_header_row()
+            workbook_service.build_column_map()
+            selected_columns = workbook_service.target_columns
+            if prompt_user and source_path != self.last_schema_source:
+                selected_columns = confirm_target_column_mapping(
+                    self,
+                    source_path,
+                    workbook_service.target_columns,
+                    workbook_service.build_type,
+                    current_columns=self.detected_target_columns,
+                ) or self.detected_target_columns
+            self._apply_detected_schema(selected_columns, workbook_service.build_type)
+            self.last_schema_source = source_path
+        except Exception:
+            self._apply_detected_schema(default_target_columns(), infer_build_type(source_path))
+
+    def _resolve_target_names(self, payload: Optional[Dict[str, Any]] = None) -> List[str]:
+        """Internal helper for resolve target names."""
+        if payload:
+            return resolve_profile_target_columns(payload)
+        return self.detected_target_columns or default_target_columns()
+
     def load_profile_defaults(self):
+        """Load profile defaults."""
         payload = self.profile_service.load_profile(self.profile_name.get().strip())
-        self.vcenter_server.set(payload.get("vcenter_server", ""))
-        self.vcenter_username.set(payload.get("vcenter_username", ""))
-        self.vcenter_password.set(payload.get("vcenter_password", ""))
+        self.vcenter_server.set(payload.get("vcenter_server", payload.get("vsphere", {}).get("server", "")))
+        self.vcenter_username.set(payload.get("vcenter_username", payload.get("vsphere", {}).get("username", "")))
+        self.vcenter_password.set(payload.get("vcenter_password", payload.get("vsphere", {}).get("password", "")))
+        ssh_tunnel = payload.get("ssh_tunnel", {})
+        if isinstance(ssh_tunnel, dict):
+            self.ssh_gateway_host.set(ssh_tunnel.get("gateway_host", ""))
+            self.ssh_gateway_port.set(str(ssh_tunnel.get("gateway_port", "22")))
+            self.ssh_gateway_username.set(ssh_tunnel.get("gateway_username", ""))
+            self.ssh_gateway_password.set(ssh_tunnel.get("gateway_password", ""))
+            self.ssh_target_port.set(str(ssh_tunnel.get("target_port", "22")))
+        self._apply_detected_schema(self._resolve_target_names(payload), payload.get("build_type", payload.get("target_schema", {}).get("build_type", self.audit_path.get())))
 
         targets = payload.get("targets", {})
         target_creds = []
         if isinstance(targets, dict):
-            for target_name in SYSTEM_COLUMNS:
+            for target_name in self._resolve_target_names(payload):
                 entry = targets.get(target_name, {})
                 if not isinstance(entry, dict):
                     continue
@@ -3329,35 +4563,42 @@ class AuditFrame(BaseFrame):
         # Optionally update other fields if needed
 
     @staticmethod
-    def _coerce_local_only_profile(vm_profile: Dict[str, Any]) -> Dict[str, Any]:
+    def _coerce_local_only_profile(vm_profile: Dict[str, Any], target_names: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Internal helper for coerce local only profile."""
         targets = vm_profile.setdefault("targets", {})
-        for target_name in SYSTEM_COLUMNS:
+        for target_name in (target_names or resolve_profile_target_columns(vm_profile)):
             target_entry = targets.setdefault(target_name, {"vm_name": "", "os_type": "windows"})
             target_entry["vm_name"] = LOCAL_SENTINEL
             target_entry["os_type"] = "windows"
         return vm_profile
 
     def pick_audit(self):
+        """Pick audit."""
         path = filedialog.askopenfilename(title="Select audit workbook", filetypes=[("Excel files", "*.xlsx *.xlsm"), ("All files", "*.*")])
         if path:
             self.audit_path.set(path)
+            self._refresh_audit_source_metadata(prompt_user=True)
 
     def pick_output(self):
+        """Pick output."""
         path = filedialog.asksaveasfilename(title="Save audited workbook as", defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
         if path:
             self.output_path.set(path)
 
     def start_audit(self):
+        """Start audit."""
         self.run_button.configure(state="disabled")
         self.probe_button.configure(state="disabled")
         self.progress_var.set(0)
-        self.set_status("Status: Running...")
+        self.set_status(f"Status: Running ({self.build_type_value.get()})")
         self.logger = FileLogger(LOGS_DIR, "audit_run")
         self.append_log(f"Opening workbook: {self.audit_path.get()}")
+        self.append_log(f"Build type for this audit: {self.build_type_value.get()}")
         self.append_log(f"Session log file: {self.logger.get_path()}")
         threading.Thread(target=self._worker, daemon=True).start()
 
     def start_probe(self):
+        """Start probe."""
         self.run_button.configure(state="disabled")
         self.probe_button.configure(state="disabled")
         self.set_status("Status: Probing remote connection...")
@@ -3367,6 +4608,7 @@ class AuditFrame(BaseFrame):
         threading.Thread(target=self._probe_worker, daemon=True).start()
 
     def _probe_worker(self):
+        """Internal helper for probe worker."""
         service = None
         try:
             mode = normalize_text(self.connection_mode.get()).lower()
@@ -3386,9 +4628,10 @@ class AuditFrame(BaseFrame):
                     gateway_port=self._parse_int(self.ssh_gateway_port.get(), 22),
                 )
                 profile = self.profile_service.load_profile(self.profile_name.get().strip())
+                target_names = self._resolve_target_names(profile)
                 mapped_hosts = [
                     normalize_text(profile.get("targets", {}).get(name, {}).get("vm_name", ""))
-                    for name in SYSTEM_COLUMNS
+                    for name in target_names
                 ]
                 mapped_hosts = sorted({host for host in mapped_hosts if host and host.upper() != LOCAL_SENTINEL})
                 if not mapped_hosts:
@@ -3415,9 +4658,10 @@ class AuditFrame(BaseFrame):
 
                 try:
                     profile = self.profile_service.load_profile(self.profile_name.get().strip())
+                    target_names = self._resolve_target_names(profile)
                     mapped_vm_names = [
                         normalize_text(profile.get("targets", {}).get(name, {}).get("vm_name", ""))
-                        for name in SYSTEM_COLUMNS
+                        for name in target_names
                     ]
                     mapped_vm_names = [name for name in mapped_vm_names if name and name.upper() != LOCAL_SENTINEL]
                     if mapped_vm_names:
@@ -3449,11 +4693,13 @@ class AuditFrame(BaseFrame):
             self.after(0, lambda: self.probe_button.configure(state="normal"))
 
     def _worker(self):
+        """Internal helper for worker."""
         started_at = datetime.now().isoformat(timespec="seconds")
         rows: List[AuditRow] = []
         results: List[ScanResult] = []
 
         def build_scan_job_payload(status: str, error_message: str = "") -> Dict[str, Any]:
+            """Build scan job payload."""
             row_by_index = {row.row_index: row for row in rows}
 
             parsed_rows: List[Dict[str, Any]] = []
@@ -3532,6 +4778,7 @@ class AuditFrame(BaseFrame):
                 },
                 "settings": {
                     "profile_name": self.profile_name.get().strip(),
+                    "build_type": self.build_type_value.get(),
                     "connection_mode": normalize_text(self.connection_mode.get()),
                     "local_only": bool(self.local_only.get()),
                     "fallback_enabled": bool(self.show_ssh_settings.get()),
@@ -3541,6 +4788,7 @@ class AuditFrame(BaseFrame):
                     "ssh_target_port": self._parse_int(self.ssh_target_port.get(), 22),
                 },
                 "sbl_parse": {
+                    "target_columns": list(self.detected_target_columns),
                     "row_count": len(parsed_rows),
                     "rows": parsed_rows,
                     "special_path_scan_list": special_path_list,
@@ -3559,9 +4807,11 @@ class AuditFrame(BaseFrame):
             workbook_service.detect_header_row()
             workbook_service.build_column_map()
             rows = workbook_service.iter_audit_rows()
+            self.after(0, lambda cols=list(workbook_service.target_columns), build_type=workbook_service.build_type: self._apply_detected_schema(cols, build_type))
             self.after(0, lambda: self.append_log(f"Detected format with {workbook_service.sbl_build_header} and {workbook_service.audit_header}. Rows to process: {len(rows)}"))
             processed = {"count": 0}
             def logger(msg: str):
+                """Logger."""
                 if msg.startswith("Scanning "):
                     processed["count"] += 1
                 total = max(1, len(rows))
@@ -3571,10 +4821,10 @@ class AuditFrame(BaseFrame):
             vcenter_server = self.vcenter_server.get().strip()
             mode = normalize_text(self.connection_mode.get()).lower()
             if self.local_only.get():
-                vm_profile = self._coerce_local_only_profile(vm_profile)
+                vm_profile = self._coerce_local_only_profile(vm_profile, workbook_service.target_columns)
                 self.after(0, lambda: self.append_log("Local-only scan enabled; all targets set to __LOCAL__."))
             elif mode != "ssh tunnel" and not vcenter_server:
-                vm_profile = self._coerce_local_only_profile(vm_profile)
+                vm_profile = self._coerce_local_only_profile(vm_profile, workbook_service.target_columns)
                 self.after(0, lambda: self.append_log("No vCenter server configured; forcing local-only scan mode (__LOCAL__) for all targets."))
             engine = AuditEngine(
                 workbook_service,
@@ -3645,6 +4895,7 @@ class AuditFrame(BaseFrame):
 
     @staticmethod
     def build_summary(results: List[ScanResult]) -> str:
+        """Build summary."""
         passed = sum(1 for r in results if r.status == "PASS")
         failed = sum(1 for r in results if r.status == "FAIL")
         warned = sum(1 for r in results if r.status == "WARN")
@@ -3652,6 +4903,7 @@ class AuditFrame(BaseFrame):
 
 
 def main():
+    """Main."""
     app = App()
     app.mainloop()
 

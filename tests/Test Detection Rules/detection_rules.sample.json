@@ -1,4 +1,6 @@
 {
+  "_file_purpose": "Reference and record fixture for detection-rule definitions. Not used as SBL intake input.",
+  "_how_to_use": "Use for documenting, reviewing, and testing rule syntax/coverage. Keep SBL intake fixtures under tests/Test SBLs/.",
   "schema_version": "1.0",
   "rules": [
     {

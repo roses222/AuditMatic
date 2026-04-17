@@ -1,4 +1,15 @@
 {
+  "_file_purpose": "Sample registry snapshot used by tests and detection rule validation.",
+  "_how_to_use": "Use this file to validate parser behavior. Keep top-level keys stable: generated_at, host, registry_entries.",
+  "_field_guide": {
+    "generated_at": "ISO timestamp when snapshot was captured.",
+    "host": "Machine name where registry data was collected.",
+    "registry_entries": "List of installed software entries from uninstall registry paths.",
+    "registry_entries[].path": "Registry path that contains uninstall metadata.",
+    "registry_entries[].display_name": "Software name as shown in Add/Remove Programs.",
+    "registry_entries[].display_version": "Installed software version string.",
+    "registry_entries[].publisher": "Software publisher/vendor name."
+  },
   "generated_at": "2026-04-16T00:00:00",
   "host": "TEST-HOST-01",
   "registry_entries": [

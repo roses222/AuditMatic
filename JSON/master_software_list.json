@@ -198,7 +198,73 @@
           "tracked_software": []
         }
       }
+    },
+    "7-Zip": {
+      "software_components": {
+        "7-Zip": {
+          "generic_name": "7-Zip",
+          "registry_name": "",
+          "path": "Programs and Features",
+          "coded_path": "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName,DisplayVersion",
+          "verification_source": "programs_and_features",
+          "path_last_verified_date": "2026-04-17T05:40:41",
+          "tracked_in_vms": [],
+          "notes": ""
+        },
+        "ArcGIS PowerShell DSC Module": {
+          "generic_name": "ArcGIS PowerShell DSC Module",
+          "registry_name": "",
+          "path": "powershell:Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version",
+          "coded_path": "Get-Module -Name ArcGIS* -ListAvailable | Select-Object -Property Name,Version",
+          "verification_source": "powershell",
+          "path_last_verified_date": "2026-04-17T05:40:41",
+          "tracked_in_vms": [],
+          "notes": ""
+        },
+        "Notepad++": {
+          "generic_name": "Notepad++",
+          "registry_name": "",
+          "path": "C:\\Program Files\\Notepad++\\notepad++.exe",
+          "coded_path": "C:\\Program Files\\Notepad++\\notepad++.exe",
+          "verification_source": "file_version",
+          "path_last_verified_date": "2026-04-17T05:40:40",
+          "tracked_in_vms": [],
+          "notes": ""
+        }
+      },
+      "vm_components": {
+        "ArcGIS_WebAdaptor": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_Portal": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_HostingServer": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_DS1": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "ArcGIS_DS2": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        },
+        "GCS_Management": {
+          "vm_name": "",
+          "os_type": "windows",
+          "tracked_software": []
+        }
+      }
     }
   },
-  "updated_at": "2026-04-03T11:38:55"
+  "updated_at": "2026-04-17T05:40:41"
 }
