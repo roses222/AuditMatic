@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 import pandas as pd
 import sys
 import re
@@ -297,6 +297,195 @@ def derive_import_target_columns(rows: List[Dict[str, Any]]) -> List[str]:
             if name not in discovered:
                 discovered.append(name)
     return discovered or default_target_columns()
+
+
+def extract_path_from_version_location(version_location: Any) -> str:
+    """Extract a filesystem path prefix from a VERSION LOCATIONS-style string when possible."""
+    text = normalize_text(version_location)
+    if not text:
+        return ""
+    match = re.match(r"([A-Za-z]:[\\/].*?)(?=\s*>)", text)
+    if match:
+        return match.group(1)
+    return text
+
+
+def read_software_list_universal_rows(
+    file_path: str,
+    debug_logger: Optional[Callable[[str], None]] = None,
+) -> List[Dict[str, Any]]:
+    """Read heterogeneous SBL-like sources and normalize rows for import/checklist pipelines.
+
+    This keeps the strict parser as the primary path and acts as a tolerant fallback when
+    incoming workbooks vary in header row or naming conventions.
+    """
+    format_type = detect_workbook_format(file_path)
+
+    def _dbg(message: str) -> None:
+        """Emit parser debug messages when a logger callback is provided."""
+        if debug_logger is not None:
+            debug_logger(f"[universal-parser] {message}")
+
+    _dbg(f"source={file_path}")
+    _dbg(f"detected_format={format_type}")
+
+    def _select_column(columns: List[str], patterns: List[str]) -> str:
+        normalized = [normalize_text(col).lower() for col in columns]
+        for pattern in patterns:
+            regex = re.compile(pattern, re.IGNORECASE)
+            for index, col_name in enumerate(normalized):
+                if regex.search(col_name):
+                    return columns[index]
+        return ""
+
+    def _normalize_records(raw_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        normalized_rows: List[Dict[str, Any]] = []
+        for record in raw_records:
+            if not isinstance(record, dict):
+                continue
+            software_component = pick_record_value(record, ["SOFTWARE COMPONENT", "COMPONENT", "SOFTWARE", "NAME"])
+            if not software_component:
+                continue
+            displayed_name = pick_record_value(record, ["DISPLAYED NAME", "DISPLAY NAME", "SOFTWARE COMPONENT", "NAME"]) or software_component
+            expected_version = pick_record_value(record, ["CURRENT CI VERSION", "CURRENT VERSION", "EXPECTED VERSION", "VERSION"])
+            version_locations = extract_path_from_version_location(
+                pick_record_value(record, ["VERSION LOCATIONS", "VERSION LOCATION", "LOCATION", "PATH", "RULE"])
+            )
+            cm_id = pick_record_value(record, ["CM TOOL ID NUMBER", "TOOL ID", "ID"])
+
+            target_vms: Dict[str, str] = {}
+            for key, value in record.items():
+                key_name = normalize_text(key)
+                if not key_name or is_known_non_target_header(key_name) or key_name.lower() == "target_vms":
+                    continue
+                if normalize_text(value).upper() == "X":
+                    target_vms[key_name] = "X"
+
+            normalized_entry: Dict[str, Any] = {
+                "SOFTWARE COMPONENT": software_component,
+                "DISPLAYED NAME": displayed_name,
+                "CURRENT CI VERSION": expected_version,
+                "VERSION LOCATIONS": version_locations,
+            }
+            if cm_id:
+                normalized_entry["CM TOOL ID NUMBER"] = cm_id
+            if target_vms:
+                normalized_entry["target_vms"] = target_vms
+            normalized_rows.append(normalized_entry)
+        _dbg(f"json_rows_in={len(raw_records)} json_rows_out={len(normalized_rows)}")
+        return normalized_rows
+
+    def _from_dataframe(df: pd.DataFrame) -> List[Dict[str, Any]]:
+        if df.empty:
+            return []
+        columns = [normalize_text(col) for col in list(df.columns)]
+        source_columns = list(df.columns)
+
+        software_col = _select_column(columns, [r"software\s*component", r"\bcomponent\b", r"\bsoftware\b", r"\bname\b"])
+        current_col = _select_column(columns, [r"current\s*ci\s*version", r"current\s*version", r"expected\s*version", r"\bci\s*version\b"])
+        version_col = _select_column(columns, [r"version\s*locations?", r"\bversion\s*location\b", r"\blocation\b", r"\bpath\b", r"\brule\b"])
+        displayed_col = _select_column(columns, [r"displayed\s*name", r"display\s*name"])
+        id_col = _select_column(columns, [r"cm\s*tool\s*id\s*number", r"\btool\s*id\b", r"\bid\b"])
+
+        if not software_col:
+            _dbg("software_component column not found in dataframe candidate")
+            return []
+
+        _dbg(
+            "matched_columns="
+            f"software={software_col or 'N/A'}, "
+            f"current={current_col or 'N/A'}, "
+            f"version_locations={version_col or 'N/A'}, "
+            f"displayed={displayed_col or 'N/A'}, "
+            f"id={id_col or 'N/A'}"
+        )
+
+        # Map selected normalized labels back to original column names.
+        col_lookup = {normalize_text(original): original for original in source_columns}
+        software_src = col_lookup.get(software_col, software_col)
+        current_src = col_lookup.get(current_col, current_col) if current_col else ""
+        version_src = col_lookup.get(version_col, version_col) if version_col else ""
+        displayed_src = col_lookup.get(displayed_col, displayed_col) if displayed_col else ""
+        id_src = col_lookup.get(id_col, id_col) if id_col else ""
+
+        output_rows: List[Dict[str, Any]] = []
+        for _, row in df.iterrows():
+            software_component = normalize_text(row.get(software_src, ""))
+            if not software_component:
+                continue
+            displayed_name = normalize_text(row.get(displayed_src, "")) if displayed_src else software_component
+            expected_version = normalize_text(row.get(current_src, "")) if current_src else ""
+            version_locations = extract_path_from_version_location(row.get(version_src, "")) if version_src else ""
+            cm_id = normalize_text(row.get(id_src, "")) if id_src else ""
+
+            selected_cols = {software_src, current_src, version_src, displayed_src, id_src}
+            target_vms: Dict[str, str] = {}
+            for col_name in source_columns:
+                if col_name in selected_cols:
+                    continue
+                if is_known_non_target_header(normalize_text(col_name)):
+                    continue
+                if normalize_text(row.get(col_name, "")).upper() == "X":
+                    target_vms[normalize_text(col_name)] = "X"
+
+            normalized_entry: Dict[str, Any] = {
+                "SOFTWARE COMPONENT": software_component,
+                "DISPLAYED NAME": displayed_name,
+                "CURRENT CI VERSION": expected_version,
+                "VERSION LOCATIONS": version_locations,
+            }
+            if cm_id:
+                normalized_entry["CM TOOL ID NUMBER"] = cm_id
+            if target_vms:
+                normalized_entry["target_vms"] = target_vms
+            output_rows.append(normalized_entry)
+        _dbg(f"dataframe_rows_in={len(df)} dataframe_rows_out={len(output_rows)}")
+        return output_rows
+
+    if format_type == "excel":
+        primary_header = detect_header_row_index(file_path, format_type)
+        header_candidates: List[int] = [primary_header, 0, 1, 2, 3, 4, 5]
+        _dbg(f"excel_header_candidates={header_candidates}")
+        seen: set = set()
+        for header_index in header_candidates:
+            if header_index in seen or header_index < 0:
+                continue
+            seen.add(header_index)
+            try:
+                df = pd.read_excel(file_path, header=header_index)
+            except Exception:
+                _dbg(f"header_index={header_index} read_failed")
+                continue
+            _dbg(f"header_index={header_index} read_ok columns={list(df.columns)}")
+            normalized_rows = _from_dataframe(df)
+            if normalized_rows:
+                _dbg(f"selected_header_index={header_index}")
+                return normalized_rows
+        raise ValueError("Unable to detect required columns in workbook using universal parser")
+
+    if format_type == "csv":
+        df = pd.read_csv(file_path)
+        _dbg(f"csv_columns={list(df.columns)}")
+        normalized_rows = _from_dataframe(df)
+        if normalized_rows:
+            return normalized_rows
+        raise ValueError("CSV parse did not produce usable software rows")
+
+    if format_type == "json":
+        payload = json.loads(Path(file_path).read_text(encoding="utf-8"))
+        _dbg(f"json_payload_type={type(payload).__name__}")
+        if isinstance(payload, list):
+            normalized_rows = _normalize_records(payload)
+        elif isinstance(payload, dict):
+            candidate_rows = payload.get("rows", [])
+            normalized_rows = _normalize_records(candidate_rows if isinstance(candidate_rows, list) else [])
+        else:
+            normalized_rows = []
+        if normalized_rows:
+            return normalized_rows
+        raise ValueError("JSON parse did not produce usable software rows")
+
+    raise ValueError(f"Unsupported format for universal row reader: {format_type}")
 
 
 def is_known_non_target_header(header: str) -> bool:
@@ -3659,20 +3848,34 @@ class ProfileFrame(BaseFrame):
         """Edit target info dialog."""
         dialog = tk.Toplevel(self)
         dialog.title("Edit Target VM Info")
+        dialog.resizable(False, False)
+        dialog.transient(self)
+        dialog.grab_set()
+        container = ttk.Frame(dialog, padding=8)
+        container.pack(fill="both", expand=True)
+
+        header = ttk.Frame(container)
+        header.pack(fill="x", pady=(0, 4))
+        ttk.Label(header, text="Target", width=30, anchor="w", font=("Segoe UI", 9, "bold")).pack(side="left")
+        ttk.Label(header, text="VM Name", width=24, anchor="w", font=("Segoe UI", 9, "bold")).pack(side="left", padx=(0, 4))
+        ttk.Label(header, text="Username", width=18, anchor="w", font=("Segoe UI", 9, "bold")).pack(side="left", padx=(0, 4))
+        ttk.Label(header, text="Password", width=18, anchor="w", font=("Segoe UI", 9, "bold")).pack(side="left", padx=(0, 4))
+        ttk.Label(header, text="OS", width=10, anchor="w", font=("Segoe UI", 9, "bold")).pack(side="left")
+
         rows = {}
         for idx, target_name in enumerate(self.target_columns):
             info = self.target_info.get(target_name, self._default_target_info())
-            row = ttk.Frame(dialog)
-            row.grid(row=idx, column=0, sticky="ew", pady=2)
-            ttk.Label(row, text=f"VM target: {target_name}", width=26).pack(side="left")
+            row = ttk.Frame(container)
+            row.pack(fill="x", pady=2)
+            ttk.Label(row, text=target_name, width=30, anchor="w").pack(side="left")
             vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
             user_var = tk.StringVar(value=info.get("username", ""))
             pass_var = tk.StringVar(value=info.get("password", ""))
             os_var = tk.StringVar(value=info.get("os_type", "windows"))
-            ttk.Entry(row, textvariable=vm_var, width=16).pack(side="left", padx=2)
-            ttk.Entry(row, textvariable=user_var, width=12).pack(side="left", padx=2)
-            ttk.Entry(row, textvariable=pass_var, width=12, show="*").pack(side="left", padx=2)
-            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=8, state="readonly").pack(side="left", padx=2)
+            ttk.Entry(row, textvariable=vm_var, width=24).pack(side="left", padx=(0, 4))
+            ttk.Entry(row, textvariable=user_var, width=18).pack(side="left", padx=(0, 4))
+            ttk.Entry(row, textvariable=pass_var, width=18, show="*").pack(side="left", padx=(0, 4))
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").pack(side="left")
             rows[target_name] = (vm_var, user_var, pass_var, os_var)
 
         def apply_shared_credentials():
@@ -3701,8 +3904,13 @@ class ProfileFrame(BaseFrame):
                 # Update dropdowns to reflect new VM names
                 self.vm_dropdowns[t].set(vm_var.get().strip() or LOCAL_SENTINEL)
             dialog.destroy()
-        ttk.Button(dialog, text="Apply Shared Login To All", command=apply_shared_credentials).grid(row=len(self.target_columns), column=0, pady=(8, 2))
-        ttk.Button(dialog, text="Save", command=save_and_close).grid(row=len(self.target_columns) + 1, column=0, pady=(2, 8))
+
+        controls = ttk.Frame(container)
+        controls.pack(fill="x", pady=(8, 0))
+        ttk.Button(controls, text="Apply Shared Login To All", command=apply_shared_credentials).pack(side="left")
+        ttk.Button(controls, text="Save", command=save_and_close).pack(side="right")
+
+        dialog.wait_window()
 
     def _entry_row(self, parent, label, var, show=None, command=None):
         """Internal helper for entry row."""
@@ -4183,6 +4391,136 @@ class ChecklistFrame(BaseFrame):
 
 
 class AuditFrame(BaseFrame):
+    def _prompt_quick_audit_vm_details(self, target_columns: List[str]) -> Optional[Dict[str, Any]]:
+        """Prompt for quick-audit VM details using a compact modal dialog."""
+        dialog = tk.Toplevel(self)
+        dialog.title("Quick Audit Scan - VM Details")
+        dialog.transient(self)
+        dialog.grab_set()
+        dialog.resizable(False, False)
+
+        container = ttk.Frame(dialog, padding=10)
+        container.pack(fill="both", expand=True)
+
+        vcenter_server = tk.StringVar(value=self.vcenter_server.get().strip())
+        vcenter_username = tk.StringVar(value=self.vcenter_username.get().strip())
+        vcenter_password = tk.StringVar(value=self.vcenter_password.get())
+        guest_username = tk.StringVar(value=self.guest_username.get().strip())
+        guest_password = tk.StringVar(value=self.guest_password.get())
+
+        ttk.Label(
+            container,
+            text="Quick Audit Scan: local scan runs first, then VM targets are scanned.",
+            wraplength=620,
+        ).pack(anchor="w", pady=(0, 8))
+
+        creds = ttk.LabelFrame(container, text="Connection Details", padding=8)
+        creds.pack(fill="x", pady=(0, 8))
+
+        def _entry_row(parent: ttk.Widget, label: str, variable: tk.StringVar, show: Optional[str] = None):
+            """Render one label/entry row for the quick-audit dialog."""
+            row = ttk.Frame(parent)
+            row.pack(fill="x", pady=2)
+            ttk.Label(row, text=label, width=22).pack(side="left")
+            ttk.Entry(row, textvariable=variable, show=show).pack(side="left", fill="x", expand=True)
+
+        _entry_row(creds, "vCenter server", vcenter_server)
+        _entry_row(creds, "vCenter username", vcenter_username)
+        _entry_row(creds, "vCenter password", vcenter_password, show="*")
+        _entry_row(creds, "Guest username", guest_username)
+        _entry_row(creds, "Guest password", guest_password, show="*")
+
+        mapping_box = ttk.LabelFrame(container, text="Target -> VM Name Mapping", padding=8)
+        mapping_box.pack(fill="both", expand=True)
+
+        target_vars: Dict[str, tk.StringVar] = {}
+        for target_name in target_columns:
+            row = ttk.Frame(mapping_box)
+            row.pack(fill="x", pady=2)
+            ttk.Label(row, text=target_name, width=26).pack(side="left")
+            vm_var = tk.StringVar(value=LOCAL_SENTINEL)
+            combo = ttk.Combobox(row, textvariable=vm_var, values=[LOCAL_SENTINEL], state="normal")
+            combo.pack(side="left", fill="x", expand=True)
+            target_vars[target_name] = vm_var
+
+        result: Dict[str, Any] = {}
+
+        def _apply_guest_to_all():
+            """Apply shared guest credentials to all target mappings."""
+            user = normalize_text(guest_username.get())
+            password = guest_password.get()
+            if not user or not password:
+                messagebox.showwarning(
+                    "Missing guest credentials",
+                    "Enter guest username and password first.",
+                    parent=dialog,
+                )
+                return
+            for _target, vm_var in target_vars.items():
+                if not normalize_text(vm_var.get()):
+                    vm_var.set(LOCAL_SENTINEL)
+
+        def _submit():
+            """Validate and submit the quick-audit dialog."""
+            server = normalize_text(vcenter_server.get())
+            user = normalize_text(vcenter_username.get())
+            password = vcenter_password.get()
+            guest_user = normalize_text(guest_username.get())
+            guest_pass = guest_password.get()
+            if not server or not user or not password:
+                messagebox.showwarning(
+                    "vCenter credentials required",
+                    "Provide vCenter server, username, and password.",
+                    parent=dialog,
+                )
+                return
+            if not guest_user or not guest_pass:
+                messagebox.showwarning(
+                    "Guest credentials required",
+                    "Provide guest username and password used for VM scans.",
+                    parent=dialog,
+                )
+                return
+
+            targets: Dict[str, Dict[str, str]] = {}
+            for target_name in target_columns:
+                vm_name = normalize_text(target_vars[target_name].get()) or LOCAL_SENTINEL
+                targets[target_name] = {
+                    "vm_name": vm_name,
+                    "username": guest_user,
+                    "password": guest_pass,
+                    "os_type": "windows",
+                }
+
+            result.update(
+                {
+                    "vcenter": {
+                        "server": server,
+                        "username": user,
+                        "password": password,
+                    },
+                    "guest": {
+                        "username": guest_user,
+                        "password": guest_pass,
+                    },
+                    "targets": targets,
+                }
+            )
+            dialog.destroy()
+
+        def _cancel():
+            """Cancel the quick-audit dialog."""
+            dialog.destroy()
+
+        btn_row = ttk.Frame(container)
+        btn_row.pack(fill="x", pady=(8, 0))
+        ttk.Button(btn_row, text="Apply Guest Creds To All", command=_apply_guest_to_all).pack(side="left")
+        ttk.Button(btn_row, text="Cancel", command=_cancel).pack(side="right")
+        ttk.Button(btn_row, text="Run Quick Audit Scan", command=_submit).pack(side="right", padx=(0, 8))
+
+        self.wait_window(dialog)
+        return result or None
+
     def _init_target_info_table(self, parent):
         """Internal helper for init target info table."""
         self.target_info_vars = {}
@@ -4199,29 +4537,33 @@ class AuditFrame(BaseFrame):
             return
         self.target_info_dialog = tk.Toplevel(self)
         self.target_info_dialog.title("Edit Target VM Info")
+        self.target_info_dialog.resizable(False, False)
         frame = ttk.Frame(self.target_info_dialog, padding=8)
         frame.pack(fill="both", expand=True)
         self.target_info_vars = {}
         header = ttk.Frame(frame)
         header.pack(fill="x")
-        for col, text in enumerate(["Target", "VM Name", "Username", "Password", "OS Type"]):
-            ttk.Label(header, text=text, width=14 if col else 18, font=("Segoe UI", 9, "bold")).grid(row=0, column=col)
+        ttk.Label(header, text="Target", width=30, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=0, sticky="w", padx=(0, 4))
+        ttk.Label(header, text="VM Name", width=24, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=1, sticky="w", padx=(0, 4))
+        ttk.Label(header, text="Username", width=18, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=2, sticky="w", padx=(0, 4))
+        ttk.Label(header, text="Password", width=18, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=3, sticky="w", padx=(0, 4))
+        ttk.Label(header, text="OS Type", width=10, anchor="w", font=("Segoe UI", 9, "bold")).grid(row=0, column=4, sticky="w")
         profile = self.profile_service.load_profile(self.profile_name.get().strip()) if self.profile_name.get().strip() else {}
         targets = profile.get("targets", {})
         target_names = self._resolve_target_names(profile)
         for idx, target in enumerate(target_names):
             info = targets.get(target, {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"})
             row = ttk.Frame(frame)
-            row.pack(fill="x")
-            ttk.Label(row, text=target, width=18).grid(row=0, column=0)
+            row.pack(fill="x", pady=2)
+            ttk.Label(row, text=target, width=30, anchor="w").grid(row=0, column=0, sticky="w", padx=(0, 4))
             vm_var = tk.StringVar(value=info.get("vm_name", LOCAL_SENTINEL))
             user_var = tk.StringVar(value=info.get("username", ""))
             pass_var = tk.StringVar(value=info.get("password", ""))
             os_var = tk.StringVar(value=info.get("os_type", "windows"))
-            ttk.Entry(row, textvariable=vm_var, width=16).grid(row=0, column=1)
-            ttk.Entry(row, textvariable=user_var, width=14).grid(row=0, column=2)
-            ttk.Entry(row, textvariable=pass_var, width=14, show="*").grid(row=0, column=3)
-            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4)
+            ttk.Entry(row, textvariable=vm_var, width=24).grid(row=0, column=1, sticky="we", padx=(0, 4))
+            ttk.Entry(row, textvariable=user_var, width=18).grid(row=0, column=2, sticky="we", padx=(0, 4))
+            ttk.Entry(row, textvariable=pass_var, width=18, show="*").grid(row=0, column=3, sticky="we", padx=(0, 4))
+            ttk.Combobox(row, textvariable=os_var, values=["windows", "linux"], width=10, state="readonly").grid(row=0, column=4, sticky="w")
             self.target_info_vars[target] = (vm_var, user_var, pass_var, os_var)
         def _apply_shared_credentials_to_targets():
             """Internal helper for apply shared credentials to targets."""
@@ -4270,6 +4612,8 @@ class AuditFrame(BaseFrame):
         """Initialize the AuditFrame instance."""
         super().__init__(parent, controller)
         self._compact_label_width = 16
+        self._audit_profile_override: Optional[Dict[str, Any]] = None
+        self._audit_mode_label = "standard"
         self.profile_service = VMProfileService()
         self.style = ttk.Style()
         self.style.configure("Bold.TLabelframe.Label", font=("Segoe UI", 10, "bold"))
@@ -4359,6 +4703,8 @@ class AuditFrame(BaseFrame):
         ttk.Checkbutton(toggle_row, text="Scan only local machine (ignore VMs)", variable=self.local_only).pack(side="left", padx=(16, 0))
         self.run_button = ttk.Button(controls, text="Run Audit", command=self.start_audit)
         self.run_button.pack(side="left")
+        self.quick_run_button = ttk.Button(controls, text="Quick Audit Scan", command=self.start_quick_audit)
+        self.quick_run_button.pack(side="left", padx=(8, 0))
         self.probe_button = ttk.Button(controls, text="Test vCenter Probe", command=self.start_probe)
         self.probe_button.pack(side="left", padx=(8, 0))
         ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
@@ -4587,7 +4933,10 @@ class AuditFrame(BaseFrame):
 
     def start_audit(self):
         """Start audit."""
+        self._audit_profile_override = None
+        self._audit_mode_label = "standard"
         self.run_button.configure(state="disabled")
+        self.quick_run_button.configure(state="disabled")
         self.probe_button.configure(state="disabled")
         self.progress_var.set(0)
         self.set_status(f"Status: Running ({self.build_type_value.get()})")
@@ -4597,9 +4946,75 @@ class AuditFrame(BaseFrame):
         self.append_log(f"Session log file: {self.logger.get_path()}")
         threading.Thread(target=self._worker, daemon=True).start()
 
+    def start_quick_audit(self):
+        """Run the quick-audit pipeline: file picker -> VM prompt -> local+VM scan."""
+        selected_path = filedialog.askopenfilename(
+            title="Quick Audit Scan - Select XLSX Checklist",
+            filetypes=[("Excel files", "*.xlsx *.xlsm"), ("All files", "*.*")],
+        )
+        if not selected_path:
+            return
+
+        try:
+            workbook_service = AuditWorkbookService(selected_path)
+            workbook_service.detect_header_row()
+            workbook_service.build_column_map()
+            target_columns = workbook_service.target_columns or default_target_columns()
+            self._apply_detected_schema(target_columns, workbook_service.build_type)
+        except Exception as exc:
+            messagebox.showerror("Quick Audit Scan", f"Unable to parse selected workbook:\n{exc}")
+            return
+
+        quick_details = self._prompt_quick_audit_vm_details(target_columns)
+        if not quick_details:
+            return
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        source_stem = Path(selected_path).stem
+        quick_output = AUDIT_RESULTS_DIR / f"quick_audit_scan_{source_stem}_{timestamp}.xlsx"
+
+        self.audit_path.set(selected_path)
+        self.output_path.set(str(quick_output))
+        self.connection_mode.set("vSphere")
+        self.local_only.set(False)
+        self.show_ssh_settings.set(False)
+
+        vcenter = quick_details["vcenter"]
+        guest = quick_details["guest"]
+        self.vcenter_server.set(vcenter["server"])
+        self.vcenter_username.set(vcenter["username"])
+        self.vcenter_password.set(vcenter["password"])
+        self.guest_username.set(guest["username"])
+        self.guest_password.set(guest["password"])
+
+        self._audit_profile_override = {
+            "profile_name": "quick_audit_scan",
+            "build_type": self.build_type_value.get(),
+            "target_schema": {
+                "source_path": selected_path,
+                "target_columns": list(target_columns),
+                "build_type": self.build_type_value.get(),
+            },
+            "targets": quick_details["targets"],
+        }
+        self._audit_mode_label = "quick_audit_scan"
+
+        self.run_button.configure(state="disabled")
+        self.quick_run_button.configure(state="disabled")
+        self.probe_button.configure(state="disabled")
+        self.progress_var.set(0)
+        self.set_status("Status: Running Quick Audit Scan")
+        self.logger = FileLogger(LOGS_DIR, "quick_audit_scan")
+        self.append_log("Quick Audit Scan started.")
+        self.append_log(f"Selected workbook: {selected_path}")
+        self.append_log(f"Output workbook: {quick_output}")
+        self.append_log(f"Session log file: {self.logger.get_path()}")
+        threading.Thread(target=self._worker, daemon=True).start()
+
     def start_probe(self):
         """Start probe."""
         self.run_button.configure(state="disabled")
+        self.quick_run_button.configure(state="disabled")
         self.probe_button.configure(state="disabled")
         self.set_status("Status: Probing remote connection...")
         self.logger = FileLogger(LOGS_DIR, "audit_probe")
@@ -4690,6 +5105,7 @@ class AuditFrame(BaseFrame):
                 except Exception:
                     pass
             self.after(0, lambda: self.run_button.configure(state="normal"))
+            self.after(0, lambda: self.quick_run_button.configure(state="normal"))
             self.after(0, lambda: self.probe_button.configure(state="normal"))
 
     def _worker(self):
@@ -4697,6 +5113,11 @@ class AuditFrame(BaseFrame):
         started_at = datetime.now().isoformat(timespec="seconds")
         rows: List[AuditRow] = []
         results: List[ScanResult] = []
+        source_audit_path = self.audit_path.get().strip()
+        normalized_audit_path = source_audit_path
+        normalized_from_fallback = False
+        temp_json_path = ""
+        temp_xlsx_path = ""
 
         def build_scan_job_payload(status: str, error_message: str = "") -> Dict[str, Any]:
             """Build scan job payload."""
@@ -4768,6 +5189,7 @@ class AuditFrame(BaseFrame):
                 "sbl_file": {
                     "name": Path(audit_path_value).name if audit_path_value else "",
                     "path": audit_path_value,
+                    "normalized_path": normalized_audit_path,
                     "baseline_name": baseline_name,
                     "timestamp": datetime.now().isoformat(timespec="seconds"),
                     "sbl_model": _get_sbl_model_from_workbook(audit_path_value) if audit_path_value else "UNKNOWN",
@@ -4777,7 +5199,12 @@ class AuditFrame(BaseFrame):
                     "result_base_name": Path(output_path_value).stem if output_path_value else "audit_results",
                 },
                 "settings": {
-                    "profile_name": self.profile_name.get().strip(),
+                    "profile_name": (
+                        "quick_audit_scan"
+                        if self._audit_profile_override is not None
+                        else self.profile_name.get().strip()
+                    ),
+                    "audit_mode": self._audit_mode_label,
                     "build_type": self.build_type_value.get(),
                     "connection_mode": normalize_text(self.connection_mode.get()),
                     "local_only": bool(self.local_only.get()),
@@ -4801,11 +5228,41 @@ class AuditFrame(BaseFrame):
 
         try:
             template_service = TemplateAssetService()
-            workbook_service = AuditWorkbookService(self.audit_path.get().strip())
+            try:
+                workbook_service = AuditWorkbookService(source_audit_path)
+                if workbook_service.repaired_file_path:
+                    self.after(0, lambda: self.append_log(f"Recovered workbook during load: {workbook_service.repaired_file_path}"))
+                workbook_service.detect_header_row()
+                workbook_service.build_column_map()
+            except Exception as parse_exc:
+                self.after(0, lambda error_text=str(parse_exc): self.append_log(f"Primary workbook parse failed: {error_text}"))
+                self.after(0, lambda: self.append_log("Attempting fallback normalization for non-standard workbook format..."))
+
+                import_rows = read_software_list_universal_rows(
+                    source_audit_path,
+                    debug_logger=lambda message: self.after(0, lambda msg=message: self.append_log(msg)),
+                )
+
+                if not import_rows:
+                    raise ValueError("Fallback normalization found no data rows")
+
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as temp_json:
+                    temp_json_path = temp_json.name
+                    json.dump(import_rows, temp_json, indent=2)
+                with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as temp_xlsx:
+                    temp_xlsx_path = temp_xlsx.name
+
+                template_service.import_list_to_sbl_workbook(temp_json_path, temp_xlsx_path)
+
+                workbook_service = AuditWorkbookService(temp_xlsx_path)
+                workbook_service.detect_header_row()
+                workbook_service.build_column_map()
+                normalized_audit_path = temp_xlsx_path
+                normalized_from_fallback = True
+                self.after(0, lambda path=temp_xlsx_path: self.append_log(f"Fallback normalization succeeded: {path}"))
+
             if workbook_service.repaired_file_path:
                 self.after(0, lambda: self.append_log(f"Recovered workbook during load: {workbook_service.repaired_file_path}"))
-            workbook_service.detect_header_row()
-            workbook_service.build_column_map()
             rows = workbook_service.iter_audit_rows()
             self.after(0, lambda cols=list(workbook_service.target_columns), build_type=workbook_service.build_type: self._apply_detected_schema(cols, build_type))
             self.after(0, lambda: self.append_log(f"Detected format with {workbook_service.sbl_build_header} and {workbook_service.audit_header}. Rows to process: {len(rows)}"))
@@ -4817,7 +5274,11 @@ class AuditFrame(BaseFrame):
                 total = max(1, len(rows))
                 self.after(0, lambda p=min(100, (processed['count'] / total) * 100): self.progress_var.set(p))
                 self.after(0, lambda m=msg: self.append_log(m))
-            vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
+            if self._audit_profile_override is not None:
+                vm_profile = copy.deepcopy(self._audit_profile_override)
+                self.after(0, lambda: self.append_log("Using quick-audit target mapping from dialog input."))
+            else:
+                vm_profile = self.profile_service.load_profile(self.profile_name.get().strip())
             vcenter_server = self.vcenter_server.get().strip()
             mode = normalize_text(self.connection_mode.get()).lower()
             if self.local_only.get():
@@ -4860,10 +5321,10 @@ class AuditFrame(BaseFrame):
 
             results = engine.run()
             workbook_service.save_as(self.output_path.get().strip())
-            sbl_model = _get_sbl_model_from_workbook(self.audit_path.get().strip())
+            sbl_model = _get_sbl_model_from_workbook(normalized_audit_path)
             latest_sbl = template_service.update_latest_sbl(self.output_path.get().strip())
             latest_master = template_service.snapshot_current_master_to_latest(sbl_model=sbl_model)
-            json_path = JsonExportService.write_result_json(Path(self.output_path.get()).stem, {"audit_workbook": self.audit_path.get(), "saved_workbook": self.output_path.get(), "profile_name": self.profile_name.get().strip(), "generated_at": datetime.now().isoformat(timespec="seconds"), "results": [asdict(result) for result in results]})
+            json_path = JsonExportService.write_result_json(Path(self.output_path.get()).stem, {"audit_workbook": self.audit_path.get(), "normalized_audit_workbook": normalized_audit_path if normalized_from_fallback else self.audit_path.get(), "saved_workbook": self.output_path.get(), "profile_name": self.profile_name.get().strip(), "generated_at": datetime.now().isoformat(timespec="seconds"), "results": [asdict(result) for result in results]})
             scan_job_json_path = JsonExportService.write_scan_job_json(
                 Path(self.output_path.get()).stem,
                 build_scan_job_payload("completed"),
@@ -4890,8 +5351,21 @@ class AuditFrame(BaseFrame):
                 self.after(0, lambda: self.append_log(f"Scan job JSON write failed: {scan_job_exc}"))
             self.after(0, lambda: self.set_status("Status: Failed"))
         finally:
+            if temp_json_path:
+                try:
+                    Path(temp_json_path).unlink(missing_ok=True)
+                except Exception:
+                    pass
+            if temp_xlsx_path:
+                try:
+                    Path(temp_xlsx_path).unlink(missing_ok=True)
+                except Exception:
+                    pass
             self.after(0, lambda: self.run_button.configure(state="normal"))
+            self.after(0, lambda: self.quick_run_button.configure(state="normal"))
             self.after(0, lambda: self.probe_button.configure(state="normal"))
+            self._audit_profile_override = None
+            self._audit_mode_label = "standard"
 
     @staticmethod
     def build_summary(results: List[ScanResult]) -> str:
