@@ -1026,6 +1026,7 @@ class ChecklistFrame(BaseFrame):
 		controls.pack(fill="x", pady=(0, 10))
 		self.generate_button = ttk.Button(controls, text="Generate Audit Form", command=self.start_generate)
 		self.generate_button.pack(side="left")
+		ttk.Button(controls, text="Preview Source Mapping", command=self.preview_source_mapping).pack(side="left", padx=(8, 0))
 		ttk.Button(controls, text="Load Baseline Template", command=self.load_baseline_template).pack(side="left", padx=(8, 0))
 		ttk.Button(controls, text="Update Baseline From Source", command=self.update_baseline_template).pack(side="left", padx=(8, 0))
 		ttk.Button(controls, text="Import List (CSV/JSON/XLSX)", command=self.import_list_source).pack(side="left", padx=(8, 0))
@@ -1193,6 +1194,54 @@ class ChecklistFrame(BaseFrame):
 		except Exception as exc:
 			self.logger.write_exception(exc)
 			messagebox.showerror("Import failed", str(exc))
+
+	def preview_source_mapping(self):
+		"""Preview detected source mapping and sample rows before generation."""
+		source = self.source_path.get().strip()
+		if not source:
+			messagebox.showerror("No source selected", "Select a source workbook before previewing mapping.")
+			return
+
+		try:
+			generator = ChecklistGeneratorService(source)
+			preview = generator.preview_source_mapping()
+		except Exception as exc:
+			self.logger.write_exception(exc)
+			messagebox.showerror("Preview failed", str(exc))
+			return
+
+		mapped = preview.get("mapped_headers", {})
+		target_columns = preview.get("target_columns", [])
+		sample_components = preview.get("sample_components", [])
+		row_count = int(preview.get("row_count", 0))
+
+		summary_lines = [
+			f"Header row: {preview.get('header_row', '')}",
+			f"Rows detected: {row_count}",
+			"",
+			"Mapped headers:",
+			f"- Software component: {mapped.get('software_component', '') or 'not detected'}",
+			f"- Current version: {mapped.get('current_version', '') or 'not detected'}",
+			f"- Version location: {mapped.get('version_locations', '') or 'not detected'}",
+			f"- SBL build: {mapped.get('sbl_build', '') or 'not detected'}",
+			f"- Audit: {mapped.get('audit', '') or 'will be created as AUDIT'}",
+			"",
+			f"Target columns: {', '.join(target_columns[:8]) if target_columns else 'none detected'}",
+		]
+		if len(target_columns) > 8:
+			summary_lines.append(f"(+{len(target_columns) - 8} more target columns)")
+		if sample_components:
+			summary_lines.extend([
+				"",
+				"Sample components:",
+				"- " + "\n- ".join(sample_components[:5]),
+			])
+
+		self.append_log(
+			f"Preview mapping complete | rows={row_count} | targets={len(target_columns)} | "
+			f"software_header={mapped.get('software_component', '') or 'N/A'}"
+		)
+		messagebox.showinfo("Source Mapping Preview", "\n".join(summary_lines))
 
 	def extract_path(self, version_locations):
 		"""Extract or normalize a path-like VERSION LOCATIONS value."""

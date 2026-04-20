@@ -21,6 +21,7 @@ from config import TEMPLATES_DIR
 from models import AuditRow, WorkbookSchema
 from services.file_logger import FileLogger
 from services.utils import (
+    derive_import_target_columns,
     default_target_columns,
     detect_header_row_index,
     detect_target_columns,
@@ -1031,6 +1032,80 @@ class ChecklistGeneratorService:
         self.source_ws = self.source_workbook.active
         print(f"Initialized ChecklistGeneratorService with source: {source_path} (normalized={self.normalized_source_path})")
 
+    @staticmethod
+    def _match_header(headers_by_name: Dict[str, int], candidates: List[str]) -> Optional[str]:
+        """Return the first header key that contains one of the candidate tokens."""
+        for candidate in candidates:
+            token = normalize_header(candidate)
+            for header_name in headers_by_name.keys():
+                if token in normalize_header(header_name):
+                    return header_name
+        return None
+
+    def _detect_header_row_tolerant(self, worksheet, search_limit: int = 30) -> int:
+        """Detect header row for non-standard SBL-like sheets with relaxed matching."""
+        max_search = min(search_limit, worksheet.max_row)
+        for row_idx in range(1, max_search + 1):
+            headers = [
+                normalize_header(worksheet.cell(row=row_idx, column=col_idx).value)
+                for col_idx in range(1, worksheet.max_column + 1)
+            ]
+            has_software = any(
+                ("SOFTWARE COMPONENT" in header) or ("COMPONENT" in header) or ("SOFTWARE" in header)
+                for header in headers
+            )
+            has_version_location = any(
+                ("VERSION LOCATION" in header) or ("VERSION LOCATIONS" in header) or ("LOCATION" in header)
+                for header in headers
+            )
+            has_current_version = any(
+                ("CURRENT CI VERSION" in header) or ("CURRENT VERSION" in header) or ("EXPECTED VERSION" in header)
+                for header in headers
+            )
+            if has_software and (has_version_location or has_current_version):
+                return row_idx
+        return 1
+
+    def _build_header_map(self, worksheet, header_row: int) -> Dict[str, int]:
+        """Build a raw header-to-column index map for the selected header row."""
+        headers_by_name: Dict[str, int] = {}
+        for col_idx in range(1, worksheet.max_column + 1):
+            text = normalize_text(worksheet.cell(header_row, col_idx).value)
+            if text and text not in headers_by_name:
+                headers_by_name[text] = col_idx
+        return headers_by_name
+
+    def preview_source_mapping(self) -> Dict[str, Any]:
+        """Preview source parsing, mapped headers, and sample rows before generation."""
+        header_row = self._detect_header_row_tolerant(self.source_ws)
+        headers_by_name = self._build_header_map(self.source_ws, header_row)
+        software_header = self._match_header(headers_by_name, ["SOFTWARE COMPONENT", "COMPONENT", "SOFTWARE", "NAME"])
+        current_header = self._match_header(headers_by_name, ["CURRENT CI VERSION", "CURRENT VERSION", "EXPECTED VERSION", "VERSION"])
+        location_header = self._match_header(headers_by_name, ["VERSION LOCATIONS", "VERSION LOCATION", "LOCATION", "PATH", "RULE"])
+        sbl_header = self._match_header(headers_by_name, ["SBL BUILD", "SBL BUILD VERSION", "BASELINE VERSION", "BUILD VERSION"])
+        audit_header = self._match_header(headers_by_name, ["AUDIT", "AUDIT RESULT", "VERSION STATUS", "STATUS"])
+
+        rows = read_software_list_universal_rows(self.source_path)
+        sample_components = [normalize_text(row.get("SOFTWARE COMPONENT", "")) for row in rows[:5]]
+        sample_components = [value for value in sample_components if value]
+        target_columns = [name for name in headers_by_name.keys() if not is_known_non_target_header(name)]
+
+        return {
+            "source_path": self.source_path,
+            "normalized_source_path": self.normalized_source_path,
+            "header_row": header_row,
+            "mapped_headers": {
+                "software_component": software_header or "",
+                "current_version": current_header or "",
+                "version_locations": location_header or "",
+                "sbl_build": sbl_header or "",
+                "audit": audit_header or "",
+            },
+            "target_columns": target_columns,
+            "row_count": len(rows),
+            "sample_components": sample_components,
+        }
+
     def generate_audit_form(self, output_path: str) -> None:
         """Create an audit workbook by preserving source structure and clearing audit result cells."""
         print(f"Generating audit form from '{self.source_path}' to '{output_path}'")
@@ -1044,15 +1119,24 @@ class ChecklistGeneratorService:
         ws_out = wb_out.active
 
         print("Copied workbook directly. Now detecting headers and clearing audit values...")
-        proxy = AuditWorkbookServiceProxy(ws_out)
-        col_map, _, audit_header = proxy.build_column_map()
-        header_row = proxy.header_row_index
+        header_row = self._detect_header_row_tolerant(ws_out)
+        headers_by_name = self._build_header_map(ws_out, header_row)
+        software_header = self._match_header(headers_by_name, ["SOFTWARE COMPONENT", "COMPONENT", "SOFTWARE", "NAME"])
+        audit_header = self._match_header(headers_by_name, ["AUDIT", "AUDIT RESULT", "VERSION STATUS", "STATUS"])
+
+        if not audit_header:
+            audit_col = ws_out.max_column + 1
+            ws_out.cell(header_row, audit_col).value = "AUDIT"
+            audit_header = "AUDIT"
+            headers_by_name[audit_header] = audit_col
+        else:
+            audit_col = headers_by_name[audit_header]
+
         print(f"Detected header row at index: {header_row}")
-        print(f"Column map: {col_map}, audit header: {audit_header}")
-        audit_col = col_map[audit_header]
+        print(f"Header map: {headers_by_name}, audit header: {audit_header}")
 
         data_start_row = header_row + 1
-        software_col = col_map.get("SOFTWARE COMPONENT")
+        software_col = headers_by_name.get(software_header) if software_header else None
         if software_col:
             for row_idx in range(header_row + 1, ws_out.max_row + 1):
                 software_value = normalize_text(ws_out.cell(row_idx, software_col).value)
@@ -1079,25 +1163,45 @@ class ChecklistGeneratorService:
 
     def export_json_payload(self) -> Dict[str, Any]:
         """Export normalized checklist rows and schema metadata as a JSON payload."""
-        service = AuditWorkbookService(self.normalized_source_path)
-        service.detect_header_row()
-        service.build_column_map()
-        rows = [
-            {
-                "software_component": row.software_component,
-                "current_ci_version": row.current_ci_version,
-                "sbl_build_version": row.sbl_build_version,
-                "audit_value": row.audit_value,
-                "target_vms": row.target_vms,
-                "version_locations": row.version_locations,
-            }
-            for row in service.iter_audit_rows()
-        ]
+        rows: List[Dict[str, Any]] = []
+        target_columns: List[str] = []
+        build_type = "unknown"
+        try:
+            service = AuditWorkbookService(self.normalized_source_path)
+            service.detect_header_row()
+            service.build_column_map()
+            rows = [
+                {
+                    "software_component": row.software_component,
+                    "current_ci_version": row.current_ci_version,
+                    "sbl_build_version": row.sbl_build_version,
+                    "audit_value": row.audit_value,
+                    "target_vms": row.target_vms,
+                    "version_locations": row.version_locations,
+                }
+                for row in service.iter_audit_rows()
+            ]
+            target_columns = list(service.target_columns)
+            build_type = service.build_type
+        except Exception:
+            fallback_rows = read_software_list_universal_rows(self.source_path)
+            rows = [
+                {
+                    "software_component": normalize_text(row.get("SOFTWARE COMPONENT", "")),
+                    "current_ci_version": normalize_text(row.get("CURRENT CI VERSION", "")),
+                    "sbl_build_version": normalize_text(row.get("SBL BUILD", "")),
+                    "audit_value": normalize_text(row.get("AUDIT", "")),
+                    "target_vms": row.get("target_vms", {}) if isinstance(row.get("target_vms", {}), dict) else {},
+                    "version_locations": normalize_text(row.get("VERSION LOCATIONS", "")),
+                }
+                for row in fallback_rows
+            ]
+            target_columns = derive_import_target_columns(fallback_rows)
         return {
             "source_workbook": self.source_path,
             "normalized_source_workbook": self.normalized_source_path,
             "generated_at": datetime.now().isoformat(timespec="seconds"),
-            "target_columns": list(service.target_columns),
-            "build_type": service.build_type,
+            "target_columns": target_columns,
+            "build_type": build_type,
             "rows": rows,
         }
