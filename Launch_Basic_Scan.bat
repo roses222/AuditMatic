@@ -28,8 +28,7 @@ echo [INFO] Logs folder: logs\
 echo [INFO] Reports/workbooks: Audit Results\
 echo [INFO] JSON artifacts: JSON\json_result\ and JSON\scan_jobs\
 echo.
-echo Press any key to exit...
+echo Press any key to close this window...
 
 popd
-timeout /t 5 /nobreak
-exit /b %EXIT_CODE%
+pause

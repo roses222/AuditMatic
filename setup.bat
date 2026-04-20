@@ -94,4 +94,3 @@ if /I "%~1"=="--run" (
 
 popd
 pause
-exit /b 0

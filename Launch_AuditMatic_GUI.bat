@@ -20,4 +20,3 @@ echo [ERROR] Missing virtual environment at venv\Scripts\python.exe
 echo [NEXT] Run setup first: setup.bat OR python bootstrap_setup.py
 popd
 pause
-exit /b 1

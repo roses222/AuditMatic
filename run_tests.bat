@@ -38,4 +38,3 @@ if defined LATEST_REPORT (
 
 popd
 pause
-exit /b %TEST_EXIT%
