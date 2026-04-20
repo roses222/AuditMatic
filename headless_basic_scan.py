@@ -21,7 +21,7 @@ from services.template_service import _get_sbl_model_from_workbook
 
 # Create a logger that captures debug output to file only
 logger = FileLogger(Path("logs"), "headless_basic_scan")
-debug_file = open(str(Path("logs") / "headless_basic_scan_debug.log"), "w", buffering=1)
+debug_file = open(str(Path("logs") / "headless_basic_scan_debug.log"), "w", encoding="utf-8", buffering=1)
 
 def log_user(msg: str) -> None:
     """Write message to user (console + user log)."""
@@ -122,7 +122,7 @@ def main():
             registry_snapshot = engine.local_scanner.capture_registry_snapshot()
             registry_snapshot["job_id"] = job_id
             registry_snapshot_path = JsonExportService.write_registry_snapshot_json(
-                checklist_path.stem, registry_snapshot
+                "audit_scan", registry_snapshot
             )
             log_debug(f"Registry snapshot: {registry_snapshot_path}")
         except Exception as e:
@@ -143,7 +143,7 @@ def main():
         
         # Write result JSON
         result_json_path = JsonExportService.write_result_json(
-            checklist_path.stem,
+            "audit_scan",
             {
                 "audit_mode": "headless_basic_scan",
                 "audit_workbook": str(checklist_path),
@@ -170,7 +170,7 @@ def main():
             })
         
         scan_job_path = JsonExportService.write_scan_job_json(
-            checklist_path.stem,
+            "audit_scan",
             {
                 "job_id": job_id,
                 "status": "completed",
@@ -199,9 +199,9 @@ def main():
         log_user("")
         log_user("RESULTS:")
         log_user(f"  Total checks: {len(results)}")
-        log_user(f"  ✓ PASS:  {passed}")
-        log_user(f"  ✗ FAIL:  {failed}")  
-        log_user(f"  ⚠ WARN:  {warned}")
+        log_user(f"  [PASS]:  {passed}")
+        log_user(f"  [FAIL]:  {failed}")  
+        log_user(f"  [WARN]:  {warned}")
         log_user("")
         log_user("OUTPUT FILES:")
         log_user(f"  Workbook:     {output_path.name}")
