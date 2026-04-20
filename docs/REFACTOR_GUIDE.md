@@ -6,6 +6,16 @@
 - ✓ utils.py (with project structure helpers)
 - ✓ services/file_logger.py
 - ✓ services/json_export_service.py
+- ✓ services/watch_pipeline_service.py (watch-folder orchestration, dedupe persistence, dispatch lifecycle)
+
+## Current Status Note
+This guide originated during the initial extraction phase and some sections below are historical instructions.
+Current codebase status includes:
+- merged profile + pipeline management in `ui/frames.py`
+- operational watch-folder runner backed by `services/watch_pipeline_service.py`
+- persisted watch dedupe state at `JSON/scan_jobs/watch_folder_state.json`
+- runtime compatibility indicator across all pipeline trigger/output types in `AuditFrame`
+- unit test suite runner with JSON report output in `tests/reports/`
 
 ---
 

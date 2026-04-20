@@ -60,7 +60,7 @@ def ensure_mock_profile() -> None:
         }
 
     profile_payload = {
-        "profile_name": "mock_local_profile",
+        "profile_name": "mock_local_watchfolder_pipeline_profile",
         "updated_at": datetime.now().isoformat(timespec="seconds"),
         "vcenter_server": "",
         "ignore_ssl": True,
@@ -75,7 +75,7 @@ def ensure_mock_profile() -> None:
         "last_verified": "",
     }
 
-    profile_path = profiles_dir / "mock_local_profile.json"
+    profile_path = profiles_dir / "mock_local_watchfolder_pipeline_profile.json"
     profile_path.write_text(json.dumps(profile_payload, indent=2), encoding="utf-8")
     print(f"[INFO] Created fallback mock profile for test GUI: {profile_path}")
 

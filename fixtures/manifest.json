@@ -2,8 +2,8 @@
   "description": "Canonical realistic mock artifacts for testing",
   "updated_at": "2026-04-17T00:00:00",
   "files": [
-    "fixtures/profiles/mock_local_profile.json",
-    "fixtures/profiles/mock_production_profile.json",
+    "fixtures/profiles/mock_local_watchfolder_pipeline_profile.json",
+    "fixtures/profiles/mock_vsphere_watchfolder_pipeline_profile.json",
     "fixtures/json/registry_snapshots/mock_registry_snapshot.json",
     "fixtures/json/json_checklist/mock_checklist.json",
     "fixtures/json/json_result/mock_result.json",

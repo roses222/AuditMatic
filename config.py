@@ -16,7 +16,7 @@ from openpyxl.styles import PatternFill
 # Application Information
 # =====================================================================
 APP_TITLE = "Audit Tool v2"
-APP_GEOMETRY = "1020x760"
+APP_GEOMETRY = "1280x840"
 LOCAL_SENTINEL = "__LOCAL__"
 
 # =====================================================================
@@ -27,6 +27,7 @@ PROJECT_DIR = APP_DIR
 
 AUDIT_RESULTS_DIR = PROJECT_DIR / "Audit Results"
 AUDIT_CHECKLIST_DIR = PROJECT_DIR / "Audit Checklist"
+SBLS_DIR = PROJECT_DIR / "SBLs"
 JSON_DIR = PROJECT_DIR / "JSON"
 JSON_RESULTS_DIR = JSON_DIR / "json_result"
 JSON_CHECKLIST_DIR = JSON_DIR / "json_checklist"

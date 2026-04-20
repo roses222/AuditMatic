@@ -89,7 +89,7 @@ class TemplateAssetService:
         return None
 
     @staticmethod
-    def _blank_master_payload(components: Dict[str, str], sbl_model: str = None) -> Dict[str, Any]:
+    def _blank_master_payload(components: Dict[str, str], sbl_model: Optional[str] = None) -> Dict[str, Any]:
         """Internal helper for blank master payload."""
         model_key = normalize_model_key(sbl_model)
         software_components = {}
@@ -138,7 +138,7 @@ class TemplateAssetService:
                 components[row.software_component] = row.version_locations
         return components
 
-    def _write_blank_master_from_sbl(self, sbl_path: str, output_json_path: Path, sbl_model: str = None) -> str:
+    def _write_blank_master_from_sbl(self, sbl_path: str, output_json_path: Path, sbl_model: Optional[str] = None) -> str:
         """Internal helper for write blank master from sbl."""
         components = self._extract_components_from_sbl(sbl_path)
         model_key = normalize_model_key(sbl_model)
@@ -175,18 +175,18 @@ class TemplateAssetService:
         shutil.copy2(sbl_path, latest_path)
         return str(latest_path)
 
-    def snapshot_current_master_to_latest(self, sbl_model: str = None) -> str:
+    def snapshot_current_master_to_latest(self, sbl_model: Optional[str] = None) -> str:
         """Keep the canonical master software list in JSON folder only."""
         if not MASTER_SOFTWARE_LIST_PATH.exists():
             payload = _empty_master_software_list_payload()
             MASTER_SOFTWARE_LIST_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return str(MASTER_SOFTWARE_LIST_PATH)
 
-    def get_baseline_sbl_path(self, sbl_model: str = None) -> str:
+    def get_baseline_sbl_path(self, sbl_model: Optional[str] = None) -> str:
         """Get baseline SBL path (model-specific if provided)."""
         return str(get_sbl_template_baseline_path(sbl_model))
 
-    def resolve_existing_baseline_sbl_path(self, sbl_model: str = None) -> Optional[str]:
+    def resolve_existing_baseline_sbl_path(self, sbl_model: Optional[str] = None) -> Optional[str]:
         """Return an existing baseline template path, trying model-specific then fallbacks."""
         preferred = get_sbl_template_baseline_path(sbl_model)
         default_path = get_sbl_template_baseline_path()
@@ -208,7 +208,7 @@ class TemplateAssetService:
             return "Missing"
         return datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
 
-    def get_template_status(self, sbl_model: str = None) -> Dict[str, Dict[str, str]]:
+    def get_template_status(self, sbl_model: Optional[str] = None) -> Dict[str, Dict[str, str]]:
         """Get template status (model-specific if provided)."""
         if sbl_model is None:
             sbl_model = "Geospatial Intelligence Foundation"  # default
@@ -242,7 +242,12 @@ class TemplateAssetService:
         rows: List[Dict[str, Any]] = []
         if ext == ".csv":
             df = pd.read_csv(input_path)
-            rows = df.fillna("").to_dict(orient="records")
+            raw_records = df.fillna("").to_dict(orient="records")
+            rows = [
+                {str(key): value for key, value in record.items()}
+                for record in raw_records
+                if isinstance(record, dict)
+            ]
         elif ext == ".json":
             payload = json.loads(Path(input_path).read_text(encoding="utf-8"))
             if isinstance(payload, dict):
@@ -261,6 +266,16 @@ class TemplateAssetService:
             shutil.copy2(baseline_template, output_path)
             wb = load_workbook(output_path)
             ws = wb.active
+            if ws is None:
+                raise ValueError("Baseline workbook has no active worksheet")
+
+            def set_cell_value(row_idx: int, col_idx: Optional[int], value: str) -> None:
+                if not col_idx:
+                    return
+                cell = ws.cell(row_idx, col_idx)
+                if isinstance(cell, MergedCell):
+                    return
+                cell.value = value
 
             from services.workbook_service import AuditWorkbookServiceProxy
             proxy = AuditWorkbookServiceProxy(ws)
@@ -271,8 +286,8 @@ class TemplateAssetService:
             current_ci_header = next((name for name in col_map.keys() if name.startswith("CURRENT CI VERSION")), "")
             current_ci_col = col_map.get(current_ci_header)
             version_locations_col = col_map.get("VERSION LOCATIONS")
-            sbl_col = col_map.get(sbl_header)
-            audit_col = col_map.get(audit_header)
+            sbl_col = col_map.get(sbl_header) if sbl_header else None
+            audit_col = col_map.get(audit_header) if audit_header else None
 
             template_target_columns = [name for name in col_map.keys() if not is_known_non_target_header(name)]
 
@@ -304,16 +319,11 @@ class TemplateAssetService:
                 version_locations = pick_record_value(record, ["VERSION LOCATIONS", "VERSION LOCATION", "PATH", "LOCATION", "RULE"])
                 target_vms = record.get("target_vms", {}) if isinstance(record.get("target_vms", {}), dict) else {}
 
-                if software_col:
-                    ws.cell(row_idx, software_col).value = software_component
-                if current_ci_col:
-                    ws.cell(row_idx, current_ci_col).value = current_ci
-                if sbl_col:
-                    ws.cell(row_idx, sbl_col).value = sbl_build
-                if audit_col:
-                    ws.cell(row_idx, audit_col).value = audit_value
-                if version_locations_col:
-                    ws.cell(row_idx, version_locations_col).value = version_locations
+                set_cell_value(row_idx, software_col, software_component)
+                set_cell_value(row_idx, current_ci_col, current_ci)
+                set_cell_value(row_idx, sbl_col, sbl_build)
+                set_cell_value(row_idx, audit_col, audit_value)
+                set_cell_value(row_idx, version_locations_col, version_locations)
 
                 for target_name in template_target_columns:
                     target_col = col_map.get(target_name)
@@ -323,13 +333,15 @@ class TemplateAssetService:
                         target_value = normalize_text(target_vms.get(target_name, ""))
                     else:
                         target_value = pick_record_value(record, [target_name])
-                    ws.cell(row_idx, target_col).value = target_value
+                    set_cell_value(row_idx, target_col, target_value)
 
             wb.save(output_path)
             return output_path
 
         wb = Workbook()
         ws = wb.active
+        if ws is None:
+            ws = wb.create_sheet("Imported SBL")
         ws.title = "Imported SBL"
         target_columns = derive_import_target_columns(rows)
         headers = [

@@ -147,60 +147,106 @@ Input (XLSX/JSON/CSV)
 
 ```mermaid
 flowchart TD
-      A[Input Source<br/>XLSX or JSON or CSV] --> B[ChecklistGeneratorService]
-      B --> C{Input is Excel?}
-      C -- Yes --> D[Use source workbook directly]
-      C -- No --> E[TemplateAssetService.import_list_to_sbl_workbook]
-      E --> F[Normalized temp XLSX]
-      D --> G[generate_audit_form]
-      F --> G
-      G --> H[Tool-generated Audit Workbook]
-      H --> I[AuditWorkbookService]
-      I --> J[detect_header_row + build_column_map]
-      J --> K[iter_audit_rows => AuditRow list]
-      K --> L[AuditEngine local scan phase]
-      L --> M[LocalWindowsScanner.scan_software_version]
-      M --> N[compare_versions]
-      N --> O[ScanResult list]
-      O --> P[save_as audited workbook]
-      O --> Q[write_result_json]
-      L --> R[capture_registry_snapshot]
-      R --> S[write_registry_snapshot_json]
-      O --> T[build_scan_job_payload]
-      T --> U[write_scan_job_json]
+   A[Input Source<br/>XLSX or JSON or CSV] --> B[ChecklistGeneratorService]
+   B --> C{Input is Excel?}
+   C -- Yes --> D[Use source workbook directly]
+   C -- No --> E[TemplateAssetService.import_list_to_sbl_workbook]
+   E --> F[Normalized temp XLSX]
+   D --> G[generate_audit_form]
+   F --> G
+   G --> H[Tool-generated Audit Workbook]
+   H --> I[AuditWorkbookService]
+   I --> J[detect_header_row + build_column_map]
+   J --> K[iter_audit_rows => AuditRow list]
+   K --> L[AuditEngine local scan phase]
+   L --> M[LocalWindowsScanner.scan_software_version]
+   M --> N[compare_versions]
+   N --> O[ScanResult list]
+   O --> P[save_as audited workbook]
+   O --> Q[write_result_json]
+   L --> R[capture_registry_snapshot]
+   R --> S[write_registry_snapshot_json]
+   O --> T[build_scan_job_payload]
+   T --> U[write_scan_job_json]
 ```
 
 ### Mermaid: Intake and Data Artifacts
 
 ```mermaid
 flowchart LR
-      A1[XLSX Input] --> B1[ChecklistGeneratorService]
-      A2[JSON Input] --> B1
-      A3[CSV Input] --> B1
+   A1[XLSX Input] --> B1[ChecklistGeneratorService]
+   A2[JSON Input] --> B1
+   A3[CSV Input] --> B1
 
-      B1 --> C1{Format Detection}
-      C1 -->|xlsx/xlsm| D1[No normalization]
-      C1 -->|json/csv| E1[Normalize to temp XLSX]
+   B1 --> C1{Format Detection}
+   C1 -->|xlsx/xlsm| D1[No normalization]
+   C1 -->|json/csv| E1[Normalize to temp XLSX]
 
-      D1 --> F1[generate_audit_form]
-      E1 --> F1
+   D1 --> F1[generate_audit_form]
+   E1 --> F1
 
-      F1 --> G1[Audit Checklist workbook]
-      F1 --> H1[Checklist JSON payload]
+   F1 --> G1[Audit Checklist workbook]
+   F1 --> H1[Checklist JSON payload]
 
-      G1 --> I1[SBL Parse]
-      I1 --> J1[Local Scan]
-      J1 --> K1[Compare]
+   G1 --> I1[SBL Parse]
+   I1 --> J1[Local Scan]
+   J1 --> K1[Compare]
 
-      K1 --> L1[Audit Results workbook]
-      K1 --> M1[JSON/json_result/*.json]
-      J1 --> N1[JSON/registry_snapshots/*.json]
-      K1 --> O1[JSON/scan_jobs/*.json]
+   K1 --> L1[Audit Results workbook]
+   K1 --> M1[JSON/json_result/*.json]
+   J1 --> N1[JSON/registry_snapshots/*.json]
+   K1 --> O1[JSON/scan_jobs/*.json]
 ```
 
 ---
 
-## 7) Live Validation Results (2026-04-17)
+## 7) Watch Folder Automation Pipeline
+
+### Service Components
+- `services/watch_pipeline_service.py`
+- `WatchFolderPipelineService.start(...)`
+- `WatchFolderPipelineService.poll(...)`
+- `WatchFolderPipelineService.stop(...)`
+
+### Runtime Flow
+1. `AuditFrame.start_watch_folder_pipeline()` resolves selected profile pipeline config.
+2. `WatchFolderPipelineService.start(...)` validates watch/output config and loads persisted dedupe hashes.
+3. UI scheduler (`after`) calls `WatchFolderPipelineService.poll(...)` every ~1.5s.
+4. `poll(...)` emits one dispatch item at a time (`WatchDispatch`) when a stable `.xlsx/.xlsm` file is ready.
+5. `AuditFrame` uses dispatch input/output paths and starts a normal audit run.
+6. On completion, next poll cycle finalizes in-flight bookkeeping, archives input (optional), and persists updated hash state.
+
+### Persistent Dedupe State
+- State file: `JSON/scan_jobs/watch_folder_state.json`
+- Keyed by: `profile_name + watch_folder_path`
+- Stores file-content SHA-256 hashes to prevent duplicate reprocessing across app restarts.
+- Hash list is bounded (max 5000 entries per key) to avoid unbounded growth.
+- State compaction runs at watcher startup to prune stale entries by age and migrate legacy hash-only records to timestamped hash entries.
+
+### Watch Options
+- `process existing files on start`:
+   - `False`: files already present in watch folder are marked seen and skipped.
+   - `True`: existing files are eligible for processing.
+- `archive processed files`:
+   - `True`: processed files are moved to `watch_folder/processed/`.
+   - `False`: inputs remain in place after processing.
+
+### Runtime Compatibility (All Pipeline Types)
+- `Watch Folder` or `File Explorer Folder` with `Save to Local Folder`: supported for in-app auto-run.
+- `Email Trigger`, `Ticket System Trigger`, `Database Trigger`, and `API Trigger`: recognized as configured external-trigger flows.
+- Other output combinations are kept as valid config and shown as manual/external runtime status in the UI.
+
+### Mocked Remote Testing (No Real Infrastructure)
+- `tests/Test Scripts/test_remote_scan_mocked.py` injects mocked vSphere and SSH services and fake runtime modules.
+- Validates core purpose behavior without environment dependencies:
+   - SBL target rows are filtered by `X` marks (sublist behavior)
+   - local baseline scan runs for each row
+   - remote scans are routed through expected vSphere/SSH path based on connection mode
+   - fallback behavior is enforced when primary remote path warns/fails (SSH->vSphere and vSphere->SSH)
+
+---
+
+## 8) Live Validation Results (2026-04-17)
 
 ### Multi-Format Pipeline Validation
 All three intake formats were exercised through:
@@ -220,7 +266,7 @@ The local machine currently has versions newer/different than the test SBL basel
 
 ---
 
-## 8) Concrete Data Example (One Row)
+## 9) Concrete Data Example (One Row)
 
 1. Parsed row:
    - `software_component`: `7-Zip`

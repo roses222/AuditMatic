@@ -9,6 +9,7 @@ import copy
 import json
 import re
 import sys
+import subprocess
 import tempfile
 import threading
 from dataclasses import asdict
@@ -20,13 +21,14 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from config import AUDIT_CHECKLIST_DIR, BUILD_TYPE_OPTIONS, LOCAL_SENTINEL, LOGS_DIR, PROFILES_DIR, TEMPLATES_DIR, TESTS_DIR
+from config import AUDIT_CHECKLIST_DIR, AUDIT_RESULTS_DIR, BUILD_TYPE_OPTIONS, LOCAL_SENTINEL, LOGS_DIR, PROFILES_DIR, SBLS_DIR, TEMPLATES_DIR, TESTS_DIR
 from models import AuditRow, ScanResult
 from services.audit_engine import AuditEngine, LocalWindowsScanner
 from services.file_logger import FileLogger
 from services.json_export_service import JsonExportService
 from services.profile_service import PARAMIKO_AVAILABLE, SSHTunnelService, VMProfileService, VSphereService
 from services.template_service import TemplateAssetService, _get_sbl_model_from_workbook
+from services.watch_pipeline_service import PipelineRuntimeStatus, WatchFolderPipelineService
 from services.workbook_service import AuditWorkbookService, ChecklistGeneratorService, VersionRuleResolver, read_software_list_universal_rows
 from services.utils import (
 	build_target_schema_payload,
@@ -118,6 +120,41 @@ class BaseFrame(ttk.Frame):
 		except Exception as exc:
 			messagebox.showerror("Open folder failed", str(exc))
 
+	def ensure_desktop_shortcuts(self) -> None:
+		"""Run shortcut bootstrap script so required desktop shortcuts exist."""
+		script_path = Path(__file__).resolve().parents[1] / "ensure_desktop_shortcuts.bat"
+		if not script_path.exists():
+			messagebox.showerror("Shortcuts", f"Shortcut script not found:\n{script_path}")
+			return
+
+		try:
+			result = subprocess.run(
+				["cmd", "/c", str(script_path)],
+				cwd=str(script_path.parent),
+				capture_output=True,
+				text=True,
+				check=False,
+			)
+		except Exception as exc:
+			messagebox.showerror("Shortcuts", f"Unable to run shortcut setup:\n{exc}")
+			return
+
+		output = (result.stdout or "").strip()
+		error_output = (result.stderr or "").strip()
+		if result.returncode == 0:
+			message = "Desktop shortcuts checked successfully."
+			if output:
+				message = f"{message}\n\n{output}"
+			messagebox.showinfo("Shortcuts", message)
+			return
+
+		failure_message = "Shortcut setup reported an error."
+		if output:
+			failure_message = f"{failure_message}\n\n{output}"
+		if error_output:
+			failure_message = f"{failure_message}\n\n{error_output}"
+		messagebox.showwarning("Shortcuts", failure_message)
+
 
 class HomeFrame(BaseFrame):
 	"""Home frame with tool description and navigation."""
@@ -139,16 +176,25 @@ class HomeFrame(BaseFrame):
 			ttk.Label(box, text=body, wraplength=980).pack(anchor="w", pady=(0, 10))
 			ttk.Button(box, text=button, command=lambda: controller.show_frame(frame_name)).pack(anchor="w")
 
-		card("Configure VM Profile", f"Map worksheet targets to vSphere VMs or to {LOCAL_SENTINEL} for the machine running the tool.", "Open VM Profile Manager", "ProfileFrame")
+		card("Configure Target Profile", f"Map worksheet targets to vSphere VMs or to {LOCAL_SENTINEL} for the machine running the tool.", "Open Target Profile Manager", "ProfileFrame")
 		card("Create Audit Form", "Generate an audit workbook in the approved format and export additional JSON checklist payload.", "Open Checklist Generator", "ChecklistFrame")
 		card("Run Audit", "Scans local targets first, then scans guest VMs through VMware Tools, compares found version against the SBL Build version, and writes PASS/FAIL text to the AUDIT column.", "Open Audit Runner", "AuditFrame")
-		card("Establish Pipeline", "Choose a saved profile, define how audits are triggered, and select where results should be sent.", "Open Pipeline Setup", "PipelineFrame")
+
+		utilities = ttk.LabelFrame(outer, text="Utilities", padding=12)
+		utilities.pack(fill="x", pady=(4, 0))
+		ttk.Label(
+			utilities,
+			text="Create missing desktop launch shortcuts for standalone Basic Scan and full GUI.",
+			wraplength=980,
+		).pack(anchor="w", pady=(0, 8))
+		ttk.Button(utilities, text="Ensure Desktop Shortcuts", command=self.ensure_desktop_shortcuts).pack(anchor="w")
 
 
-class PipelineFrame(BaseFrame):
-	"""Pipeline setup frame for trigger and destination configuration."""
+class ProfileFrame(BaseFrame):
+	"""Profile management frame for target mappings and connection settings."""
 
 	INPUT_SOURCE_OPTIONS = [
+		"Watch Folder",
 		"File Explorer Folder",
 		"Email Trigger",
 		"Ticket System Trigger",
@@ -163,321 +209,6 @@ class PipelineFrame(BaseFrame):
 		"Save to Spreadsheet",
 		"Write to Database",
 	]
-
-	def __init__(self, parent, controller):
-		"""Initialize the PipelineFrame instance."""
-		super().__init__(parent, controller)
-		self.profile_service = VMProfileService()
-		self.profile_options = self._get_profile_options()
-		self.profile_name = tk.StringVar(value=self.profile_options[0] if self.profile_options else "")
-		self.input_source = tk.StringVar(value="File Explorer Folder")
-		self.output_action = tk.StringVar(value="Save to Local Folder")
-		self.status_var = tk.StringVar(value="Status: Ready")
-
-		# Input-specific fields
-		self.input_folder = tk.StringVar(value="")
-		self.email_address = tk.StringVar(value="")
-		self.email_folder = tk.StringVar(value="Inbox")
-		self.email_subject_filter = tk.StringVar(value="")
-		self.ticket_system = tk.StringVar(value="ServiceNow")
-		self.ticket_queue = tk.StringVar(value="")
-		self.ticket_filter = tk.StringVar(value="")
-		self.input_db_connection = tk.StringVar(value="")
-		self.input_db_table = tk.StringVar(value="")
-		self.api_endpoint = tk.StringVar(value="")
-		self.api_token_ref = tk.StringVar(value="")
-
-		# Output-specific fields
-		self.output_local_folder = tk.StringVar(value="")
-		self.output_remote_path = tk.StringVar(value="")
-		self.output_email_recipients = tk.StringVar(value="")
-		self.output_spreadsheet_path = tk.StringVar(value="")
-		self.output_db_connection = tk.StringVar(value="")
-		self.output_db_table = tk.StringVar(value="")
-
-		top = ttk.Frame(self)
-		top.pack(fill="x")
-		ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
-		ttk.Label(top, text="Establish Pipeline", font=("Segoe UI", 16, "bold")).pack(side="left", padx=(12, 0))
-
-		setup = ttk.LabelFrame(self, text="Pipeline Config", padding=12)
-		setup.pack(fill="x", pady=12)
-
-		row1 = ttk.Frame(setup)
-		row1.pack(fill="x", pady=4)
-		ttk.Label(row1, text="Saved profile", width=20).pack(side="left")
-		self.profile_combo = ttk.Combobox(row1, textvariable=self.profile_name, values=self.profile_options, state="readonly")
-		self.profile_combo.pack(side="left", fill="x", expand=True, padx=(0, 8))
-		ttk.Button(row1, text="Refresh", command=self._refresh_profiles).pack(side="left")
-		self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
-
-		row2 = ttk.Frame(setup)
-		row2.pack(fill="x", pady=4)
-		ttk.Label(row2, text="Input source", width=20).pack(side="left")
-		ttk.Combobox(
-			row2,
-			textvariable=self.input_source,
-			state="readonly",
-			values=self.INPUT_SOURCE_OPTIONS,
-		).pack(side="left", fill="x", expand=True)
-		self.input_source.trace_add("write", self._on_input_source_changed)
-
-		self.input_dynamic = ttk.LabelFrame(setup, text="Input Details", padding=8)
-		self.input_dynamic.pack(fill="x", pady=6)
-
-		row4 = ttk.Frame(setup)
-		row4.pack(fill="x", pady=4)
-		ttk.Label(row4, text="Output action", width=20).pack(side="left")
-		ttk.Combobox(
-			row4,
-			textvariable=self.output_action,
-			state="readonly",
-			values=self.OUTPUT_ACTION_OPTIONS,
-		).pack(side="left", fill="x", expand=True)
-		self.output_action.trace_add("write", self._on_output_action_changed)
-
-		self.output_dynamic = ttk.LabelFrame(setup, text="Output Details", padding=8)
-		self.output_dynamic.pack(fill="x", pady=6)
-
-		controls = ttk.Frame(self)
-		controls.pack(fill="x", pady=(0, 8))
-		ttk.Button(controls, text="Save Pipeline To Profile", command=self._save_pipeline_to_profile).pack(side="left")
-		ttk.Label(controls, textvariable=self.status_var).pack(side="left", padx=(12, 0))
-
-		self.log = tk.Text(self, wrap="word", height=16)
-		self.log.pack(fill="both", expand=True)
-
-		self._render_input_fields()
-		self._render_output_fields()
-		self._load_pipeline_from_profile()
-
-	def _get_profile_options(self) -> List[str]:
-		"""Return available saved profile names."""
-		if not PROFILES_DIR.exists():
-			return []
-		return sorted([f.stem for f in PROFILES_DIR.glob("*.json") if f.is_file() and not f.stem.startswith("pipeline_")])
-
-	def _refresh_profiles(self) -> None:
-		"""Refresh saved profile choices."""
-		self.profile_options = self._get_profile_options()
-		self.profile_combo.configure(values=self.profile_options)
-		if self.profile_options and not normalize_text(self.profile_name.get()):
-			self.profile_name.set(self.profile_options[0])
-		self._append_log(f"Refreshed profiles: {len(self.profile_options)} found")
-		self._load_pipeline_from_profile()
-
-	def _render_field(self, parent: ttk.Widget, label: str, variable: tk.StringVar, browse_mode: str = "") -> None:
-		"""Render a labeled entry row with optional browse button."""
-		row = ttk.Frame(parent)
-		row.pack(fill="x", pady=3)
-		ttk.Label(row, text=label, width=20).pack(side="left")
-		ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
-		if browse_mode == "folder":
-			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "folder")).pack(side="left")
-		elif browse_mode == "file":
-			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "file")).pack(side="left")
-
-	def _browse_into(self, variable: tk.StringVar, mode: str) -> None:
-		"""Pick a file/folder and place it in the supplied variable."""
-		if mode == "folder":
-			picked = filedialog.askdirectory(title="Select folder")
-		else:
-			picked = filedialog.askopenfilename(title="Select file")
-		if picked:
-			variable.set(picked)
-
-	def _clear_dynamic(self, container: ttk.Widget) -> None:
-		"""Clear all child widgets from a dynamic form section."""
-		for child in container.winfo_children():
-			child.destroy()
-
-	def _render_input_fields(self) -> None:
-		"""Render input-specific fields for the selected source type."""
-		self._clear_dynamic(self.input_dynamic)
-		source = normalize_text(self.input_source.get())
-		if source == "File Explorer Folder":
-			self._render_field(self.input_dynamic, "Input folder", self.input_folder, browse_mode="folder")
-		elif source == "Email Trigger":
-			self._render_field(self.input_dynamic, "Mailbox", self.email_address)
-			self._render_field(self.input_dynamic, "Mailbox folder", self.email_folder)
-			self._render_field(self.input_dynamic, "Subject filter", self.email_subject_filter)
-		elif source == "Ticket System Trigger":
-			self._render_field(self.input_dynamic, "Ticket system", self.ticket_system)
-			self._render_field(self.input_dynamic, "Queue/Project", self.ticket_queue)
-			self._render_field(self.input_dynamic, "Filter query", self.ticket_filter)
-		elif source == "Database Trigger":
-			self._render_field(self.input_dynamic, "DB connection", self.input_db_connection)
-			self._render_field(self.input_dynamic, "Table/View", self.input_db_table)
-		elif source == "API Trigger":
-			self._render_field(self.input_dynamic, "API endpoint", self.api_endpoint)
-			self._render_field(self.input_dynamic, "Token ref/secret", self.api_token_ref)
-
-	def _render_output_fields(self) -> None:
-		"""Render output-specific fields for the selected action."""
-		self._clear_dynamic(self.output_dynamic)
-		action = normalize_text(self.output_action.get())
-		if action == "Save to Local Folder":
-			self._render_field(self.output_dynamic, "Output folder", self.output_local_folder, browse_mode="folder")
-		elif action == "Save to Remote Folder":
-			self._render_field(self.output_dynamic, "Remote path", self.output_remote_path)
-		elif action == "Send Email":
-			self._render_field(self.output_dynamic, "Recipients", self.output_email_recipients)
-		elif action == "Save to Spreadsheet":
-			self._render_field(self.output_dynamic, "Spreadsheet path", self.output_spreadsheet_path, browse_mode="file")
-		elif action == "Write to Database":
-			self._render_field(self.output_dynamic, "DB connection", self.output_db_connection)
-			self._render_field(self.output_dynamic, "Table", self.output_db_table)
-
-	def _on_input_source_changed(self, *_args) -> None:
-		"""Re-render input fields when source type changes."""
-		self._render_input_fields()
-
-	def _on_output_action_changed(self, *_args) -> None:
-		"""Re-render output fields when action type changes."""
-		self._render_output_fields()
-
-	def _on_profile_changed(self, *_args) -> None:
-		"""Load pipeline data when selected profile changes."""
-		self._load_pipeline_from_profile()
-
-	def _collect_input_config(self) -> Dict[str, str]:
-		"""Collect input-source-specific config fields."""
-		source = normalize_text(self.input_source.get())
-		if source == "File Explorer Folder":
-			return {"folder": normalize_text(self.input_folder.get())}
-		if source == "Email Trigger":
-			return {
-				"mailbox": normalize_text(self.email_address.get()),
-				"folder": normalize_text(self.email_folder.get()),
-				"subject_filter": normalize_text(self.email_subject_filter.get()),
-			}
-		if source == "Ticket System Trigger":
-			return {
-				"system": normalize_text(self.ticket_system.get()),
-				"queue": normalize_text(self.ticket_queue.get()),
-				"filter": normalize_text(self.ticket_filter.get()),
-			}
-		if source == "Database Trigger":
-			return {
-				"connection": normalize_text(self.input_db_connection.get()),
-				"table": normalize_text(self.input_db_table.get()),
-			}
-		if source == "API Trigger":
-			return {
-				"endpoint": normalize_text(self.api_endpoint.get()),
-				"token_ref": normalize_text(self.api_token_ref.get()),
-			}
-		return {}
-
-	def _collect_output_config(self) -> Dict[str, str]:
-		"""Collect output-action-specific config fields."""
-		action = normalize_text(self.output_action.get())
-		if action == "Save to Local Folder":
-			return {"folder": normalize_text(self.output_local_folder.get())}
-		if action == "Save to Remote Folder":
-			return {"remote_path": normalize_text(self.output_remote_path.get())}
-		if action == "Send Email":
-			return {"recipients": normalize_text(self.output_email_recipients.get())}
-		if action == "Save to Spreadsheet":
-			return {"spreadsheet_path": normalize_text(self.output_spreadsheet_path.get())}
-		if action == "Write to Database":
-			return {
-				"connection": normalize_text(self.output_db_connection.get()),
-				"table": normalize_text(self.output_db_table.get()),
-			}
-		return {}
-
-	def _load_pipeline_from_profile(self) -> None:
-		"""Load existing pipeline config from selected profile."""
-		name = normalize_text(self.profile_name.get())
-		if not name:
-			return
-		try:
-			payload = self.profile_service.load_profile(name)
-		except Exception:
-			self._append_log(f"Profile '{name}' not found yet. Save profile first, then save pipeline.")
-			return
-
-		pipelines = payload.get("pipelines", {}) if isinstance(payload, dict) else {}
-		items = pipelines.get("items", {}) if isinstance(pipelines, dict) else {}
-		active = normalize_text(pipelines.get("active", "default")) if isinstance(pipelines, dict) else "default"
-		current = items.get(active, {}) if isinstance(items, dict) else {}
-		if not isinstance(current, dict) or not current:
-			return
-
-		self.input_source.set(normalize_text(current.get("input_source", self.input_source.get())) or self.input_source.get())
-		self.output_action.set(normalize_text(current.get("output_action", self.output_action.get())) or self.output_action.get())
-		self._render_input_fields()
-		self._render_output_fields()
-
-		input_cfg = current.get("input_config", {}) if isinstance(current.get("input_config", {}), dict) else {}
-		output_cfg = current.get("output_config", {}) if isinstance(current.get("output_config", {}), dict) else {}
-
-		self.input_folder.set(normalize_text(input_cfg.get("folder", self.input_folder.get())))
-		self.email_address.set(normalize_text(input_cfg.get("mailbox", self.email_address.get())))
-		self.email_folder.set(normalize_text(input_cfg.get("folder", self.email_folder.get())) or self.email_folder.get())
-		self.email_subject_filter.set(normalize_text(input_cfg.get("subject_filter", self.email_subject_filter.get())))
-		self.ticket_system.set(normalize_text(input_cfg.get("system", self.ticket_system.get())) or self.ticket_system.get())
-		self.ticket_queue.set(normalize_text(input_cfg.get("queue", self.ticket_queue.get())))
-		self.ticket_filter.set(normalize_text(input_cfg.get("filter", self.ticket_filter.get())))
-		self.input_db_connection.set(normalize_text(input_cfg.get("connection", self.input_db_connection.get())))
-		self.input_db_table.set(normalize_text(input_cfg.get("table", self.input_db_table.get())))
-		self.api_endpoint.set(normalize_text(input_cfg.get("endpoint", self.api_endpoint.get())))
-		self.api_token_ref.set(normalize_text(input_cfg.get("token_ref", self.api_token_ref.get())))
-
-		self.output_local_folder.set(normalize_text(output_cfg.get("folder", self.output_local_folder.get())))
-		self.output_remote_path.set(normalize_text(output_cfg.get("remote_path", self.output_remote_path.get())))
-		self.output_email_recipients.set(normalize_text(output_cfg.get("recipients", self.output_email_recipients.get())))
-		self.output_spreadsheet_path.set(normalize_text(output_cfg.get("spreadsheet_path", self.output_spreadsheet_path.get())))
-		self.output_db_connection.set(normalize_text(output_cfg.get("connection", self.output_db_connection.get())))
-		self.output_db_table.set(normalize_text(output_cfg.get("table", self.output_db_table.get())))
-
-		self._append_log(f"Loaded pipeline config from profile '{name}'.")
-
-	def _save_pipeline_to_profile(self) -> None:
-		"""Save pipeline configuration under the selected saved profile."""
-		name = normalize_text(self.profile_name.get())
-		if not name:
-			messagebox.showerror("Pipeline Config", "Select a saved profile first.")
-			return
-		try:
-			payload = self.profile_service.load_profile(name)
-		except Exception:
-			messagebox.showerror("Pipeline Config", f"Profile '{name}' was not found. Create/save the profile first.")
-			return
-
-		pipeline_payload = {
-			"title": "Pipeline Config",
-			"input_source": normalize_text(self.input_source.get()),
-			"input_config": self._collect_input_config(),
-			"output_action": normalize_text(self.output_action.get()),
-			"output_config": self._collect_output_config(),
-			"updated_at": datetime.now().isoformat(timespec="seconds"),
-		}
-
-		pipelines = payload.setdefault("pipelines", {})
-		if not isinstance(pipelines, dict):
-			pipelines = {}
-			payload["pipelines"] = pipelines
-		items = pipelines.setdefault("items", {})
-		if not isinstance(items, dict):
-			items = {}
-			pipelines["items"] = items
-		items["default"] = pipeline_payload
-		pipelines["active"] = "default"
-
-		path = self.profile_service.save_profile(name, payload)
-		self.status_var.set("Status: Pipeline config saved")
-		self._append_log(f"Saved pipeline config to profile '{name}': {path}")
-
-	def _append_log(self, message: str) -> None:
-		"""Append a log line in the local pipeline view."""
-		self.log.insert("end", message + "\n")
-		self.log.see("end")
-
-
-class ProfileFrame(BaseFrame):
-	"""Profile management frame for target mappings and connection settings."""
 
 	def __init__(self, parent, controller):
 		"""Initialize the ProfileFrame instance."""
@@ -498,6 +229,26 @@ class ProfileFrame(BaseFrame):
 		self.ssh_gateway_username = tk.StringVar()
 		self.ssh_gateway_password = tk.StringVar()
 		self.ssh_target_port = tk.StringVar(value="22")
+
+		self.pipeline_input_source = tk.StringVar(value="")
+		self.pipeline_output_action = tk.StringVar(value="")
+		self.pipeline_input_folder = tk.StringVar(value="")
+		self.pipeline_email_address = tk.StringVar(value="")
+		self.pipeline_email_folder = tk.StringVar(value="Inbox")
+		self.pipeline_email_subject_filter = tk.StringVar(value="")
+		self.pipeline_ticket_system = tk.StringVar(value="ServiceNow")
+		self.pipeline_ticket_queue = tk.StringVar(value="")
+		self.pipeline_ticket_filter = tk.StringVar(value="")
+		self.pipeline_input_db_connection = tk.StringVar(value="")
+		self.pipeline_input_db_table = tk.StringVar(value="")
+		self.pipeline_api_endpoint = tk.StringVar(value="")
+		self.pipeline_api_token_ref = tk.StringVar(value="")
+		self.pipeline_output_local_folder = tk.StringVar(value="")
+		self.pipeline_output_remote_path = tk.StringVar(value="")
+		self.pipeline_output_email_recipients = tk.StringVar(value="")
+		self.pipeline_output_spreadsheet_path = tk.StringVar(value="")
+		self.pipeline_output_db_connection = tk.StringVar(value="")
+		self.pipeline_output_db_table = tk.StringVar(value="")
 		self.target_columns = default_target_columns()
 		self.inventory_values = [LOCAL_SENTINEL]
 		self.vm_dropdowns: Dict[str, ttk.Combobox] = {}
@@ -505,15 +256,72 @@ class ProfileFrame(BaseFrame):
 			name: {"vm_name": LOCAL_SENTINEL, "username": "", "password": "", "os_type": "windows"}
 			for name in self.target_columns
 		}
+		# ── top bar ───────────────────────────────────────────────────────────────
 		top = ttk.Frame(self)
 		top.pack(fill="x")
 		ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
-		ttk.Label(top, text="VM Profile Manager", font=("Segoe UI", 16, "bold")).pack(side="left", padx=(12, 0))
-		settings = ttk.LabelFrame(self, text="vSphere Settings", padding=12)
-		settings.pack(fill="x", pady=12)
+		ttk.Label(top, text="Target Profile Manager (vSphere + Local)", font=("Segoe UI", 14, "bold")).pack(side="left", padx=(12, 0))
+
+		# ── horizontal PanedWindow: form left | right pane ───────────────────────
+		paned = ttk.PanedWindow(self, orient="horizontal")
+		paned.pack(fill="both", expand=True, pady=(4, 0))
+
+		# ── left pane: scrollable form ────────────────────────────────────────────
+		left_outer = ttk.Frame(paned)
+		paned.add(left_outer, weight=0)
+
+		scroll_canvas = tk.Canvas(left_outer, highlightthickness=0)
+		scrollbar = ttk.Scrollbar(left_outer, orient="vertical", command=scroll_canvas.yview)
+		scroll_canvas.configure(yscrollcommand=scrollbar.set)
+		scrollbar.pack(side="right", fill="y")
+		scroll_canvas.pack(side="left", fill="both", expand=True)
+		self._scroll_canvas = scroll_canvas
+
+		inner = ttk.Frame(scroll_canvas)
+		self._scroll_inner_id = scroll_canvas.create_window((0, 0), window=inner, anchor="nw")
+
+		def _on_inner_configure(event):
+			req_w = inner.winfo_reqwidth()
+			scroll_canvas.configure(scrollregion=scroll_canvas.bbox("all"))
+			# widen the canvas (and therefore the pane) to fit content when it grows
+			if scroll_canvas.winfo_width() < req_w:
+				scroll_canvas.configure(width=req_w)
+			# keep inner width pinned to canvas width so entries fill the pane
+			scroll_canvas.itemconfigure(self._scroll_inner_id, width=max(scroll_canvas.winfo_width(), req_w))
+		inner.bind("<Configure>", _on_inner_configure)
+		scroll_canvas.bind("<Configure>", lambda e: scroll_canvas.itemconfigure(
+			self._scroll_inner_id, width=max(e.width, inner.winfo_reqwidth())
+		))
+
+		def _on_mousewheel(event):
+			scroll_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+		scroll_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+		# ── right pane: controls + log ────────────────────────────────────────────
+		right_outer = ttk.Frame(paned)
+		paned.add(right_outer, weight=1)
+
+		controls = ttk.Frame(right_outer)
+		controls.pack(fill="x", pady=(0, 4))
+		ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
+		self.save_profile_button = ttk.Button(controls, text="Save Profile", command=self.save_profile)
+		self.save_profile_button.pack(side="left", padx=(8, 0))
+		ttk.Button(controls, text="Verify Profile", command=self.verify_profile).pack(side="left", padx=(8, 0))
+		ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
+
+		log_frame = ttk.LabelFrame(right_outer, text="Log", padding=4)
+		log_frame.pack(fill="both", expand=True)
+		log_scroll = ttk.Scrollbar(log_frame)
+		log_scroll.pack(side="right", fill="y")
+		self.log = tk.Text(log_frame, wrap="word", yscrollcommand=log_scroll.set)
+		log_scroll.configure(command=self.log.yview)
+		self.log.pack(fill="both", expand=True)
+
+		settings = ttk.LabelFrame(inner, text="vSphere Settings", padding=8)
+		settings.pack(fill="x", pady=(8, 4), padx=4)
 		self._entry_row(settings, "Profile name", self.profile_name)
 		profile_select_row = ttk.Frame(settings)
-		profile_select_row.pack(fill="x", pady=4)
+		profile_select_row.pack(fill="x", pady=2)
 		ttk.Label(profile_select_row, text="Saved profiles", width=18).pack(side="left")
 		self.profile_selector = ttk.Combobox(
 			profile_select_row,
@@ -524,49 +332,302 @@ class ProfileFrame(BaseFrame):
 		self.profile_selector.pack(side="left", fill="x", expand=True, padx=(0, 8))
 		ttk.Button(profile_select_row, text="Refresh", command=self._refresh_profile_options).pack(side="left")
 		ttk.Button(profile_select_row, text="Use Selected", command=self._use_selected_profile).pack(side="left", padx=(8, 0))
-		self._entry_row(settings, "Source SBL / checklist", self.source_sbl_path, command=self.pick_profile_source)
+		self._entry_row(settings, "Source workbook", self.source_sbl_path, command=self.pick_profile_source)
 		build_row = ttk.Frame(settings)
-		build_row.pack(fill="x", pady=4)
+		build_row.pack(fill="x", pady=2)
 		ttk.Label(build_row, text="Build type", width=18).pack(side="left")
 		ttk.Combobox(build_row, textvariable=self.build_type, values=BUILD_TYPE_OPTIONS, state="readonly").pack(side="left", fill="x", expand=True, padx=(0, 8))
-		ttk.Button(build_row, text="Detect VM Targets", command=self.detect_profile_targets).pack(side="left")
+		ttk.Button(build_row, text="Detect Targets", command=self.detect_profile_targets).pack(side="left")
 		self._entry_row(settings, "vCenter server", self.vcenter_server)
 		self._entry_row(settings, "vCenter username", self.vcenter_username)
 		self._entry_row(settings, "vCenter password", self.vcenter_password, show="*")
-		ttk.Checkbutton(settings, text="Ignore SSL warnings", variable=self.ignore_ssl).pack(anchor="w", pady=(6, 0))
+		ttk.Checkbutton(settings, text="Ignore SSL warnings", variable=self.ignore_ssl).pack(anchor="w", pady=(4, 0))
 		self.credential_status_var = tk.StringVar(value="Credentials protection: checking...")
-		ttk.Label(settings, textvariable=self.credential_status_var, foreground="#2f6f2f").pack(anchor="w", pady=(6, 0))
-		ssh_settings = ttk.LabelFrame(self, text="SSH Tunnel Settings", padding=12)
-		ssh_settings.pack(fill="x", pady=(0, 12))
+		ttk.Label(settings, textvariable=self.credential_status_var, foreground="#2f6f2f").pack(anchor="w", pady=(2, 0))
+
+		ssh_settings = ttk.LabelFrame(inner, text="SSH Tunnel Settings", padding=8)
+		ssh_settings.pack(fill="x", pady=(0, 4), padx=4)
 		self._entry_row(ssh_settings, "SSH gateway host", self.ssh_gateway_host)
 		self._entry_row(ssh_settings, "Gateway port", self.ssh_gateway_port)
 		self._entry_row(ssh_settings, "Gateway username", self.ssh_gateway_username)
 		self._entry_row(ssh_settings, "Gateway password", self.ssh_gateway_password, show="*")
 		self._entry_row(ssh_settings, "Target SSH port", self.ssh_target_port)
-		mapping = ttk.LabelFrame(self, text=f"SBL VM Targets → Selected VM Name or {LOCAL_SENTINEL}", padding=12)
-		mapping.pack(fill="x")
+
+		pipeline_settings = ttk.LabelFrame(inner, text="Pipeline Config", padding=8)
+		pipeline_settings.pack(fill="x", pady=(0, 4), padx=4)
+		pipeline_source_row = ttk.Frame(pipeline_settings)
+		pipeline_source_row.pack(fill="x", pady=4)
+		ttk.Label(pipeline_source_row, text="Input type/source", width=18).pack(side="left")
+		ttk.Combobox(
+			pipeline_source_row,
+			textvariable=self.pipeline_input_source,
+			values=self.INPUT_SOURCE_OPTIONS,
+			state="readonly",
+		).pack(side="left", fill="x", expand=True)
+		self.pipeline_input_source.trace_add("write", self._on_profile_pipeline_input_changed)
+
+		self.pipeline_input_dynamic = ttk.LabelFrame(pipeline_settings, text="Input Details", padding=8)
+		self.pipeline_input_dynamic.pack(fill="x", pady=6)
+
+		pipeline_output_row = ttk.Frame(pipeline_settings)
+		pipeline_output_row.pack(fill="x", pady=4)
+		ttk.Label(pipeline_output_row, text="Output action", width=18).pack(side="left")
+		ttk.Combobox(
+			pipeline_output_row,
+			textvariable=self.pipeline_output_action,
+			values=self.OUTPUT_ACTION_OPTIONS,
+			state="readonly",
+		).pack(side="left", fill="x", expand=True)
+		self.pipeline_output_action.trace_add("write", self._on_profile_pipeline_output_changed)
+
+		self.pipeline_output_dynamic = ttk.LabelFrame(pipeline_settings, text="Output Details", padding=8)
+		self.pipeline_output_dynamic.pack(fill="x", pady=4)
+		self._render_profile_pipeline_input_fields()
+		self._render_profile_pipeline_output_fields()
+
+		mapping = ttk.LabelFrame(inner, text=f"SBL VM Targets → Selected VM Name or {LOCAL_SENTINEL}", padding=8)
+		mapping.pack(fill="x", pady=(0, 4), padx=4)
 		self.mapping_rows = ttk.Frame(mapping)
 		self.mapping_rows.pack(fill="x")
 		self._render_target_rows()
 		ttk.Button(mapping, text="Edit Target Info", command=self.edit_target_info_dialog).pack(side="right", padx=8)
-		controls = ttk.Frame(self)
-		controls.pack(fill="x", pady=10)
-		ttk.Button(controls, text="Load VM Inventory", command=self.load_inventory).pack(side="left")
-		self.save_profile_button = ttk.Button(controls, text="Save Profile", command=self.save_profile)
-		self.save_profile_button.pack(side="left", padx=(8, 0))
-		ttk.Button(controls, text="Verify Profile", command=self.verify_profile).pack(side="left", padx=(8, 0))
-		ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
-		self.log = tk.Text(self, wrap="word", height=20)
-		self.log.pack(fill="both", expand=True)
 		self.profile_name.trace_add("write", self._refresh_profile_save_state)
 		self._refresh_profile_save_state()
 		self._refresh_profile_options()
 		self._refresh_credential_status()
 
+	def _render_profile_pipeline_field(self, parent: ttk.Widget, label: str, variable: tk.StringVar, browse_mode: str = ""):
+		"""Render a labeled pipeline field row with optional browse button."""
+		row = ttk.Frame(parent)
+		row.pack(fill="x", pady=3)
+		ttk.Label(row, text=label, width=18).pack(side="left")
+		ttk.Entry(row, textvariable=variable).pack(side="left", fill="x", expand=True, padx=(0, 8))
+		if browse_mode == "folder":
+			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "folder")).pack(side="left")
+		elif browse_mode == "file":
+			ttk.Button(row, text="Browse", command=lambda: self._browse_into(variable, "file")).pack(side="left")
+
+	def _browse_into(self, variable: tk.StringVar, mode: str):
+		"""Pick a file or folder path for pipeline fields."""
+		if mode == "folder":
+			picked = filedialog.askdirectory(title="Select folder")
+		else:
+			picked = filedialog.askopenfilename(title="Select file")
+		if picked:
+			variable.set(picked)
+
+	def _clear_dynamic(self, container: ttk.Widget):
+		"""Clear dynamic child widgets from a container."""
+		for child in container.winfo_children():
+			child.destroy()
+
+	def _render_profile_pipeline_input_fields(self):
+		"""Render input details fields for the selected pipeline source."""
+		self._clear_dynamic(self.pipeline_input_dynamic)
+		source = normalize_text(self.pipeline_input_source.get())
+		if source in {"Watch Folder", "File Explorer Folder"}:
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Input folder", self.pipeline_input_folder, browse_mode="folder")
+		elif source == "Email Trigger":
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Mailbox", self.pipeline_email_address)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Mailbox folder", self.pipeline_email_folder)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Subject filter", self.pipeline_email_subject_filter)
+		elif source == "Ticket System Trigger":
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Ticket system", self.pipeline_ticket_system)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Queue/Project", self.pipeline_ticket_queue)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Filter query", self.pipeline_ticket_filter)
+		elif source == "Database Trigger":
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "DB connection", self.pipeline_input_db_connection)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Table/View", self.pipeline_input_db_table)
+		elif source == "API Trigger":
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "API endpoint", self.pipeline_api_endpoint)
+			self._render_profile_pipeline_field(self.pipeline_input_dynamic, "Token ref/secret", self.pipeline_api_token_ref)
+
+	def _render_profile_pipeline_output_fields(self):
+		"""Render output details fields for the selected pipeline destination."""
+		self._clear_dynamic(self.pipeline_output_dynamic)
+		action = normalize_text(self.pipeline_output_action.get())
+		if action == "Save to Local Folder":
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "Output folder", self.pipeline_output_local_folder, browse_mode="folder")
+		elif action == "Save to Remote Folder":
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "Remote path", self.pipeline_output_remote_path)
+		elif action == "Send Email":
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "Recipients", self.pipeline_output_email_recipients)
+		elif action == "Save to Spreadsheet":
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "Spreadsheet path", self.pipeline_output_spreadsheet_path, browse_mode="file")
+		elif action == "Write to Database":
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "DB connection", self.pipeline_output_db_connection)
+			self._render_profile_pipeline_field(self.pipeline_output_dynamic, "Table", self.pipeline_output_db_table)
+
+	def _on_profile_pipeline_input_changed(self, *_args):
+		"""Refresh input details rows when pipeline source changes."""
+		self._render_profile_pipeline_input_fields()
+
+	def _on_profile_pipeline_output_changed(self, *_args):
+		"""Refresh output details rows when pipeline action changes."""
+		self._render_profile_pipeline_output_fields()
+
+	def _collect_profile_pipeline_input_config(self) -> Dict[str, str]:
+		"""Collect input-source-specific pipeline settings."""
+		source = normalize_text(self.pipeline_input_source.get())
+		if source in {"Watch Folder", "File Explorer Folder"}:
+			return {"folder": normalize_text(self.pipeline_input_folder.get())}
+		if source == "Email Trigger":
+			return {
+				"mailbox": normalize_text(self.pipeline_email_address.get()),
+				"folder": normalize_text(self.pipeline_email_folder.get()),
+				"subject_filter": normalize_text(self.pipeline_email_subject_filter.get()),
+			}
+		if source == "Ticket System Trigger":
+			return {
+				"system": normalize_text(self.pipeline_ticket_system.get()),
+				"queue": normalize_text(self.pipeline_ticket_queue.get()),
+				"filter": normalize_text(self.pipeline_ticket_filter.get()),
+			}
+		if source == "Database Trigger":
+			return {
+				"connection": normalize_text(self.pipeline_input_db_connection.get()),
+				"table": normalize_text(self.pipeline_input_db_table.get()),
+			}
+		if source == "API Trigger":
+			return {
+				"endpoint": normalize_text(self.pipeline_api_endpoint.get()),
+				"token_ref": normalize_text(self.pipeline_api_token_ref.get()),
+			}
+		return {}
+
+	def _collect_profile_pipeline_output_config(self) -> Dict[str, str]:
+		"""Collect output-action-specific pipeline settings."""
+		action = normalize_text(self.pipeline_output_action.get())
+		if action == "Save to Local Folder":
+			return {"folder": normalize_text(self.pipeline_output_local_folder.get())}
+		if action == "Save to Remote Folder":
+			return {"remote_path": normalize_text(self.pipeline_output_remote_path.get())}
+		if action == "Send Email":
+			return {"recipients": normalize_text(self.pipeline_output_email_recipients.get())}
+		if action == "Save to Spreadsheet":
+			return {"spreadsheet_path": normalize_text(self.pipeline_output_spreadsheet_path.get())}
+		if action == "Write to Database":
+			return {
+				"connection": normalize_text(self.pipeline_output_db_connection.get()),
+				"table": normalize_text(self.pipeline_output_db_table.get()),
+			}
+		return {}
+
+	def _validate_profile_pipeline_config(self) -> List[str]:
+		"""Validate required pipeline fields before profile save."""
+		errors: List[str] = []
+
+		source = normalize_text(self.pipeline_input_source.get())
+		if source in {"Watch Folder", "File Explorer Folder"}:
+			if not normalize_text(self.pipeline_input_folder.get()):
+				errors.append("Pipeline input source requires Input folder")
+		elif source == "Email Trigger":
+			if not normalize_text(self.pipeline_email_address.get()):
+				errors.append("Email Trigger requires Mailbox")
+			if not normalize_text(self.pipeline_email_folder.get()):
+				errors.append("Email Trigger requires Mailbox folder")
+		elif source == "Ticket System Trigger":
+			if not normalize_text(self.pipeline_ticket_system.get()):
+				errors.append("Ticket System Trigger requires Ticket system")
+			if not normalize_text(self.pipeline_ticket_queue.get()):
+				errors.append("Ticket System Trigger requires Queue/Project")
+		elif source == "Database Trigger":
+			if not normalize_text(self.pipeline_input_db_connection.get()):
+				errors.append("Database Trigger requires DB connection")
+			if not normalize_text(self.pipeline_input_db_table.get()):
+				errors.append("Database Trigger requires Table/View")
+		elif source == "API Trigger":
+			if not normalize_text(self.pipeline_api_endpoint.get()):
+				errors.append("API Trigger requires API endpoint")
+			if not normalize_text(self.pipeline_api_token_ref.get()):
+				errors.append("API Trigger requires Token ref/secret")
+		else:
+			errors.append("Select a valid pipeline Input source")
+
+		action = normalize_text(self.pipeline_output_action.get())
+		if action == "Save to Local Folder":
+			if not normalize_text(self.pipeline_output_local_folder.get()):
+				errors.append("Save to Local Folder requires Output folder")
+		elif action == "Save to Remote Folder":
+			if not normalize_text(self.pipeline_output_remote_path.get()):
+				errors.append("Save to Remote Folder requires Remote path")
+		elif action == "Send Email":
+			if not normalize_text(self.pipeline_output_email_recipients.get()):
+				errors.append("Send Email requires Recipients")
+		elif action == "Save to Spreadsheet":
+			if not normalize_text(self.pipeline_output_spreadsheet_path.get()):
+				errors.append("Save to Spreadsheet requires Spreadsheet path")
+		elif action == "Write to Database":
+			if not normalize_text(self.pipeline_output_db_connection.get()):
+				errors.append("Write to Database requires DB connection")
+			if not normalize_text(self.pipeline_output_db_table.get()):
+				errors.append("Write to Database requires Table")
+		else:
+			errors.append("Select a valid pipeline Output action")
+
+		return errors
+
+	def _build_profile_pipeline_payload(self) -> Dict[str, Any]:
+		"""Build the profile pipeline payload from current form values."""
+		return {
+			"active": "default",
+			"items": {
+				"default": {
+					"title": "Pipeline Config",
+					"input_source": normalize_text(self.pipeline_input_source.get()),
+					"input_config": self._collect_profile_pipeline_input_config(),
+					"output_action": normalize_text(self.pipeline_output_action.get()),
+					"output_config": self._collect_profile_pipeline_output_config(),
+					"updated_at": datetime.now().isoformat(timespec="seconds"),
+				}
+			},
+		}
+
+	def _load_profile_pipeline_fields(self, payload: Dict[str, Any]):
+		"""Load pipeline fields from saved profile payload."""
+		pipelines = payload.get("pipelines", {}) if isinstance(payload, dict) else {}
+		items = pipelines.get("items", {}) if isinstance(pipelines, dict) else {}
+		active = normalize_text(pipelines.get("active", "default")) if isinstance(pipelines, dict) else "default"
+		current = items.get(active, {}) if isinstance(items, dict) else {}
+		if not isinstance(current, dict):
+			return
+
+		input_source = normalize_text(current.get("input_source", self.pipeline_input_source.get())) or self.pipeline_input_source.get()
+		if input_source == "File Explorer Folder":
+			input_source = "Watch Folder"
+		self.pipeline_input_source.set(input_source)
+		self.pipeline_output_action.set(normalize_text(current.get("output_action", self.pipeline_output_action.get())) or self.pipeline_output_action.get())
+
+		input_cfg = current.get("input_config", {}) if isinstance(current.get("input_config", {}), dict) else {}
+		output_cfg = current.get("output_config", {}) if isinstance(current.get("output_config", {}), dict) else {}
+
+		self.pipeline_input_folder.set(normalize_text(input_cfg.get("folder", self.pipeline_input_folder.get())))
+		self.pipeline_email_address.set(normalize_text(input_cfg.get("mailbox", self.pipeline_email_address.get())))
+		self.pipeline_email_folder.set(normalize_text(input_cfg.get("folder", self.pipeline_email_folder.get())) or self.pipeline_email_folder.get())
+		self.pipeline_email_subject_filter.set(normalize_text(input_cfg.get("subject_filter", self.pipeline_email_subject_filter.get())))
+		self.pipeline_ticket_system.set(normalize_text(input_cfg.get("system", self.pipeline_ticket_system.get())) or self.pipeline_ticket_system.get())
+		self.pipeline_ticket_queue.set(normalize_text(input_cfg.get("queue", self.pipeline_ticket_queue.get())))
+		self.pipeline_ticket_filter.set(normalize_text(input_cfg.get("filter", self.pipeline_ticket_filter.get())))
+		self.pipeline_input_db_connection.set(normalize_text(input_cfg.get("connection", self.pipeline_input_db_connection.get())))
+		self.pipeline_input_db_table.set(normalize_text(input_cfg.get("table", self.pipeline_input_db_table.get())))
+		self.pipeline_api_endpoint.set(normalize_text(input_cfg.get("endpoint", self.pipeline_api_endpoint.get())))
+		self.pipeline_api_token_ref.set(normalize_text(input_cfg.get("token_ref", self.pipeline_api_token_ref.get())))
+
+		self.pipeline_output_local_folder.set(normalize_text(output_cfg.get("folder", self.pipeline_output_local_folder.get())))
+		self.pipeline_output_remote_path.set(normalize_text(output_cfg.get("remote_path", self.pipeline_output_remote_path.get())))
+		self.pipeline_output_email_recipients.set(normalize_text(output_cfg.get("recipients", self.pipeline_output_email_recipients.get())))
+		self.pipeline_output_spreadsheet_path.set(normalize_text(output_cfg.get("spreadsheet_path", self.pipeline_output_spreadsheet_path.get())))
+		self.pipeline_output_db_connection.set(normalize_text(output_cfg.get("connection", self.pipeline_output_db_connection.get())))
+		self.pipeline_output_db_table.set(normalize_text(output_cfg.get("table", self.pipeline_output_db_table.get())))
+
+		self._render_profile_pipeline_input_fields()
+		self._render_profile_pipeline_output_fields()
+
 	def pick_profile_source(self):
 		"""Prompt for a source SBL or audit workbook."""
 		path = filedialog.askopenfilename(
 			title="Select SBL or audit workbook",
+			initialdir=str(SBLS_DIR),
 			filetypes=[("Supported files", "*.xlsx *.xlsm *.json *.csv"), ("All files", "*.*")],
 		)
 		if path:
@@ -802,6 +863,7 @@ class ProfileFrame(BaseFrame):
 		"""Append a message to the frame log and file logger."""
 		self.log.insert("end", message + "\n")
 		self.log.see("end")
+		print(f"[PROFILE] {message}", flush=True)
 		self.logger.write(message)
 
 	def _service(self) -> VSphereService:
@@ -831,6 +893,13 @@ class ProfileFrame(BaseFrame):
 		profile_name = self._get_profile_name_or_warn()
 		if profile_name is None:
 			return
+		pipeline_errors = self._validate_profile_pipeline_config()
+		if pipeline_errors:
+			messagebox.showerror(
+				"Pipeline Config",
+				"Provide all required pipeline details before saving profile:\n\n- " + "\n- ".join(pipeline_errors),
+			)
+			return
 		default_user = normalize_text(self.vcenter_username.get())
 		default_password = self.vcenter_password.get()
 		for name, combo in self.vm_dropdowns.items():
@@ -838,10 +907,6 @@ class ProfileFrame(BaseFrame):
 				self.target_info[name] = {"vm_name": combo.get().strip(), "username": "", "password": "", "os_type": "windows"}
 			else:
 				self.target_info[name]["vm_name"] = combo.get().strip()
-			if not normalize_text(self.target_info[name].get("username", "")) and default_user:
-				self.target_info[name]["username"] = default_user
-			if not self.target_info[name].get("password", "") and default_password:
-				self.target_info[name]["password"] = default_password
 
 		profile_path = self.profile_service.profile_path(profile_name)
 		if profile_path.exists():
@@ -868,10 +933,14 @@ class ProfileFrame(BaseFrame):
 				"target_port": normalize_text(self.ssh_target_port.get()) or "22",
 			},
 			"targets": self.target_info,
+			"pipelines": self._build_profile_pipeline_payload(),
 			"last_verified": "",
 		}
 		path = self.profile_service.save_profile(profile_name, payload)
 		self.append_log(f"Saved profile: {path}")
+		self.append_log(
+			f"Saved merged pipeline config: input={self.pipeline_input_source.get().strip()} -> output={self.pipeline_output_action.get().strip()}"
+		)
 		self._refresh_profile_options(select_name=profile_name)
 		self._refresh_credential_status(profile_name)
 
@@ -897,7 +966,11 @@ class ProfileFrame(BaseFrame):
 		self.target_info = payload.get("targets", {name: self._default_target_info() for name in self.target_columns})
 		for name, combo in self.vm_dropdowns.items():
 			combo.set(self.target_info.get(name, {}).get("vm_name", LOCAL_SENTINEL))
+		self._load_profile_pipeline_fields(payload)
 		self.append_log(f"Loaded profile: {profile_name}")
+		self.append_log(
+			f"Loaded merged pipeline config: input={self.pipeline_input_source.get().strip()} -> output={self.pipeline_output_action.get().strip()}"
+		)
 		self._refresh_profile_options(select_name=profile_name)
 		self._refresh_credential_status(profile_name)
 
@@ -1032,7 +1105,11 @@ class ChecklistFrame(BaseFrame):
 
 	def pick_source(self):
 		"""Prompt for the checklist source workbook."""
-		path = filedialog.askopenfilename(title="Select main SBL source", filetypes=[("Supported files", "*.xlsx *.xlsm *.csv *.json"), ("All files", "*.*")])
+		path = filedialog.askopenfilename(
+			title="Select main SBL source",
+			initialdir=str(SBLS_DIR),
+			filetypes=[("Supported files", "*.xlsx *.xlsm *.csv *.json"), ("All files", "*.*")],
+		)
 		if path:
 			self.source_path.set(path)
 
@@ -1095,6 +1172,7 @@ class ChecklistFrame(BaseFrame):
 		"""Import a CSV, JSON, or workbook into a normalized source workbook."""
 		in_path = filedialog.askopenfilename(
 			title="Import list file",
+			initialdir=str(SBLS_DIR),
 			filetypes=[("Supported files", "*.xlsx *.xlsm *.csv *.json"), ("All files", "*.*")],
 		)
 		if not in_path:
@@ -1492,8 +1570,13 @@ class AuditFrame(BaseFrame):
 		self.ssh_target_port = tk.StringVar(value="22")
 		self.show_ssh_settings = tk.BooleanVar(value=False)
 		self.status_var = tk.StringVar(value="Status: Ready")
+		self.pipeline_runtime_var = tk.StringVar(value="Pipeline status: not loaded")
 		self.progress_var = tk.DoubleVar(value=0)
 		self.logger = FileLogger(LOGS_DIR, "audit_run")
+		self._watch_service = WatchFolderPipelineService()
+		self._watch_after_id: Optional[str] = None
+		self._watch_process_existing = tk.BooleanVar(value=False)
+		self._watch_archive_processed = tk.BooleanVar(value=True)
 		top = ttk.Frame(self)
 		top.pack(fill="x")
 		ttk.Button(top, text="← Back", command=lambda: controller.show_frame("HomeFrame")).pack(side="left")
@@ -1547,10 +1630,19 @@ class AuditFrame(BaseFrame):
 		self.run_button.pack(side="left")
 		self.quick_run_button = ttk.Button(controls, text="Quick Audit Scan", command=self.start_quick_audit)
 		self.quick_run_button.pack(side="left", padx=(8, 0))
+		self.watch_start_button = ttk.Button(controls, text="Start Pipeline", command=self.start_watch_folder_pipeline)
+		self.watch_start_button.pack(side="left", padx=(8, 0))
+		self.watch_stop_button = ttk.Button(controls, text="Stop Pipeline", command=self.stop_watch_folder_pipeline, state="disabled")
+		self.watch_stop_button.pack(side="left", padx=(8, 0))
 		self.probe_button = ttk.Button(controls, text="Test vCenter Probe", command=self.start_probe)
 		self.probe_button.pack(side="left", padx=(8, 0))
 		ttk.Button(controls, text="Open Logs Folder", command=lambda: self.open_folder(LOGS_DIR)).pack(side="left", padx=(8, 0))
 		ttk.Label(controls, textvariable=self.status_var).pack(side="left", padx=(12, 0))
+		watch_options = ttk.Frame(self)
+		watch_options.pack(fill="x", pady=(0, 6))
+		ttk.Checkbutton(watch_options, text="Watch: process existing files on start", variable=self._watch_process_existing).pack(side="left")
+		ttk.Checkbutton(watch_options, text="Watch: archive processed files", variable=self._watch_archive_processed).pack(side="left", padx=(12, 0))
+		ttk.Label(watch_options, textvariable=self.pipeline_runtime_var, foreground="#35556b").pack(side="left", padx=(12, 0))
 		ttk.Progressbar(self, variable=self.progress_var, maximum=100).pack(fill="x")
 		log_box = ttk.LabelFrame(self, text="Log", padding=6)
 		log_box.pack(fill="both", expand=True, pady=(8, 0))
@@ -1852,8 +1944,112 @@ class AuditFrame(BaseFrame):
 		pipeline_payload, pipeline_source, pipeline_ref = self._resolve_pipeline_for_profile(selected_profile)
 		if pipeline_payload:
 			self.append_log(f"Pipeline detected for profile '{selected_profile}' [{pipeline_source}]: {pipeline_ref}")
+			self._refresh_pipeline_runtime_status(pipeline_payload)
 		else:
-			self.append_log(f"Pipeline not found for profile '{selected_profile}'. Configure one in Establish Pipeline.")
+			self.append_log(f"Pipeline not found for profile '{selected_profile}'. Configure one in Target Profile Manager.")
+			self.pipeline_runtime_var.set("Pipeline status: not configured")
+
+	def _refresh_pipeline_runtime_status(self, pipeline_payload: Dict[str, Any]) -> PipelineRuntimeStatus:
+		"""Refresh user-visible runtime status for the selected pipeline payload."""
+		runtime = WatchFolderPipelineService.evaluate_runtime_compatibility(pipeline_payload)
+		self.pipeline_runtime_var.set(runtime.summary)
+		return runtime
+
+	def start_watch_folder_pipeline(self):
+		"""Start pipeline runtime handling based on current profile pipeline configuration."""
+		selected_profile = normalize_text(self.profile_name.get())
+		if not selected_profile:
+			messagebox.showerror("Pipeline Runtime", "Select a profile first.")
+			return
+
+		pipeline_payload, pipeline_source, pipeline_ref = self._resolve_pipeline_for_profile(selected_profile)
+		if not pipeline_payload:
+			messagebox.showerror("Pipeline Runtime", "No pipeline config found for selected profile.")
+			return
+
+		runtime = self._refresh_pipeline_runtime_status(pipeline_payload)
+		if not runtime.can_auto_run:
+			self.append_log(
+				f"Pipeline runtime compatibility: mode={runtime.mode} | input={runtime.input_source or 'N/A'} | output={runtime.output_action or 'N/A'}"
+			)
+			messagebox.showinfo(
+				"Pipeline Runtime",
+				(
+					f"{runtime.summary}\n\n"
+					"This pipeline type is recognized and validated, but does not have in-app auto-run execution yet."
+				),
+			)
+			return
+
+		try:
+			self._watch_service.start(
+				profile_name=selected_profile,
+				pipeline_payload=pipeline_payload,
+				logger=self.append_log,
+				process_existing=bool(self._watch_process_existing.get()),
+				archive_processed=bool(self._watch_archive_processed.get()),
+			)
+		except Exception as exc:
+			messagebox.showerror("Pipeline Runtime", str(exc))
+			return
+
+		self.watch_start_button.configure(state="disabled")
+		self.watch_stop_button.configure(state="normal")
+		self.pipeline_runtime_var.set("Pipeline status: watching folder")
+		self.append_log(f"Watch folder config source: {pipeline_source} | ref={pipeline_ref}")
+		self._schedule_watch_tick()
+
+	def stop_watch_folder_pipeline(self):
+		"""Stop watch-folder polling loop."""
+		if self._watch_service.active:
+			self._watch_service.stop(self.append_log)
+		if self._watch_after_id:
+			try:
+				self.after_cancel(self._watch_after_id)
+			except Exception:
+				pass
+			self._watch_after_id = None
+		self.watch_start_button.configure(state="normal")
+		self.watch_stop_button.configure(state="disabled")
+		if normalize_text(self.profile_name.get()):
+			payload, _, _ = self._resolve_pipeline_for_profile(normalize_text(self.profile_name.get()))
+			if payload:
+				self._refresh_pipeline_runtime_status(payload)
+			else:
+				self.pipeline_runtime_var.set("Pipeline status: not configured")
+		else:
+			self.pipeline_runtime_var.set("Pipeline status: not loaded")
+		self.append_log("Watch folder stopped.")
+
+	def _schedule_watch_tick(self):
+		"""Schedule next watch-folder polling cycle."""
+		if not self._watch_service.active:
+			return
+		self._watch_after_id = self.after(1500, self._watch_tick)
+
+	def _watch_tick(self):
+		"""Poll watch folder and launch audit for newly discovered files."""
+		if not self._watch_service.active:
+			return
+		try:
+			is_busy = str(self.run_button.cget("state")) != "normal"
+			dispatch = self._watch_service.poll(is_busy=is_busy, logger=self.append_log)
+			if dispatch is not None:
+				if normalize_text(self.profile_name.get()) != dispatch.profile_name:
+					self.profile_name.set(dispatch.profile_name)
+				self.audit_path.set(str(dispatch.input_path))
+				self.output_path.set(str(dispatch.output_path))
+				self.pipeline_runtime_var.set("Pipeline status: processing watch input")
+				self.append_log(f"Watch folder picked file: {dispatch.input_path}")
+				self.append_log(f"Watch folder output path: {dispatch.output_path}")
+				self.start_audit()
+			elif not is_busy:
+				self.pipeline_runtime_var.set("Pipeline status: watching folder")
+		except Exception as exc:
+			self.append_log(f"Watch folder error: {exc}")
+			self.pipeline_runtime_var.set("Pipeline status: watch error")
+		finally:
+			self._schedule_watch_tick()
 
 	@staticmethod
 	def _coerce_local_only_profile(vm_profile: Dict[str, Any], target_names: Optional[List[str]] = None) -> Dict[str, Any]:
@@ -2368,4 +2564,4 @@ class AuditFrame(BaseFrame):
 		)
 
 
-__all__ = ["BaseFrame", "HomeFrame", "ProfileFrame", "ChecklistFrame", "AuditFrame", "PipelineFrame"]
+__all__ = ["BaseFrame", "HomeFrame", "ProfileFrame", "ChecklistFrame", "AuditFrame"]

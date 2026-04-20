@@ -9,7 +9,7 @@ import ssl
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 from config import PROFILES_DIR
 from services.utils import normalize_text, ensure_project_structure
@@ -212,28 +212,35 @@ class VSphereService:
         self.username = username.strip()
         self.password = password
         self.ignore_ssl = ignore_ssl
-        self.si = None
+        self.si: Any = None
 
     def connect(self):
         """Connect."""
         if not PYVMOMI_AVAILABLE:
             raise RuntimeError("pyVmomi is not installed. Install it with: pip install pyvmomi requests")
+        if SmartConnect is None:
+            raise RuntimeError("pyVmomi SmartConnect entrypoint is unavailable")
         context = ssl._create_unverified_context() if self.ignore_ssl else None
-        self.si = SmartConnect(host=self.server, user=self.username, pwd=self.password, sslContext=context)
+        smart_connect = cast(Any, SmartConnect)
+        self.si = smart_connect(host=self.server, user=self.username, pwd=self.password, sslContext=context)
         return self.si
 
     def disconnect(self):
         """Disconnect."""
         if self.si is not None:
-            Disconnect(self.si)
+            disconnect = cast(Any, Disconnect)
+            if disconnect is not None:
+                disconnect(self.si)
             self.si = None
 
     def _all_vms(self):
         """Internal helper for all vms."""
         if self.si is None:
             self.connect()
-        content = self.si.RetrieveContent()
-        view = content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
+        service_instance = cast(Any, self.si)
+        vim_module = cast(Any, vim)
+        content = service_instance.RetrieveContent()
+        view = content.viewManager.CreateContainerView(content.rootFolder, [vim_module.VirtualMachine], True)
         try:
             return list(view.view)
         finally:
@@ -251,15 +258,20 @@ class VSphereService:
         names = [LOCAL_SENTINEL]
         for vm_obj in self._all_vms():
             guest_name = normalize_text(getattr(getattr(vm_obj, "guest", None), "guestFullName", ""))
+            vm_name = normalize_text(getattr(vm_obj, "name", ""))
             if not guest_name or "WINDOWS" in guest_name.upper():
-                names.append(vm_obj.name)
+                if vm_name:
+                    names.append(vm_name)
         return sorted(set(names), key=lambda x: (x != LOCAL_SENTINEL, x.lower()))
 
     def verify_vm_names(self, vm_names: List[str]) -> Dict[str, Dict[str, str]]:
         """Verify vm names."""
         inventory: Dict[str, Dict[str, str]] = {}
         for vm_obj in self._all_vms():
-            inventory[vm_obj.name] = {
+            vm_name = normalize_text(getattr(vm_obj, "name", ""))
+            if not vm_name:
+                continue
+            inventory[vm_name] = {
                 "power_state": normalize_text(getattr(getattr(vm_obj, "runtime", None), "powerState", "")),
                 "tools_status": normalize_text(getattr(getattr(vm_obj, "guest", None), "toolsRunningStatus", "")),
                 "guest_os": normalize_text(getattr(getattr(vm_obj, "guest", None), "guestFullName", "")),
@@ -269,7 +281,7 @@ class VSphereService:
 
     def run_powershell_in_guest(self, vm_name: str, guest_username: str, guest_password: str, script: str, timeout_seconds: int = 90) -> Tuple[str, str, str]:
         """Run powershell in guest."""
-        if requests is None:
+        if requests is None or vim is None:
             return "WARN", "ERROR", "requests is not installed. Install with: pip install requests"
         vm_obj = self.find_vm(vm_name)
         if vm_obj is None:
@@ -281,9 +293,13 @@ class VSphereService:
         if "guestToolsRunning" not in tools_status and "running" not in tools_status.lower():
             return "WARN", "TOOLS_NOT_READY", f"VMware Tools not ready on '{vm_name}'"
 
-        content = self.si.RetrieveContent()
-        guest_ops = content.guestOperationsManager
-        creds = vim.vm.guest.NamePasswordAuthentication(username=guest_username, password=guest_password, interactiveSession=False)
+        if self.si is None:
+            self.connect()
+        service_instance = cast(Any, self.si)
+        vim_module = cast(Any, vim)
+        content = service_instance.RetrieveContent()
+        guest_ops = cast(Any, content.guestOperationsManager)
+        creds = vim_module.vm.guest.NamePasswordAuthentication(username=guest_username, password=guest_password, interactiveSession=False)
         marker = datetime.now().strftime("%Y%m%d_%H%M%S")
         remote_out = fr"C:\Windows\Temp\sbl_audit_{marker}.txt"
         remote_err = fr"C:\Windows\Temp\sbl_audit_{marker}_err.txt"
@@ -292,7 +308,7 @@ class VSphereService:
             f"try {{ {script} | Out-File -FilePath '{remote_out}' -Encoding UTF8 -Force }} "
             f"catch {{ $_ | Out-File -FilePath '{remote_err}' -Encoding UTF8 -Force; exit 1 }}"
         )
-        spec = vim.vm.guest.ProcessManager.ProgramSpec(
+        spec = vim_module.vm.guest.ProcessManager.ProgramSpec(
             programPath=r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
             arguments=f"-NoProfile -ExecutionPolicy Bypass -Command \"{wrapped}\"",
         )
@@ -312,7 +328,8 @@ class VSphereService:
             """Fetch text."""
             try:
                 file_info = guest_ops.fileManager.InitiateFileTransferFromGuest(vm_obj, creds, remote_path)
-                response = requests.get(file_info.url, verify=not self.ignore_ssl, timeout=30)
+                requests_module = cast(Any, requests)
+                response = requests_module.get(file_info.url, verify=not self.ignore_ssl, timeout=30)
                 response.raise_for_status()
                 return response.text.strip()
             except Exception:
@@ -356,13 +373,14 @@ class SSHTunnelService:
         """Internal helper for connect target."""
         if not PARAMIKO_AVAILABLE:
             raise RuntimeError("paramiko is not installed. Install it with: pip install paramiko")
+        paramiko_module = cast(Any, paramiko)
 
-        target_client = paramiko.SSHClient()
-        target_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        target_client = paramiko_module.SSHClient()
+        target_client.set_missing_host_key_policy(paramiko_module.AutoAddPolicy())
 
         if self.gateway_host:
-            gateway_client = paramiko.SSHClient()
-            gateway_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            gateway_client = paramiko_module.SSHClient()
+            gateway_client.set_missing_host_key_policy(paramiko_module.AutoAddPolicy())
             gateway_client.connect(
                 hostname=self.gateway_host,
                 port=self.gateway_port,

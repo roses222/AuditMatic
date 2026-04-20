@@ -10,8 +10,8 @@ This folder contains canonical realistic mock artifacts used for testing and val
 
 ## Canonical Fixture Files
 
-- `fixtures/profiles/mock_local_profile.json`
-- `fixtures/profiles/mock_production_profile.json`
+- `fixtures/profiles/mock_local_watchfolder_pipeline_profile.json`
+- `fixtures/profiles/mock_vsphere_watchfolder_pipeline_profile.json`
 - `fixtures/json/registry_snapshots/mock_registry_snapshot.json`
 - `fixtures/json/json_checklist/mock_checklist.json`
 - `fixtures/json/json_result/mock_result.json`

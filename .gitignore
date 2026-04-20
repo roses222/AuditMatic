@@ -22,6 +22,7 @@ JSON/json_checklist/
 
 # Test artifacts
 tests/_audit_*.xlsx
+tests/reports/unit_test_report_*.json
 
 # Profile artifacts
 profiles/
